@@ -1,0 +1,183 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "LXGW WenKai", "Noto Serif SC", serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color: #0C4A6E;
+  background-color: #FFFFFF;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  background-color: #FFFFFF;
+  background-image:
+    /* 上 1/3 蓝色区，使用径向渐变制造柔和过渡，避免硬直线 */
+    radial-gradient(ellipse 130% 55% at 50% 0%, #0EA5E9 0%, #0284C7 38%, rgba(2,132,199,0) 62%),
+    /* 蓝色区点缀高光 */
+    radial-gradient(circle at 18% 12%, rgba(255,255,255,0.18) 0%, transparent 28%),
+    radial-gradient(circle at 82% 8%, rgba(255,255,255,0.12) 0%, transparent 22%),
+    /* 下 2/3 白色区微微泛蓝晕染 */
+    radial-gradient(circle at 15% 75%, rgba(14,165,233,0.06) 0%, transparent 45%),
+    radial-gradient(circle at 85% 90%, rgba(56,189,248,0.05) 0%, transparent 45%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* 艺术分界波浪层（SVG 内联，叠加在 body 背景之上用于强化蓝白交界） */
+.mobile-frame::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 38vh;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 130% 55% at 50% 0%, #0EA5E9 0%, #0284C7 42%, rgba(2,132,199,0) 64%);
+}
+
+/* 艺术波浪分界线：用多重 SVG 水波叠出起伏感 */
+.mobile-frame::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 28vh;
+  height: 90px;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 430 90' preserveAspectRatio='none'><path d='M0,40 C40,10 90,75 140,45 C190,15 250,70 300,42 C350,15 400,55 430,38 L430,90 L0,90 Z' fill='%23ffffff'/><path d='M0,55 C50,30 100,72 160,50 C220,28 270,68 330,48 C380,32 410,55 430,48 L430,90 L0,90 Z' fill='rgba(255,255,255,0.55)'/></svg>");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(14, 165, 233, 0.2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(14, 165, 233, 0.4);
+}
+
+/* 客户端竖屏容器 */
+.mobile-frame {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: transparent;
+  position: relative;
+  box-shadow: 0 0 60px rgba(7, 89, 133, 0.08);
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .mobile-frame {
+    min-height: 100vh;
+    border-left: 1px solid rgba(14, 165, 233, 0.1);
+    border-right: 1px solid rgba(14, 165, 233, 0.1);
+  }
+}
+
+/* 让 mobile-frame 内的内容位于伪元素底板之上 */
+.mobile-frame > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* 毛笔字标题 */
+.brush-title {
+  font-family: "Ma Shan Zheng", "ZCOOL XiaoWei", cursive;
+  color: #0C4A6E;
+  letter-spacing: 0.05em;
+}
+
+/* 印章 */
+.seal-stamp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #0EA5E9;
+  color: #FFFFFF;
+  font-family: "Ma Shan Zheng", cursive;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
+  transform: rotate(-3deg);
+}
+
+/* 卡片 */
+.ink-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(14, 165, 233, 0.1);
+  box-shadow: 0 4px 20px rgba(7, 89, 133, 0.05);
+}
+
+/* 主按钮 */
+.btn-navy {
+  background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+  transition: all 0.2s ease;
+}
+.btn-navy:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(14, 165, 233, 0.3);
+}
+
+/* 隐藏滚动条 */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* 轮播指示器 */
+.carousel-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+}
+.carousel-dot.active {
+  width: 18px;
+  border-radius: 3px;
+  background: #0284C7;
+}
+
+/* 学霸笔记滚动 */
+.notes-scroll {
+  animation: scroll-up 25s linear infinite;
+}
+.notes-scroll:hover {
+  animation-play-state: paused;
+}
