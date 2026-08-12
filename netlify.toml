@@ -6,7 +6,7 @@
 [build.environment]
   NODE_VERSION = "18"
 
-# API 路由：转发到 Netlify Functions
+# API 路由：转发到 Netlify Functions（优先于 SPA 回退）
 [[redirects]]
   from = "/api/questions"
   to = "/.netlify/functions/questions"
@@ -26,6 +26,7 @@
   force = true
 
 # SPA 路由回退：非文件、非 API 路径返回 index.html
+# force = false 确保已存在的静态资源优先
 [[redirects]]
   from = "/*"
   to = "/index.html"

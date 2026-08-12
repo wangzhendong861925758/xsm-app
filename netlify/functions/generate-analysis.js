@@ -219,7 +219,3 @@ export default async (req) => {
     return json({ success: false, message: err.message || 'AI 生成失败' }, 500);
   }
 };
-
-export const config = {
-  path: ['/api/generate-analysis'],
-};

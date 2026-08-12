@@ -70,7 +70,3 @@ export default async (req) => {
     return json({ success: false, message: '服务器错误' }, 500);
   }
 };
-
-export const config = {
-  path: ['/api/questions'],
-};
