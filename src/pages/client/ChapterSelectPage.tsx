@@ -21,7 +21,7 @@ export default function ChapterSelectPage() {
   const [searchParams] = useSearchParams();
   const version = searchParams.get("version") || "";
   const navigate = useNavigate();
-  const { currentUser, selectedGrade, questions } = useStore();
+  const { selectedGrade, questions } = useStore();
 
   const subjectKey = subject as Subject;
   const info = SUBJECTS[subjectKey];
@@ -29,7 +29,7 @@ export default function ChapterSelectPage() {
   // 从题目数组中聚合出「单元/课时」结构，只展示有题目的单元和课时
   const chapters = useMemo<DerivedChapter[]>(() => {
     const matched = questions.filter(
-      (q) => q.subject === subjectKey && q.grade === currentUser.grade && (!version || q.version === version),
+      (q) => q.subject === subjectKey && q.grade === selectedGrade && (!q.version || !version || q.version === version),
     );
     // ponytail: 用 Map 保序聚合，按首次出现顺序展示
     const chapterMap = new Map<string, DerivedChapter>();
@@ -52,7 +52,7 @@ export default function ChapterSelectPage() {
       }
       return ch;
     });
-  }, [questions, subjectKey, currentUser.grade, version]);
+  }, [questions, subjectKey, selectedGrade, version]);
 
   const [openChapter, setOpenChapter] = useState<string | null>(chapters[0]?.id || null);
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);

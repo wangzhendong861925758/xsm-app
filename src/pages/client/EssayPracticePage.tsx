@@ -67,7 +67,7 @@ export default function EssayPracticePage() {
   const lessonTitle = searchParams.get("lesson") || "";
   const navigate = useNavigate();
   const {
-    currentUser,
+    selectedGrade,
     incrementTodayLearned,
     recordTodayAnswer,
     addToErrorBook,
@@ -84,15 +84,16 @@ export default function EssayPracticePage() {
   const versionQuestions = useMemo(() => {
     return questions.filter((q) => {
       if (q.subject !== subjectKey) return false;
-      if (q.grade !== currentUser.grade) return false;
-      if (version && q.version !== version) return false;
+      if (q.grade !== selectedGrade) return false;
+      // 版本匹配：管理端未指定版本时匹配所有
+      if (q.version && version && q.version !== version) return false;
       // 大题专项训练：仅取大题
       if (q.type !== "essay") return false;
       // 若指定了课时标题，则按 section 过滤
       if (lessonTitle && q.section && q.section !== lessonTitle) return false;
       return true;
     });
-  }, [questions, subjectKey, currentUser.grade, version, lessonTitle]);
+  }, [questions, subjectKey, selectedGrade, version, lessonTitle]);
 
   // 本次训练题目（避免依赖问题导致重渲染）
   const sessionKeyRef = useRef<string>("");
@@ -304,7 +305,7 @@ export default function EssayPracticePage() {
           <span className="text-5xl mb-3 opacity-30">📝</span>
           <p className="font-kai text-sm text-navy-800/50 text-center">
             当前学段/版本暂无大题<br />
-            <span className="text-[11px]">({currentUser.grade} · {version || "默认版本"})</span>
+            <span className="text-[11px]">({selectedGrade} · {version || "默认版本"})</span>
           </p>
           <button onClick={() => navigate(-1)} className="mt-5 px-5 py-2 rounded-lg btn-navy font-kai text-xs font-bold">
             返回
@@ -338,7 +339,7 @@ export default function EssayPracticePage() {
             >大题</span>
           </div>
           <p className="text-[10px] text-navy-800/50 mt-0.5">
-            {currentUser.grade} · {version || "默认版本"} · 第 {currentIdx + 1}/{sessionQuestions.length} 题
+            {selectedGrade} · {version || "默认版本"} · 第 {currentIdx + 1}/{sessionQuestions.length} 题
           </p>
         </div>
         <button
