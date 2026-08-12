@@ -50,9 +50,27 @@ export default function AdminQuestions() {
 
   return (
     <div>
-      <header className="mb-5">
-        <h1 className="brush-title text-3xl text-navy-900 mb-1">题库管理</h1>
-        <p className="font-kai text-xs text-navy-800/60">共 {questions.length} 道题目</p>
+      <header className="mb-5 flex items-start justify-between gap-3">
+        <div>
+          <h1 className="brush-title text-3xl text-navy-900 mb-1">题库管理</h1>
+          <p className="font-kai text-xs text-navy-800/60">共 {questions.length} 道题目</p>
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <button
+            onClick={() => setShowUpload(true)}
+            className="flex items-center gap-1 border border-navy-500/30 text-navy-700 px-3 py-2 rounded-lg font-kai text-sm hover:bg-navy-500/8"
+          >
+            <Upload size={15} />
+            上传 Word 题库
+          </button>
+          <button
+            onClick={handleAdd}
+            className="flex items-center gap-1 btn-navy px-3 py-2 rounded-lg font-kai text-sm"
+          >
+            <Plus size={15} />
+            新增题目
+          </button>
+        </div>
       </header>
 
       {/* 工具栏 */}
@@ -76,20 +94,6 @@ export default function AdminQuestions() {
             <option key={s.key} value={s.key}>{s.name}</option>
           ))}
         </select>
-        <button
-          onClick={() => setShowUpload(true)}
-          className="flex items-center gap-1 border border-navy-500/30 text-navy-700 px-3 py-2 rounded-lg font-kai text-sm hover:bg-navy-500/8"
-        >
-          <Upload size={15} />
-          上传 Word 题库
-        </button>
-        <button
-          onClick={handleAdd}
-          className="flex items-center gap-1 btn-navy px-3 py-2 rounded-lg font-kai text-sm"
-        >
-          <Plus size={15} />
-          新增题目
-        </button>
       </div>
 
       {/* 题目列表 */}
