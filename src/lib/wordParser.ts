@@ -33,7 +33,7 @@ const ESSAY_QUESTION_PREFIX = /^\s*\d+\s*[.．、]\s*问\s*[:：]/;
  * 每道选择判断题必有"答案："行，以它为分界不会被子序号干扰。
  * 答案后的"解析："行归入当前题块，之后第一个非空行开始下一题。
  */
-function splitChoiceByAnswer(text: string): string[] {
+export function splitChoiceByAnswer(text: string): string[] {
   const lines = text.replace(/\r\n/g, "\n").split("\n");
   const blocks: string[] = [];
   let current: string[] = [];
@@ -78,7 +78,7 @@ function splitChoiceByAnswer(text: string): string[] {
  * 用户指定大题格式为"1.问：题干 / 答：答案"，以"N.问："为分界，
  * 答案中的子序号不会误判为新题。
  */
-function splitEssayByQuestion(text: string): string[] {
+export function splitEssayByQuestion(text: string): string[] {
   const lines = text.replace(/\r\n/g, "\n").split("\n");
   const blocks: string[] = [];
   let current: string[] = [];

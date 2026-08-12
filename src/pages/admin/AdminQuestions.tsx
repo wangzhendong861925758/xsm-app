@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Search, Plus, Pencil, Trash2, X, Upload, FileText, Eraser } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import { SUBJECTS, GRADES, TEXTBOOKS } from "@/data/textbooks";
-import { parseDocxToQuestions } from "@/lib/wordParser";
+import { parseDocxToQuestions, readDocx, splitChoiceByAnswer, splitEssayByQuestion } from "@/lib/wordParser";
 import type { Question, Subject, QuestionType } from "@/data/types";
 
 export default function AdminQuestions() {
@@ -198,6 +198,10 @@ function WordUploadForm({
   const [file, setFile] = useState<File | null>(null);
   const [parsing, setParsing] = useState(false);
   const [result, setResult] = useState<{ ok: number; errors: string[] } | null>(null);
+  // 调试预览：显示 mammoth 提取的纯文本和切分结果
+  const [debugText, setDebugText] = useState<string>("");
+  const [debugBlocks, setDebugBlocks] = useState<string[]>([]);
+  const [showDebug, setShowDebug] = useState(false);
 
   const versions = TEXTBOOKS.filter((t) => t.grade === grade && t.subject === subject).flatMap((t) => t.versions);
 
@@ -233,6 +237,23 @@ function WordUploadForm({
       setResult({ ok: qs.length, errors });
     } catch (e) {
       setResult({ ok: 0, errors: [`解析失败：${(e as Error).message}`] });
+    } finally {
+      setParsing(false);
+    }
+  };
+
+  // 调试预览：读取 docx 纯文本并展示切分结果，帮助定位格式问题
+  const handleDebug = async () => {
+    if (!file) return;
+    setParsing(true);
+    try {
+      const text = await readDocx(file);
+      const blocks = mode === "choice" ? splitChoiceByAnswer(text) : splitEssayByQuestion(text);
+      setDebugText(text);
+      setDebugBlocks(blocks);
+      setShowDebug(true);
+    } catch (e) {
+      setResult({ ok: 0, errors: [`读取失败：${(e as Error).message}`] });
     } finally {
       setParsing(false);
     }
@@ -348,18 +369,27 @@ function WordUploadForm({
           {/* 文件选择 */}
           <div>
             <label className="block text-xs font-kai text-navy-800/60 mb-1">Word 文件（.docx）</label>
-            <label className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-dashed border-navy-500/30 bg-navy-50/40 cursor-pointer hover:border-navy-500/60">
-              <FileText size={16} className="text-navy-600" />
-              <span className="font-kai text-sm text-navy-800/70 flex-1 truncate">
-                {file ? file.name : "点击选择 .docx 文件"}
-              </span>
-              <input
-                type="file"
-                accept=".docx"
-                className="hidden"
-                onChange={(e) => { setFile(e.target.files?.[0] || null); setResult(null); }}
-              />
-            </label>
+            <div className="flex gap-2">
+              <label className="flex-1 flex items-center gap-2 px-3 py-2.5 rounded-lg border border-dashed border-navy-500/30 bg-navy-50/40 cursor-pointer hover:border-navy-500/60">
+                <FileText size={16} className="text-navy-600" />
+                <span className="font-kai text-sm text-navy-800/70 flex-1 truncate">
+                  {file ? file.name : "点击选择 .docx 文件"}
+                </span>
+                <input
+                  type="file"
+                  accept=".docx"
+                  className="hidden"
+                  onChange={(e) => { setFile(e.target.files?.[0] || null); setResult(null); setDebugText(""); setDebugBlocks([]); setShowDebug(false); }}
+                />
+              </label>
+              <button
+                onClick={handleDebug}
+                disabled={!file || parsing}
+                className="px-3 py-2.5 rounded-lg border border-navy-500/30 text-navy-700 font-kai text-sm hover:bg-navy-500/8 disabled:opacity-40"
+              >
+                调试预览
+              </button>
+            </div>
           </div>
 
           {/* 结果 */}
@@ -374,6 +404,40 @@ function WordUploadForm({
                   {result.errors.slice(0, 5).map((e, i) => <li key={i}>{e}</li>)}
                 </ul>
               )}
+            </div>
+          )}
+
+          {/* 调试预览面板 */}
+          {showDebug && (
+            <div className="rounded-lg border border-navy-500/20 p-3 space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="font-kai text-xs font-bold text-navy-900">调试预览（切出 {debugBlocks.length} 个题块）</p>
+                <button onClick={() => setShowDebug(false)} className="text-navy-800/50 hover:text-navy-900">
+                  <X size={14} />
+                </button>
+              </div>
+              <div>
+                <p className="font-kai text-[11px] text-navy-800/60 mb-1">① mammoth 提取的纯文本（前 800 字）：</p>
+                <pre className="text-[10px] bg-navy-50/60 rounded p-2 max-h-40 overflow-auto whitespace-pre-wrap font-mono">{debugText.slice(0, 800)}{debugText.length > 800 ? "…" : ""}</pre>
+              </div>
+              <div>
+                <p className="font-kai text-[11px] text-navy-800/60 mb-1">② 切分出的题块（每个块前 200 字）：</p>
+                <div className="space-y-1.5 max-h-60 overflow-auto">
+                  {debugBlocks.length === 0 ? (
+                    <p className="text-[10px] text-gold-dark font-kai">⚠ 没有切出任何题块。选择判断题需要每题有"答案："行；大题需要每题以"N.问："开头。</p>
+                  ) : (
+                    debugBlocks.map((b, i) => (
+                      <div key={i} className="text-[10px] bg-navy-50/60 rounded p-2">
+                        <p className="font-bold text-navy-700 mb-0.5">块 {i + 1}：</p>
+                        <pre className="whitespace-pre-wrap font-mono">{b.slice(0, 200)}{b.length > 200 ? "…" : ""}</pre>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+              <p className="font-kai text-[10px] text-navy-800/50">
+                把上面的内容截图发我，我就能定位格式问题。
+              </p>
             </div>
           )}
         </div>
