@@ -1,9 +1,12 @@
-// AI 解析生成 API：调用第三方中转 API（token.xinhankr.com）一次性为每题生成所有选项的错因 + 正确思路
+// AI 解析生成 API：通过原生 https 模块调用第三方中转 API（token.xinhankr.com）
+// API Key 由管理端浏览器传入（保存在 localStorage），优先使用前端传来的 key，fallback 到环境变量
 // - 选择/判断题：生成 optionAnalysis 数组（顺序与 options 对齐，正确选项位置存"正确思路"）
 // - 大题：生成 analysis（错题解析）和 solution（正确思路）
-// 环境变量 DEEPSEEK_API_KEY 需在 Netlify 后台设置（中转 API 的 key）
-const DEEPSEEK_URL = 'https://token.xinhankr.com/v1/chat/completions';
+const https = require('https');
+const DEEPSEEK_HOST = 'token.xinhankr.com';
+const DEEPSEEK_PATH = '/v1/chat/completions';
 const MODEL = 'deepseek-v4-pro';
+const TIMEOUT_MS = 30000;
 
 function json(data, status = 200) {
   return Response.json(data, {
@@ -11,29 +14,70 @@ function json(data, status = 200) {
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST,OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Headers': 'Content-Type,X-API-Key',
     },
+  });
+}
+
+/** 用原生 https 模块发请求，提供比 fetch 更详细的网络错误诊断 */
+function httpsRequest(bodyData, apiKey) {
+  return new Promise((resolve, reject) => {
+    const postData = JSON.stringify(bodyData);
+    const options = {
+      hostname: DEEPSEEK_HOST,
+      port: 443,
+      path: DEEPSEEK_PATH,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Length': Buffer.byteLength(postData),
+      },
+      timeout: TIMEOUT_MS,
+    };
+
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', (chunk) => { data += chunk; });
+      res.on('end', () => {
+        try {
+          resolve({ statusCode: res.statusCode, body: data });
+        } catch (e) {
+          reject(new Error(`解析响应失败: ${e.message}`));
+        }
+      });
+    });
+
+    req.on('error', (e) => {
+      reject(new Error(`网络连接失败: ${e.code || ''} ${e.message}（可能是DNS解析失败/连接超时/防火墙拦截，目标地址 ${DEEPSEEK_HOST}）`));
+    });
+
+    req.on('timeout', () => {
+      req.destroy();
+      reject(new Error(`请求超时（${TIMEOUT_MS}ms），Netlify 服务器无法连接 ${DEEPSEEK_HOST}，可能是国际网络链路不通`));
+    });
+
+    req.write(postData);
+    req.end();
   });
 }
 
 /** 将题目的 answer 统一成单字母数组，便于定位正确选项下标 */
 function normalizeAnswerIndexes(q) {
   const opts = q.options || [];
-  // answer 可能是 "A" / "AB" / "正确" / ["A","B"] / "对" 等
   let ans = q.answer;
   if (Array.isArray(ans)) ans = ans.join('');
   if (!ans) return { correctIndexes: [], opts };
-  // 将"正确"/"错误"/"对"/"错" 映射到 A/B（判断题约定 options=["正确","错误"]）
   const normalized = String(ans).replace(/[对√]/g, 'A').replace(/[错×]/g, 'B');
   const letters = normalized.toUpperCase().match(/[A-Z]/g) || [];
   const correctIndexes = letters
-    .map((l) => l.charCodeAt(0) - 65) // A->0, B->1 ...
+    .map((l) => l.charCodeAt(0) - 65)
     .filter((i) => i >= 0 && i < opts.length);
   return { correctIndexes, opts };
 }
 
-/** 调用 DeepSeek 为一批选择题生成每个选项的错因/正确思路 */
-async function callDeepSeekChoice(questions, apiKey) {
+/** 调用 AI 为一批选择题生成每个选项的错因/正确思路 */
+async function callAIChoice(questions, apiKey) {
   const items = questions.map((q, i) => {
     const { correctIndexes, opts } = normalizeAnswerIndexes(q);
     return {
@@ -61,37 +105,33 @@ ${JSON.stringify(items)}
 输出格式：
 [{"index":0,"optionAnalysis":["选A错因...","选B错因...","正确思路：C选项...","选D错因..."]}]`;
 
-  const res = await fetch(DEEPSEEK_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3,
-      max_tokens: 6000,
-    }),
-  });
+  const { statusCode, body } = await httpsRequest({
+    model: MODEL,
+    messages: [{ role: 'user', content: prompt }],
+    temperature: 0.3,
+    max_tokens: 6000,
+  }, apiKey);
 
-  if (!res.ok) {
-    const err = await res.text();
-    if (res.status === 401) {
-      throw new Error(`DeepSeek 鉴权失败(401)：API Key 无效或已被吊销。Key 长度 ${apiKey.length}，末尾 "${apiKey.slice(-4)}"。请检查 Netlify 后台环境变量 DEEPSEEK_API_KEY 是否完整（应以 sk- 开头，无多余空格/引号/换行）。原始错误：${err}`);
+  if (statusCode !== 200) {
+    if (statusCode === 401) {
+      throw new Error(`AI 鉴权失败(401)：API Key 无效或已被吊销。Key 长度 ${apiKey.length}，末尾 "${apiKey.slice(-4)}"。原始错误：${body.slice(0, 300)}`);
     }
-    throw new Error(`DeepSeek API 错误 ${res.status}: ${err}`);
+    if (statusCode === 403) {
+      throw new Error(`模型权限不足(403)：该 Key 不支持 ${MODEL} 模型。原始错误：${body.slice(0, 300)}`);
+    }
+    throw new Error(`AI API 错误 ${statusCode}: ${body.slice(0, 500)}`);
   }
 
-  const data = await res.json();
+  let data;
+  try { data = JSON.parse(body); } catch (e) { throw new Error(`AI 返回非 JSON: ${body.slice(0, 200)}`); }
   const content = data.choices?.[0]?.message?.content || '';
   const match = content.match(/\[[\s\S]*\]/);
-  if (!match) throw new Error('AI 返回格式异常（选择）');
+  if (!match) throw new Error('AI 返回格式异常（选择题），原始内容：' + content.slice(0, 200));
   return JSON.parse(match[0]);
 }
 
-/** 调用 DeepSeek 为一批大题生成错题解析+正确思路 */
-async function callDeepSeekEssay(questions, apiKey) {
+/** 调用 AI 为一批大题生成错题解析+正确思路 */
+async function callAIEssay(questions, apiKey) {
   const items = questions.map((q, i) => ({
     index: i,
     type: q.type,
@@ -115,32 +155,25 @@ ${JSON.stringify(items)}
 输出格式：
 [{"index":0,"analysis":"错题解析文本","solution":"正确思路文本"}]`;
 
-  const res = await fetch(DEEPSEEK_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3,
-      max_tokens: 4000,
-    }),
-  });
+  const { statusCode, body } = await httpsRequest({
+    model: MODEL,
+    messages: [{ role: 'user', content: prompt }],
+    temperature: 0.3,
+    max_tokens: 4000,
+  }, apiKey);
 
-  if (!res.ok) {
-    const err = await res.text();
-    if (res.status === 401) {
-      throw new Error(`DeepSeek 鉴权失败(401)：API Key 无效或已被吊销。Key 长度 ${apiKey.length}，末尾 "${apiKey.slice(-4)}"。原始错误：${err}`);
+  if (statusCode !== 200) {
+    if (statusCode === 401) {
+      throw new Error(`AI 鉴权失败(401)：API Key 无效。Key 末尾 "${apiKey.slice(-4)}"。原始错误：${body.slice(0, 300)}`);
     }
-    throw new Error(`DeepSeek API 错误 ${res.status}: ${err}`);
+    throw new Error(`AI API 错误 ${statusCode}: ${body.slice(0, 500)}`);
   }
 
-  const data = await res.json();
+  let data;
+  try { data = JSON.parse(body); } catch (e) { throw new Error(`AI 返回非 JSON: ${body.slice(0, 200)}`); }
   const content = data.choices?.[0]?.message?.content || '';
   const match = content.match(/\[[\s\S]*\]/);
-  if (!match) throw new Error('AI 返回格式异常（大题）');
+  if (!match) throw new Error('AI 返回格式异常（大题），原始内容：' + content.slice(0, 200));
   return JSON.parse(match[0]);
 }
 
@@ -151,7 +184,7 @@ export default async (req) => {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'POST,OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Headers': 'Content-Type,X-API-Key',
       },
     });
   }
@@ -160,21 +193,18 @@ export default async (req) => {
     return json({ success: false, message: '仅支持 POST' }, 405);
   }
 
-  // ponytail: 自动去除前后空白/换行，避免复制 key 时带入的多余字符导致 401
-  const API_KEY = (process.env.DEEPSEEK_API_KEY || '').trim();
-  if (!API_KEY) {
-    return json({ success: false, message: '未配置 DEEPSEEK_API_KEY 环境变量' }, 500);
-  }
-  if (!API_KEY.startsWith('sk-')) {
-    return json({
-      success: false,
-      message: `DEEPSEEK_API_KEY 格式错误：应以 sk- 开头。当前长度 ${API_KEY.length}，前缀 "${API_KEY.substring(0, 4)}"`,
-    }, 500);
-  }
-
   try {
     const payload = await req.json();
     const questions = payload.questions;
+    // 优先使用前端传来的 key（管理端 localStorage 里的），fallback 到环境变量
+    const API_KEY = (payload.apiKey || req.headers.get('x-api-key') || process.env.DEEPSEEK_API_KEY || '').trim();
+
+    if (!API_KEY) {
+      return json({ success: false, message: '请先在管理端点击「设置 AI Key」按钮配置 API Key' }, 400);
+    }
+    if (!API_KEY.startsWith('sk-')) {
+      return json({ success: false, message: `API Key 格式错误：应以 sk- 开头，当前前缀 "${API_KEY.substring(0, 6)}"` }, 400);
+    }
     if (!Array.isArray(questions) || questions.length === 0) {
       return json({ success: false, message: 'questions 不能为空' }, 400);
     }
@@ -183,22 +213,21 @@ export default async (req) => {
     const choiceQs = questions.filter((q) => q.type === 'single' || q.type === 'multiple' || q.type === 'judge');
     const essayQs = questions.filter((q) => q.type === 'essay');
 
-    // ponytail: DeepSeek 单次最多处理约20题，超过则分批
-    const BATCH = 20;
+    const BATCH = 15;
     const choiceResults = [];
     const essayResults = [];
 
     for (let i = 0; i < choiceQs.length; i += BATCH) {
       const batch = choiceQs.slice(i, i + BATCH);
       if (batch.length > 0) {
-        const r = await callDeepSeekChoice(batch, API_KEY);
+        const r = await callAIChoice(batch, API_KEY);
         choiceResults.push(...r);
       }
     }
     for (let i = 0; i < essayQs.length; i += BATCH) {
       const batch = essayQs.slice(i, i + BATCH);
       if (batch.length > 0) {
-        const r = await callDeepSeekEssay(batch, API_KEY);
+        const r = await callAIEssay(batch, API_KEY);
         essayResults.push(...r);
       }
     }
@@ -207,7 +236,7 @@ export default async (req) => {
     const choiceMap = new Map(choiceResults.map((r) => [r.index, r]));
     const essayMap = new Map(essayResults.map((r) => [r.index, r]));
 
-    const merged = questions.map((q, i) => {
+    const merged = questions.map((q) => {
       if (q.type === 'essay') {
         const origIndex = essayQs.indexOf(q);
         const r = essayMap.get(origIndex);
@@ -219,7 +248,6 @@ export default async (req) => {
       } else {
         const origIndex = choiceQs.indexOf(q);
         const r = choiceMap.get(origIndex);
-        // 校验返回的 optionAnalysis 长度与 options 对齐
         const optionAnalysis = Array.isArray(r?.optionAnalysis) && r.optionAnalysis.length === q.options.length
           ? r.optionAnalysis
           : q.optionAnalysis;
