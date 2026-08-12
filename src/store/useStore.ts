@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User, Question, Subject, ClientAccount } from "@/data/types";
 import { CURRENT_USER, QUESTIONS, ADMIN_USERS, CAROUSEL_IMAGES } from "@/data/mock";
+import { SUBJECTS } from "@/data/textbooks";
 
 // 错题记录条目
 export interface ErrorBookItem {
@@ -286,21 +287,30 @@ export const useStore = create<AppState>()(
         currentClientCode: s.currentClientCode,
       }),
       // 合并策略：
-      // - questions 以持久化数据为准（支持管理端清空/新增后客户端同步），
-      //   仅保留代码新增题目（id 在持久化中不存在时）并继承 mastered/collected
+      // - 无持久化数据时，使用代码里的初始 QUESTIONS（保证首次访问有题）
+      // - 有持久化数据时，以持久化 questions 为准（支持管理端清空/新增后客户端同步），
+      //   过滤掉学科已不存在的旧题目（如已删除的 science），并继承 mastered/collected
       // - 其余用户作答状态以持久化为准，避免旧数据结构污染
       merge: (persisted, current) => {
         const p = (persisted as Partial<AppState>) || {};
-        const persistedQs = Array.isArray(p.questions) ? p.questions : [];
-        // 以持久化题目为准，对每个持久化题目补全代码里可能新增的字段，并保留 mastered/collected
-        const mergedQuestions = persistedQs.map((q) => {
-          const codeQ = current.questions.find((x) => x.id === q.id);
-          if (codeQ) {
-            return { ...codeQ, mastered: q.mastered, collected: q.collected };
-          }
-          return q;
-        });
-        // 仅保留用户作答相关状态，其余字段以代码为准，避免旧持久化数据结构污染
+        // 无持久化 questions 字段：首次访问，用代码初始题目
+        if (!Array.isArray(p.questions)) {
+          return {
+            ...current,
+            adminLoggedIn: p.adminLoggedIn ?? current.adminLoggedIn,
+          };
+        }
+        // 有持久化 questions：以持久化为准，过滤掉学科已不存在的旧题目
+        const validSubjects = new Set(Object.keys(SUBJECTS));
+        const mergedQuestions = p.questions
+          .filter((q) => validSubjects.has(q.subject))
+          .map((q) => {
+            const codeQ = current.questions.find((x) => x.id === q.id);
+            if (codeQ) {
+              return { ...codeQ, mastered: q.mastered, collected: q.collected };
+            }
+            return q;
+          });
         return {
           ...current,
           answeredHistory: p.answeredHistory ?? current.answeredHistory,
