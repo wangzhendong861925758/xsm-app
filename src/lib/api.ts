@@ -106,3 +106,19 @@ export async function revokeAccount(code: string): Promise<boolean> {
     return false;
   }
 }
+
+/* ================ AI 解析生成 ================ */
+
+/** 调用 AI 为题目生成错题解析和正确思路 */
+export async function generateAnalysis(questions: Question[]): Promise<Question[]> {
+  const res = await fetch("/api/generate-analysis", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ questions }),
+  });
+  const data = await res.json();
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "AI 生成失败");
+  }
+  return data.data as Question[];
+}

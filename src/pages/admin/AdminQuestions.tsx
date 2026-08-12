@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Search, Plus, Pencil, Trash2, X, Upload, FileText, Eraser } from "lucide-react";
+import { Search, Plus, Pencil, Trash2, X, Upload, FileText, Eraser, Sparkles } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import { SUBJECTS, GRADES, TEXTBOOKS } from "@/data/textbooks";
 import { parseDocxToQuestions, readDocx, splitChoiceByAnswer, splitEssayByQuestion } from "@/lib/wordParser";
+import { generateAnalysis } from "@/lib/api";
 import type { Question, Subject, QuestionType } from "@/data/types";
 
 export default function AdminQuestions() {
@@ -12,6 +13,30 @@ export default function AdminQuestions() {
   const [editing, setEditing] = useState<Question | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
+  const [genLoading, setGenLoading] = useState(false);
+  const [genMsg, setGenMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+
+  /** 一键为所有缺解析的题目调用 AI 生成解析+正确思路 */
+  const handleGenerateAnalysis = async () => {
+    const need = questions.filter((q) => !q.analysis && !q.solution);
+    if (need.length === 0) {
+      setGenMsg({ type: "err", text: "所有题目都已有解析，无需生成" });
+      return;
+    }
+    if (!confirm(`将为 ${need.length} 道缺少解析的题目调用 AI 生成解析和正确思路，可能消耗少量 API 额度，是否继续？`)) return;
+    setGenLoading(true);
+    setGenMsg(null);
+    try {
+      const updated = await generateAnalysis(need);
+      // 逐题合并回 store（保留原 mastered/collected 等状态）
+      updated.forEach((q) => updateQuestion(q));
+      setGenMsg({ type: "ok", text: `已为 ${updated.length} 道题目生成解析和正确思路` });
+    } catch (e) {
+      setGenMsg({ type: "err", text: `生成失败：${(e as Error).message}` });
+    } finally {
+      setGenLoading(false);
+    }
+  };
 
   const filtered = questions.filter((q) => {
     const matchKey = q.stem.includes(keyword) || q.id.includes(keyword);
@@ -54,7 +79,17 @@ export default function AdminQuestions() {
           <h1 className="brush-title text-3xl text-navy-900 mb-1">题库管理</h1>
           <p className="font-kai text-xs text-navy-800/60">共 {questions.length} 道题目</p>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
+          <button
+            onClick={handleGenerateAnalysis}
+            disabled={genLoading || questions.length === 0}
+            className={`flex items-center gap-1 px-3 py-2 rounded-lg font-kai text-sm ${
+              genLoading ? "bg-navy-500/10 text-navy-800/40" : "border border-purple-400/50 text-purple-700 hover:bg-purple-50"
+            }`}
+          >
+            <Sparkles size={15} />
+            {genLoading ? "AI生成中…" : "AI生成解析"}
+          </button>
           <button
             onClick={() => {
               if (questions.length === 0) return;
@@ -83,6 +118,18 @@ export default function AdminQuestions() {
           </button>
         </div>
       </header>
+
+      {genMsg && (
+        <div
+          className="mb-3 px-4 py-2 rounded-lg font-kai text-xs"
+          style={{
+            background: genMsg.type === "ok" ? "rgba(14,165,233,0.08)" : "rgba(234,179,8,0.10)",
+            color: genMsg.type === "ok" ? "#0369A1" : "#92400E",
+          }}
+        >
+          {genMsg.text}
+        </div>
+      )}
 
       {/* 工具栏 */}
       <div className="ink-card rounded-2xl p-4 mb-4 flex items-center gap-3 flex-wrap">
