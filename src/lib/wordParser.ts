@@ -211,15 +211,20 @@ function parseChoiceBlock(block: string, ctx: UploadContext, idx: number): Quest
   // 在答案之前的文本中提取题干和选项
   let { stem, options } = extractOptions(beforeAnswer);
 
-  // 判断题：无选项，自动补"正确/错误"两个选项
+  // 判断题：明确识别到√/×/对/错等判断题答案，或者选项只有2个且是A.正确/B.错误形式
   let type: QuestionType;
-  if (isJudge || options.length < 2) {
+  if (isJudge) {
     type = "judge";
     options = ["正确", "错误"];
     // 题干去掉题号前缀和末尾的括号（判断题常见"（  ）"）
     stem = beforeAnswer.replace(NUM_PREFIX, "").trim().replace(/[（(]\s*[）)]\s*$/, "").trim();
-  } else if (options.length === 2) {
+  } else if (options.length === 2 && 
+             (/正确/.test(options[0]) && /错误/.test(options[1]) || 
+              /对/.test(options[0]) && /错/.test(options[1]))) {
     type = "judge";
+  } else if (options.length < 2) {
+    // 选项提取失败，无法确定题型
+    return null;
   } else if (answer.length >= 2) {
     type = "multiple";
   } else {
