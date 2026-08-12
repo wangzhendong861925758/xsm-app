@@ -72,6 +72,7 @@ interface AppState {
   toggleCollect: (questionId: string) => void;
   toggleMastered: (questionId: string) => void;
   addQuestion: (q: Question) => void;
+  addQuestions: (qs: Question[]) => void; // 批量新增（Word 导入用）
   updateQuestion: (q: Question) => void;
   deleteQuestion: (id: string) => void;
   addAdminUser: (u: User) => void;
@@ -137,6 +138,7 @@ export const useStore = create<AppState>()(
         })),
 
       addQuestion: (q) => set((s) => ({ questions: [...s.questions, q] })),
+      addQuestions: (qs) => set((s) => ({ questions: [...s.questions, ...qs] })),
       updateQuestion: (q) =>
         set((s) => ({ questions: s.questions.map((item) => (item.id === q.id ? q : item)) })),
       deleteQuestion: (id) =>

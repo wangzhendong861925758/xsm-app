@@ -71,6 +71,9 @@ export default function EssayPracticePage() {
     incrementTodayLearned,
     recordTodayAnswer,
     addToErrorBook,
+    answeredHistory,
+    addAnsweredQuestion,
+    resetAnsweredBySubjectVersion,
     questions,
   } = useStore();
 
@@ -104,9 +107,18 @@ export default function EssayPracticePage() {
       setSessionQuestions([]);
       return;
     }
-    const pool = shuffle(versionQuestions);
-    const n = Math.min(sessionCount, pool.length);
-    setSessionQuestions(pool.slice(0, n));
+    // 题目轮转：优先未答过的题；答完一轮后重置记录
+    const unanswered = versionQuestions.filter(
+      (q) => !answeredHistory.includes(q.id),
+    );
+    if (unanswered.length < sessionCount && versionQuestions.length >= MIN_QUESTIONS) {
+      resetAnsweredBySubjectVersion(subjectKey, version);
+      const pool = versionQuestions;
+      setSessionQuestions(shuffle(pool).slice(0, Math.min(sessionCount, pool.length)));
+    } else {
+      const pool = unanswered.length >= sessionCount ? unanswered : versionQuestions;
+      setSessionQuestions(shuffle(pool).slice(0, Math.min(sessionCount, pool.length)));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subjectKey, version, lessonTitle, sessionCount, versionQuestions]);
 
@@ -140,6 +152,7 @@ export default function EssayPracticePage() {
     if (!currentQ || !studentAnswer.trim()) return;
     const result = gradeEssay(studentAnswer, currentQ);
     setGradeMap({ ...gradeMap, [currentIdx]: result });
+    addAnsweredQuestion(currentQ.id);
     incrementTodayLearned(subjectKey);
     recordTodayAnswer(subjectKey, result.correct);
     // 答错加入错题集
