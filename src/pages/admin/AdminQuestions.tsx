@@ -3,7 +3,7 @@ import { Search, Plus, Pencil, Trash2, X, Upload, FileText, Eraser, Sparkles } f
 import { useStore } from "@/store/useStore";
 import { SUBJECTS, GRADES, TEXTBOOKS } from "@/data/textbooks";
 import { parseDocxToQuestions, readDocx, splitChoiceByAnswer, splitEssayByQuestion } from "@/lib/wordParser";
-import { generateAnalysis } from "@/lib/api";
+import { generateAnalysis, getAIKey, setAIKey } from "@/lib/api";
 import type { Question, Subject, QuestionType } from "@/data/types";
 
 export default function AdminQuestions() {
@@ -13,6 +13,9 @@ export default function AdminQuestions() {
   const [editing, setEditing] = useState<Question | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
+  const [showKeyModal, setShowKeyModal] = useState(false);
+  const [keyInput, setKeyInput] = useState("");
+  const [hasKey, setHasKey] = useState(!!getAIKey());
   const [genLoading, setGenLoading] = useState(false);
   const [genMsg, setGenMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
@@ -83,6 +86,14 @@ export default function AdminQuestions() {
           <p className="font-kai text-xs text-navy-800/60">共 {questions.length} 道题目</p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
+          <button
+            onClick={() => { setKeyInput(getAIKey()); setShowKeyModal(true); }}
+            className={`flex items-center gap-1 px-3 py-2 rounded-lg font-kai text-sm border ${
+              hasKey ? "border-emerald-400/50 text-emerald-700 hover:bg-emerald-50" : "border-red-400/50 text-red-700 hover:bg-red-50"
+            }`}
+          >
+            {hasKey ? "✓ AI Key" : "设置 AI Key"}
+          </button>
           <button
             onClick={handleGenerateAnalysis}
             disabled={genLoading || questions.length === 0}
@@ -226,6 +237,50 @@ export default function AdminQuestions() {
           onImport={(qs) => addQuestions(qs)}
           onClose={() => setShowUpload(false)}
         />
+      )}
+
+      {showKeyModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-paper rounded-2xl shadow-xl w-full max-w-lg p-6 border-2 border-ink/20">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="brush-title text-xl text-navy-900">AI API Key 设置</h3>
+              <button onClick={() => setShowKeyModal(false)} className="text-navy-800/50 hover:text-navy-900">
+                <X size={20} />
+              </button>
+            </div>
+            <p className="font-kai text-sm text-navy-800/70 mb-3">
+              请粘贴在 token.xinhankr.com 创建的 API Key（sk- 开头），密钥仅保存在你浏览器本地，不会上传到服务器。
+            </p>
+            <input
+              type="password"
+              value={keyInput}
+              onChange={(e) => setKeyInput(e.target.value)}
+              placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+              className="w-full px-3 py-2 border-2 border-ink/20 rounded-lg font-mono text-sm focus:border-purple-500 focus:outline-none bg-paper"
+              autoFocus
+            />
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => { setAIKey(""); setKeyInput(""); setHasKey(false); setShowKeyModal(false); }}
+                className="px-4 py-2 rounded-lg font-kai text-sm text-navy-800/60 hover:text-red-600"
+              >
+                清除
+              </button>
+              <button
+                onClick={() => setShowKeyModal(false)}
+                className="px-4 py-2 rounded-lg font-kai text-sm border border-ink/20 text-navy-800 hover:bg-navy-50"
+              >
+                取消
+              </button>
+              <button
+                onClick={() => { setAIKey(keyInput); setHasKey(!!keyInput.trim()); setShowKeyModal(false); }}
+                className="px-4 py-2 rounded-lg font-kai text-sm bg-purple-600 text-white hover:bg-purple-700"
+              >
+                保存
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
