@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Palette, Type, Image as ImageIcon, Eye, RotateCcw, Plus, Trash2, Save, Smartphone,
+  Flame, Target, TrendingUp, BookOpen, ChevronRight, ChevronDown,
 } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import type { CarouselItem } from "@/store/useStore";
-import { SUBJECTS, GRADES } from "@/data/textbooks";
+import { SUBJECTS, getTextbooksByGrade } from "@/data/textbooks";
+import BrushTitle from "@/components/BrushTitle";
 
 const PRESET_THEMES = [
   { name: "天蓝明亮", primary: "#0EA5E9", accent: "#0284C7", bg: "#FFFFFF" },
@@ -245,134 +247,165 @@ export default function AdminVisual() {
               style={{ width: 260, height: 460, background: draft.bgBase }}
             >
               <div className="h-full overflow-y-auto">
-                {/* 标题栏 */}
-                <div className="flex items-center justify-between px-4 pt-4 pb-2">
-                  <div>
-                    <p
-                      className="font-bold leading-none"
-                      style={{
-                        fontFamily: '"Ma Shan Zheng", "Noto Serif SC", serif',
-                        fontSize: 22,
-                        color: draft.primaryColor,
-                      }}
-                    >
-                      {draft.brandName}
-                    </p>
-                    <p className="text-[8px] mt-0.5 font-kai" style={{ color: draft.primaryColor, opacity: 0.6 }}>
-                      {draft.brandSub}
+                {/* 板块一：毛笔字标题（与客户端首页一致） */}
+              <header className="px-4 pt-4 pb-2 flex items-center justify-between">
+                <BrushTitle size="sm" text={draft.brandName} seal={draft.heroBadge} />
+                <span className="text-[9px] text-navy-800/50 font-kai">七上</span>
+              </header>
+
+              {/* 板块二：横屏轮播图（多张 + 圆点导航） */}
+              <section className="px-3 mb-3">
+                <div
+                  className="relative w-full rounded-xl overflow-hidden shadow-sm"
+                  style={{ aspectRatio: "16/9", background: `${draft.primaryColor}20` }}
+                >
+                  {draft.carousel[0]?.url && (
+                    <img src={draft.carousel[0].url} alt="" className="w-full h-full object-cover" />
+                  )}
+                  <div
+                    className="absolute bottom-0 left-0 right-0 p-2"
+                    style={{ background: `linear-gradient(to top, ${draft.primaryColor}cc, transparent)` }}
+                  >
+                    <p className="text-white text-[9px] font-kai truncate">
+                      {draft.carousel[0]?.title || "轮播图标题"}
                     </p>
                   </div>
-                  <span
-                    className="text-[8px] px-1.5 py-0.5 rounded-full font-kai"
-                    style={{ background: `${draft.primaryColor}15`, color: draft.primaryColor }}
-                  >
-                    {draft.heroBadge}
-                  </span>
+                  {draft.carousel.length > 1 && (
+                    <div className="absolute bottom-1.5 right-2 flex gap-1">
+                      {draft.carousel.map((_, i) => (
+                        <span
+                          key={i}
+                          className="rounded-full transition-all"
+                          style={{
+                            width: i === 0 ? 8 : 4,
+                            height: 4,
+                            background: i === 0 ? "#fff" : "rgba(255,255,255,0.5)",
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
+              </section>
 
-                {/* 轮播图 */}
-                <div className="px-3 mb-3">
-                  <div
-                    className="relative w-full rounded-xl overflow-hidden"
-                    style={{ aspectRatio: "16/9", background: `${draft.primaryColor}20` }}
-                  >
-                    {draft.carousel[0]?.url && (
-                      <img
-                        src={draft.carousel[0].url}
-                        alt=""
-                        className="w-full h-full object-cover"
-                      />
-                    )}
-                    <div
-                      className="absolute bottom-0 left-0 right-0 p-2"
-                      style={{
-                        background: `linear-gradient(to top, ${draft.primaryColor}cc, transparent)`,
-                      }}
-                    >
-                      <p className="text-white text-[9px] font-kai truncate">
-                        {draft.carousel[0]?.title || "轮播图标题"}
-                      </p>
+              {/* 板块三：折叠式学段选择器 + 学习概况三栏 */}
+              <section className="px-3 mb-3 space-y-2">
+                <div className="ink-card rounded-2xl overflow-hidden">
+                  <div className="flex items-center justify-between px-3 py-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-0.5 h-4 rounded-full" style={{ background: draft.primaryColor }} />
+                      <div className="text-left">
+                        <p className="font-kai text-[11px] font-bold text-navy-900 leading-none">
+                          当前学段 · 七上
+                        </p>
+                        <p className="text-[8px] text-navy-800/50 mt-0.5 font-kai">七年级上册</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 text-navy-800/50">
+                      <span className="text-[8px] font-kai">切换年级</span>
+                      <ChevronDown size={12} />
                     </div>
                   </div>
                 </div>
+                <div className="ink-card rounded-2xl p-2 grid grid-cols-3 gap-1">
+                  <div className="flex flex-col items-center">
+                    <Flame size={13} style={{ color: draft.primaryColor }} className="mb-0.5" />
+                    <span className="font-bold text-sm text-navy-900 leading-none">12</span>
+                    <span className="text-[7px] text-navy-800/50 mt-0.5">坚持天数</span>
+                  </div>
+                  <div className="flex flex-col items-center border-x border-navy-500/10">
+                    <Target size={13} style={{ color: draft.primaryColor }} className="mb-0.5" />
+                    <span className="font-bold text-sm text-navy-900 leading-none">8</span>
+                    <span className="text-[7px] text-navy-800/50 mt-0.5">今日答题</span>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <TrendingUp size={13} style={{ color: draft.primaryColor }} className="mb-0.5" />
+                    <span className="font-bold text-sm text-navy-900 leading-none">
+                      85<span className="text-[8px]">%</span>
+                    </span>
+                    <span className="text-[7px] text-navy-800/50 mt-0.5">正确率</span>
+                  </div>
+                </div>
+              </section>
 
-                {/* 学科卡片预览 */}
-                <div className="px-3 mb-3">
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {Object.values(SUBJECTS).slice(0, 4).map((s) => (
+              {/* 板块四：学科入口（两列网格，与客户端一致） */}
+              <section className="px-3 pb-3">
+                <h2 className="font-kai text-[11px] font-bold text-navy-900 mb-2 flex items-center gap-1">
+                  <span className="w-0.5 h-3 rounded-full" style={{ background: draft.primaryColor }} />
+                  学科学习
+                </h2>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {Object.values(SUBJECTS).map((s) => {
+                    const tb = getTextbooksByGrade("七年级上册").find((t) => t.subject === s.key);
+                    return (
                       <div
                         key={s.key}
-                        className="aspect-square rounded-lg flex flex-col items-center justify-center"
-                        style={{ background: `${draft.primaryColor}10` }}
+                        className="ink-card rounded-xl overflow-hidden"
+                        style={{ borderTop: `2px solid ${s.color}` }}
                       >
-                        <span className="text-base">{s.icon}</span>
-                        <span
-                          className="text-[8px] font-kai mt-0.5"
-                          style={{ color: draft.primaryColor }}
+                        <div
+                          className="relative px-2 pt-2 pb-1.5 overflow-hidden"
+                          style={{ background: `linear-gradient(135deg, ${s.bgColor} 0%, rgba(255,255,255,0) 100%)` }}
                         >
-                          {s.name}
-                        </span>
+                          <span className="absolute -right-1 -top-0.5 text-2xl opacity-15 select-none pointer-events-none">
+                            {s.icon}
+                          </span>
+                          <div className="relative flex items-start justify-between mb-1">
+                            <div>
+                              <p className="font-kai text-[11px] font-bold leading-none" style={{ color: s.color }}>
+                                {s.name}
+                              </p>
+                              <p className="text-[7px] text-navy-800/50 mt-0.5 font-kai">
+                                今日 <span className="font-bold text-[10px]" style={{ color: s.color }}>0</span> 题
+                              </p>
+                            </div>
+                            <span
+                              className="w-6 h-6 rounded-lg flex items-center justify-center text-xs"
+                              style={{ background: "rgba(255,255,255,0.7)" }}
+                            >
+                              {s.icon}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div
+                              className="flex-1 h-0.5 rounded-full overflow-hidden"
+                              style={{ background: `${s.color}20` }}
+                            >
+                              <div className="h-full rounded-full" style={{ width: "0%", background: s.color }} />
+                            </div>
+                            <span className="text-[7px] font-kai flex-shrink-0" style={{ color: s.color }}>
+                              未练
+                            </span>
+                          </div>
+                        </div>
+                        <div className="px-2 py-1">
+                          <div
+                            className="rounded-lg py-1 text-center text-[8px] font-kai font-bold text-white flex items-center justify-center gap-0.5"
+                            style={{ background: s.color }}
+                          >
+                            去学习 <ChevronRight size={9} />
+                          </div>
+                        </div>
+                        <div
+                          className="flex items-center justify-between px-2 py-1 border-t border-navy-500/8"
+                          style={{ background: `${s.color}08` }}
+                        >
+                          <div className="flex items-center gap-0.5 min-w-0">
+                            <BookOpen size={8} style={{ color: s.color }} className="flex-shrink-0" />
+                            <span
+                              className="text-[7px] font-kai font-bold px-1 py-0 rounded truncate"
+                              style={{ background: s.bgColor, color: s.color }}
+                            >
+                              {tb?.versions[0] || "人教版"}
+                            </span>
+                          </div>
+                          <ChevronDown size={9} style={{ color: s.color }} />
+                        </div>
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
-
-                {/* 年级滑动条 */}
-                <div className="px-3 mb-3">
-                  <div className="flex gap-1 overflow-x-auto pb-1">
-                    {GRADES.slice(0, 4).map((g, i) => (
-                      <span
-                        key={g.key}
-                        className="flex-shrink-0 px-2 py-1 rounded-full text-[8px] font-kai whitespace-nowrap"
-                        style={
-                          i === 0
-                            ? { background: draft.primaryColor, color: "#fff" }
-                            : { background: "#fff", color: draft.primaryColor, border: `1px solid ${draft.primaryColor}30` }
-                        }
-                      >
-                        {g.short}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 数据三栏 */}
-                <div className="px-3 mb-3">
-                  <div
-                    className="rounded-xl p-2 grid grid-cols-3 gap-1"
-                    style={{ background: "#fff", border: `1px solid ${draft.primaryColor}15` }}
-                  >
-                    {[
-                      { label: "坚持", val: 12 },
-                      { label: "今日", val: 8 },
-                      { label: "正确率", val: 85 },
-                    ].map((it, idx) => (
-                      <div key={idx} className="text-center">
-                        <p className="text-[10px] font-bold" style={{ color: draft.primaryColor }}>
-                          {it.val}
-                          {it.label === "正确率" && "%"}
-                        </p>
-                        <p className="text-[7px] font-kai text-navy-800/50">{it.label}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 模拟按钮 */}
-                <div className="px-3 mb-3 space-y-1.5">
-                  <div
-                    className="rounded-lg py-1.5 text-center text-[9px] font-kai font-bold text-white"
-                    style={{ background: `linear-gradient(135deg, ${draft.primaryColor}, ${draft.primaryColor}dd)` }}
-                  >
-                    全真模拟考试
-                  </div>
-                  <div
-                    className="rounded-lg py-1.5 text-center text-[9px] font-kai font-bold"
-                    style={{ background: `${draft.accentColor}20`, color: draft.accentColor }}
-                  >
-                    真题考试
-                  </div>
-                </div>
+              </section>
               </div>
             </div>
 
