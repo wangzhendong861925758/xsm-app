@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Palette, Type, Image as ImageIcon, Eye, RotateCcw, Plus, Trash2, Save, Smartphone,
+  Type, Image as ImageIcon, Eye, RotateCcw, Plus, Trash2, Save, Smartphone,
   Flame, Target, TrendingUp, BookOpen, ChevronRight, ChevronDown,
 } from "lucide-react";
 import { useStore } from "@/store/useStore";
@@ -9,13 +9,9 @@ import type { CarouselItem } from "@/store/useStore";
 import { SUBJECTS, getTextbooksByGrade } from "@/data/textbooks";
 import BrushTitle from "@/components/BrushTitle";
 
-const PRESET_THEMES = [
-  { name: "天蓝明亮", primary: "#0EA5E9", accent: "#0284C7", bg: "#FFFFFF" },
-  { name: "海蓝深邃", primary: "#0369A1", accent: "#075985", bg: "#F0F9FF" },
-  { name: "浅蓝清爽", primary: "#38BDF8", accent: "#0EA5E9", bg: "#F8FAFC" },
-  { name: "蓝白简约", primary: "#0284C7", accent: "#0369A1", bg: "#FFFFFF" },
-  { name: "深蓝稳重", primary: "#0C4A6E", accent: "#075985", bg: "#F1F5F9" },
-];
+// 客户端实际使用的 navy 色系（来自 tailwind.config.js）
+const NAVY_500 = "#0EA5E9";
+const NAVY_600 = "#0284C7";
 
 export default function AdminVisual() {
   const navigate = useNavigate();
@@ -61,7 +57,7 @@ export default function AdminVisual() {
       <header className="mb-5 flex items-center justify-between">
         <div>
           <h1 className="brush-title text-3xl text-navy-900 mb-1">可视化配置</h1>
-          <p className="font-kai text-xs text-navy-800/60">编辑站点外观与内容，保存后实时生效</p>
+          <p className="font-kai text-xs text-navy-800/60">编辑站点外观与内容，保存后实时同步到所有客户端标签页</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -86,34 +82,6 @@ export default function AdminVisual() {
       <div className="grid grid-cols-12 gap-4">
         {/* 左侧：编辑区 */}
         <div className="col-span-7 space-y-4">
-          {/* 预设主题 */}
-          <section className="ink-card rounded-2xl p-4">
-            <h2 className="font-kai text-sm font-bold text-navy-900 mb-3 flex items-center gap-1.5">
-              <Palette size={16} className="text-navy-600" />
-              预设主题
-            </h2>
-            <div className="grid grid-cols-5 gap-2">
-              {PRESET_THEMES.map((t) => {
-                const active = draft.primaryColor === t.primary;
-                return (
-                  <button
-                    key={t.name}
-                    onClick={() => setDraft({ ...draft, primaryColor: t.primary, accentColor: t.accent, bgBase: t.bg })}
-                    className={`p-2 rounded-xl border-2 transition-all text-center ${
-                      active ? "border-navy-600 bg-navy-500/8" : "border-navy-500/10 hover:border-navy-500/30"
-                    }`}
-                  >
-                    <div className="flex gap-1 justify-center mb-1.5">
-                      <span className="w-5 h-5 rounded-full" style={{ background: t.primary }} />
-                      <span className="w-5 h-5 rounded-full" style={{ background: t.accent }} />
-                    </div>
-                    <span className="text-[10px] font-kai text-navy-900">{t.name}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-
           {/* 品牌信息 */}
           <section className="ink-card rounded-2xl p-4">
             <h2 className="font-kai text-sm font-bold text-navy-900 mb-3 flex items-center gap-1.5">
@@ -128,14 +96,7 @@ export default function AdminVisual() {
                   className="w-full px-3 py-2 rounded-lg border border-navy-500/15 bg-paper font-kai text-sm focus:outline-none focus:border-navy-500/50"
                 />
               </Field>
-              <Field label="副标题">
-                <input
-                  value={draft.brandSub}
-                  onChange={(e) => setDraft({ ...draft, brandSub: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-navy-500/15 bg-paper font-kai text-sm focus:outline-none focus:border-navy-500/50"
-                />
-              </Field>
-              <Field label="首页右上角小标签">
+              <Field label="首页印章文字">
                 <input
                   value={draft.heroBadge}
                   onChange={(e) => setDraft({ ...draft, heroBadge: e.target.value })}
@@ -143,34 +104,6 @@ export default function AdminVisual() {
                 />
               </Field>
             </div>
-          </section>
-
-          {/* 主题色 */}
-          <section className="ink-card rounded-2xl p-4">
-            <h2 className="font-kai text-sm font-bold text-navy-900 mb-3 flex items-center gap-1.5">
-              <Palette size={16} className="text-navy-600" />
-              主题色
-            </h2>
-            <div className="grid grid-cols-3 gap-3">
-              <ColorField
-                label="主色"
-                value={draft.primaryColor}
-                onChange={(v) => setDraft({ ...draft, primaryColor: v })}
-              />
-              <ColorField
-                label="强调色"
-                value={draft.accentColor}
-                onChange={(v) => setDraft({ ...draft, accentColor: v })}
-              />
-              <ColorField
-                label="背景基色"
-                value={draft.bgBase}
-                onChange={(v) => setDraft({ ...draft, bgBase: v })}
-              />
-            </div>
-            <p className="text-[10px] text-navy-800/50 mt-2 font-kai">
-              提示：主题色影响客户端按钮、进度条、选中态等关键交互元素
-            </p>
           </section>
 
           {/* 轮播图 */}
@@ -244,7 +177,7 @@ export default function AdminVisual() {
             {/* 手机外壳 */}
             <div
               className="mx-auto rounded-[28px] border-[6px] border-navy-900 overflow-hidden shadow-xl"
-              style={{ width: 260, height: 460, background: draft.bgBase }}
+              style={{ width: 260, height: 460, background: "#FFFFFF" }}
             >
               <div className="h-full overflow-y-auto">
                 {/* 板块一：毛笔字标题（与客户端首页一致） */}
@@ -257,14 +190,14 @@ export default function AdminVisual() {
               <section className="px-3 mb-3">
                 <div
                   className="relative w-full rounded-xl overflow-hidden shadow-sm"
-                  style={{ aspectRatio: "16/9", background: `${draft.primaryColor}20` }}
+                  style={{ aspectRatio: "16/9", background: `${NAVY_500}20` }}
                 >
                   {draft.carousel[0]?.url && (
                     <img src={draft.carousel[0].url} alt="" className="w-full h-full object-cover" />
                   )}
                   <div
                     className="absolute bottom-0 left-0 right-0 p-2"
-                    style={{ background: `linear-gradient(to top, ${draft.primaryColor}cc, transparent)` }}
+                    style={{ background: `linear-gradient(to top, ${NAVY_500}cc, transparent)` }}
                   >
                     <p className="text-white text-[9px] font-kai truncate">
                       {draft.carousel[0]?.title || "轮播图标题"}
@@ -293,7 +226,7 @@ export default function AdminVisual() {
                 <div className="ink-card rounded-2xl overflow-hidden">
                   <div className="flex items-center justify-between px-3 py-2">
                     <div className="flex items-center gap-1.5">
-                      <span className="w-0.5 h-4 rounded-full" style={{ background: draft.primaryColor }} />
+                      <span className="w-0.5 h-4 rounded-full" style={{ background: NAVY_600 }} />
                       <div className="text-left">
                         <p className="font-kai text-[11px] font-bold text-navy-900 leading-none">
                           当前学段 · 七上
@@ -309,17 +242,17 @@ export default function AdminVisual() {
                 </div>
                 <div className="ink-card rounded-2xl p-2 grid grid-cols-3 gap-1">
                   <div className="flex flex-col items-center">
-                    <Flame size={13} style={{ color: draft.primaryColor }} className="mb-0.5" />
+                    <Flame size={13} style={{ color: NAVY_500 }} className="mb-0.5" />
                     <span className="font-bold text-sm text-navy-900 leading-none">12</span>
                     <span className="text-[7px] text-navy-800/50 mt-0.5">坚持天数</span>
                   </div>
                   <div className="flex flex-col items-center border-x border-navy-500/10">
-                    <Target size={13} style={{ color: draft.primaryColor }} className="mb-0.5" />
+                    <Target size={13} style={{ color: NAVY_500 }} className="mb-0.5" />
                     <span className="font-bold text-sm text-navy-900 leading-none">8</span>
                     <span className="text-[7px] text-navy-800/50 mt-0.5">今日答题</span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <TrendingUp size={13} style={{ color: draft.primaryColor }} className="mb-0.5" />
+                    <TrendingUp size={13} style={{ color: NAVY_600 }} className="mb-0.5" />
                     <span className="font-bold text-sm text-navy-900 leading-none">
                       85<span className="text-[8px]">%</span>
                     </span>
@@ -331,7 +264,7 @@ export default function AdminVisual() {
               {/* 板块四：学科入口（两列网格，与客户端一致） */}
               <section className="px-3 pb-3">
                 <h2 className="font-kai text-[11px] font-bold text-navy-900 mb-2 flex items-center gap-1">
-                  <span className="w-0.5 h-3 rounded-full" style={{ background: draft.primaryColor }} />
+                  <span className="w-0.5 h-3 rounded-full" style={{ background: NAVY_500 }} />
                   学科学习
                 </h2>
                 <div className="grid grid-cols-2 gap-1.5">
@@ -427,35 +360,6 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     <div>
       <label className="block text-xs font-kai text-navy-800/60 mb-1">{label}</label>
       {children}
-    </div>
-  );
-}
-
-function ColorField({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <div>
-      <label className="block text-xs font-kai text-navy-800/60 mb-1">{label}</label>
-      <div className="flex items-center gap-1.5 rounded-lg border border-navy-500/15 bg-paper p-1.5">
-        <input
-          type="color"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-8 h-8 rounded cursor-pointer border-0 bg-transparent"
-        />
-        <input
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="flex-1 font-mono text-xs bg-transparent focus:outline-none text-navy-900"
-        />
-      </div>
     </div>
   );
 }

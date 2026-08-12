@@ -26,20 +26,12 @@ export interface CarouselItem {
 }
 export interface SiteConfig {
   brandName: string;        // 品牌名（毛笔字标题）
-  brandSub: string;         // 副标题
-  primaryColor: string;     // 主题主色（navy）
-  accentColor: string;      // 强调色（gold）
-  bgBase: string;           // 背景基色
   carousel: CarouselItem[]; // 轮播图
-  heroBadge: string;        // 首页右上角小标签
+  heroBadge: string;        // 首页印章文字
 }
 
 const DEFAULT_SITE_CONFIG: SiteConfig = {
   brandName: "小四门精练",
-  brandSub: "中考 · 小四门刷题训练",
-  primaryColor: "#0EA5E9",
-  accentColor: "#0284C7",
-  bgBase: "#FFFFFF",
   carousel: CAROUSEL_IMAGES.map((c) => ({ ...c })),
   heroBadge: "初中同步",
 };
@@ -221,3 +213,12 @@ export const useStore = create<AppState>()(
     },
   ),
 );
+
+// 跨标签页实时同步：管理端保存配置后，其他标签页的客户端自动更新
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (e.key === "xsm-app-store" && e.newValue) {
+      useStore.persist.rehydrate();
+    }
+  });
+}
