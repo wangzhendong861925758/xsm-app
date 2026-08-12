@@ -8,7 +8,7 @@ import {
   syncQuestionsToCloud,
   fetchQuestionsFromCloud,
   subscribeToQuestions,
-} from "@/lib/leancloud";
+} from "@/lib/cloud";
 
 // 错题记录条目
 export interface ErrorBookItem {
@@ -292,7 +292,7 @@ export const useStore = create<AppState>()(
       },
 
       initCloudSync: async () => {
-        if (!(await isCloudReady())) return;
+        if (!isCloudReady()) return;
         // 拉取云端题目，合并本地 mastered/collected 状态
         const cloudQuestions = await fetchQuestionsFromCloud();
         if (cloudQuestions && cloudQuestions.length > 0) {
@@ -304,7 +304,7 @@ export const useStore = create<AppState>()(
           set({ questions: merged });
         }
         // 订阅实时更新：管理端变更后所有客户端自动同步
-        await subscribeToQuestions((cloudQuestions) => {
+        subscribeToQuestions((cloudQuestions) => {
           const local = useStore.getState().questions;
           const merged = cloudQuestions.map((q) => {
             const lq = local.find((x) => x.id === q.id);
