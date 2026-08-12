@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { User, Question, Subject } from "@/data/types";
+import type { User, Question, Subject, ClientAccount } from "@/data/types";
 import { CURRENT_USER, QUESTIONS, ADMIN_USERS, CAROUSEL_IMAGES } from "@/data/mock";
 
 // 错题记录条目
@@ -61,6 +61,10 @@ interface AppState {
   selectedVersions: Record<string, string>;
   // 错题集
   errorBook: ErrorBookItem[];
+  // 客户端注册账号列表
+  clientAccounts: ClientAccount[];
+  // 当前登录的客户端账号 8 位 ID（null 表示未登录）
+  currentClientCode: string | null;
 
   // Actions
   setSelectedGrade: (grade: string) => void;
@@ -83,6 +87,14 @@ interface AppState {
   setSelectedVersion: (subject: string, version: string) => void;
   addToErrorBook: (item: ErrorBookItem) => void;
   removeFromErrorBook: (questionId: string) => void;
+  // 客户端账号：注册（返回新生成的 8 位 ID 或 null 表示用户名已存在）
+  registerClient: (username: string, password: string, studentName: string) => string | null;
+  // 客户端账号：登录（true=成功）
+  loginClient: (username: string, password: string) => boolean;
+  // 客户端账号：登出
+  logoutClient: () => void;
+  // 管理端：凭 8 位 ID 开放权限（true=找到并开放，false=ID 不存在）
+  grantClientByCode: (code: string) => boolean;
 }
 
 export const useStore = create<AppState>()(
@@ -100,6 +112,8 @@ export const useStore = create<AppState>()(
       siteConfig: DEFAULT_SITE_CONFIG,
       selectedVersions: {},
       errorBook: [],
+      clientAccounts: [],
+      currentClientCode: null,
 
       setSelectedGrade: (grade) => set({ selectedGrade: grade }),
       setSelectedSubject: (subject) => set({ selectedSubject: subject }),
@@ -178,6 +192,48 @@ export const useStore = create<AppState>()(
         })),
       removeFromErrorBook: (questionId) =>
         set((s) => ({ errorBook: s.errorBook.filter((e) => e.questionId !== questionId) })),
+
+      registerClient: (username, password, studentName) => {
+        const state = useStore.getState();
+        if (state.clientAccounts.some((a) => a.username === username)) return null;
+        // 生成不重复的 8 位数字 ID
+        let code = "";
+        do {
+          code = Math.floor(10000000 + Math.random() * 90000000).toString();
+        } while (state.clientAccounts.some((a) => a.code === code));
+        const account: ClientAccount = {
+          code,
+          username,
+          password,
+          studentName,
+          granted: false,
+          createdAt: Date.now(),
+        };
+        set((s) => ({ clientAccounts: [...s.clientAccounts, account], currentClientCode: code }));
+        return code;
+      },
+
+      loginClient: (username, password) => {
+        const account = useStore.getState().clientAccounts.find(
+          (a) => a.username === username && a.password === password,
+        );
+        if (!account) return false;
+        set({ currentClientCode: account.code });
+        return true;
+      },
+
+      logoutClient: () => set({ currentClientCode: null }),
+
+      grantClientByCode: (code) => {
+        const exists = useStore.getState().clientAccounts.some((a) => a.code === code);
+        if (!exists) return false;
+        set((s) => ({
+          clientAccounts: s.clientAccounts.map((a) =>
+            a.code === code ? { ...a, granted: true } : a,
+          ),
+        }));
+        return true;
+      },
     }),
     {
       name: "xsm-app-store",
@@ -192,6 +248,8 @@ export const useStore = create<AppState>()(
         siteConfig: s.siteConfig,
         selectedVersions: s.selectedVersions,
         errorBook: s.errorBook,
+        clientAccounts: s.clientAccounts,
+        currentClientCode: s.currentClientCode,
       }),
       // 合并策略：以代码里的最新 QUESTIONS 为准（含新增题目），
       // 同时保留持久化的用户作答状态（mastered/collected）。

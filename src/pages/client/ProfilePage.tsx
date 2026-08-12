@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { ChevronRight, Settings, Bell, HelpCircle, Info, LogOut, Flame, Target, Award, Clock } from "lucide-react";
+import { ChevronRight, Settings, Bell, HelpCircle, Info, LogOut, Flame, Target, Award, Clock, IdCard, ShieldCheck, ShieldOff } from "lucide-react";
 import BrushTitle from "@/components/BrushTitle";
 import { useStore } from "@/store/useStore";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const { currentUser } = useStore();
+  const { currentUser, clientAccounts, currentClientCode, logoutClient } = useStore();
+  const account = clientAccounts.find((a) => a.code === currentClientCode);
 
   const menuItems = [
     { icon: Bell, label: "学习提醒", color: "#0EA5E9" },
@@ -28,16 +29,24 @@ export default function ProfilePage() {
           <div className="absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-navy-300/10" />
           <div className="relative flex items-center gap-3">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-navy-500 to-navy-700 flex items-center justify-center text-paper font-display text-2xl shadow-seal">
-              {currentUser.nickname.charAt(0)}
+              {(account?.studentName || currentUser.nickname).charAt(0)}
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <h2 className="font-kai text-lg font-bold text-navy-900">{currentUser.nickname}</h2>
+                <h2 className="font-kai text-lg font-bold text-navy-900">
+                  {account?.studentName || currentUser.nickname}
+                </h2>
                 <span className="seal-stamp text-[9px] px-1 py-0.5">学子</span>
               </div>
-              <p className="text-[11px] text-navy-800/50 font-kai mt-0.5">{currentUser.grade}</p>
+              {/* 8 位专属 ID */}
+              <div className="flex items-center gap-1 mt-0.5">
+                <IdCard size={11} className="text-navy-600" />
+                <span className="text-[11px] text-navy-600 font-bold tracking-widest font-display">
+                  {currentClientCode}
+                </span>
+              </div>
               <p className="text-[10px] text-navy-800/40 mt-1">
-                加入于 {new Date(currentUser.createdAt).toLocaleDateString("zh-CN")}
+                加入于 {new Date(account?.createdAt || currentUser.createdAt).toLocaleDateString("zh-CN")}
               </p>
             </div>
             <button
@@ -46,6 +55,28 @@ export default function ProfilePage() {
             >
               编辑
             </button>
+          </div>
+
+          {/* 权限状态条 */}
+          <div
+            className="relative mt-3 rounded-xl px-3 py-2 flex items-center gap-2"
+            style={{
+              background: account?.granted ? "rgba(14,165,233,0.08)" : "rgba(234,179,8,0.10)",
+            }}
+          >
+            {account?.granted ? (
+              <>
+                <ShieldCheck size={14} className="text-navy-600" />
+                <span className="font-kai text-[11px] text-navy-700">答题权限已开放</span>
+              </>
+            ) : (
+              <>
+                <ShieldOff size={14} className="text-gold-dark" />
+                <span className="font-kai text-[11px] text-gold-dark">
+                  未开放权限 · 请联系管理员（ID: {currentClientCode}）
+                </span>
+              </>
+            )}
           </div>
 
           <div className="relative grid grid-cols-4 gap-1 mt-4 pt-3 border-t border-navy-500/8">
@@ -102,6 +133,18 @@ export default function ProfilePage() {
             </button>
           ))}
         </div>
+
+        {/* 登出按钮 */}
+        <button
+          onClick={() => {
+            logoutClient();
+            navigate("/login", { replace: true });
+          }}
+          className="w-full mt-3 ink-card rounded-2xl py-3 flex items-center justify-center gap-1.5 font-kai text-sm text-gold-dark hover:bg-gold/5"
+        >
+          <LogOut size={15} />
+          退出登录
+        </button>
 
         <p className="text-center text-[10px] text-navy-800/40 mt-4 font-kai">
           小四门刷题 · 中考必胜 v1.0

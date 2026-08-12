@@ -18,7 +18,10 @@ export default function HomePage() {
     siteConfig,
     selectedVersions,
     setSelectedVersion,
+    clientAccounts,
+    currentClientCode,
   } = useStore();
+  const account = clientAccounts.find((a) => a.code === currentClientCode);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [gradePanelOpen, setGradePanelOpen] = useState(false);
   const [openVersionFor, setOpenVersionFor] = useState<Subject | null>(null);
@@ -41,6 +44,11 @@ export default function HomePage() {
   };
 
   const handleStartLearn = (subject: Subject) => {
+    // 权限校验：未开放权限不允许答题
+    if (!account?.granted) {
+      alert("请联系管理员开放权限");
+      return;
+    }
     const version = selectedVersions[subject] || textbooks.find((t) => t.subject === subject)?.versions[0] || "";
     navigate(`/app/chapter/${subject}?version=${encodeURIComponent(version)}`);
   };

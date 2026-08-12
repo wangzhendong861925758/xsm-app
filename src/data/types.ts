@@ -40,6 +40,16 @@ export interface User {
   stats: UserStats;
 }
 
+// 客户端登录账号（独立于 User 的展示档案）
+export interface ClientAccount {
+  code: string;        // 8 位唯一数字 ID
+  username: string;    // 用户名
+  password: string;    // 密码
+  studentName: string; // 学生姓名
+  granted: boolean;    // 是否已开放答题权限
+  createdAt: number;
+}
+
 // 题目
 export type QuestionType = "single" | "multiple" | "judge" | "essay";
 
