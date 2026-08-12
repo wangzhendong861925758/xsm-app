@@ -13,6 +13,23 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* 自适应设备比例：手机/平板充满屏幕，桌面窄柱居中 */
+  --frame-max: 100%;
+}
+
+/* 平板：充满屏幕（内容自然撑满，避免左右大片空白） */
+@media (min-width: 768px) {
+  :root {
+    --frame-max: 100%;
+  }
+}
+
+/* 桌面：窄柱居中卡片，保持阅读体验 */
+@media (min-width: 1280px) {
+  :root {
+    --frame-max: 480px;
+  }
 }
 
 * {
@@ -89,7 +106,7 @@ body {
 /* 客户端竖屏容器 */
 .mobile-frame {
   width: 100%;
-  max-width: 430px;
+  max-width: var(--frame-max);
   min-height: 100vh;
   margin: 0 auto;
   background: transparent;
@@ -98,11 +115,12 @@ body {
   overflow: hidden;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1280px) {
   .mobile-frame {
     min-height: 100vh;
     border-left: 1px solid rgba(14, 165, 233, 0.1);
     border-right: 1px solid rgba(14, 165, 233, 0.1);
+    border-radius: 0;
   }
 }
 

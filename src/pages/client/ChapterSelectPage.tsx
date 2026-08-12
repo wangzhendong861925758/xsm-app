@@ -156,7 +156,7 @@ export default function ChapterSelectPage() {
 
       {/* 训练类型选择：独立全屏页面，覆盖当前章节选择页 */}
       {showModeSelect && (
-        <div className="!fixed inset-0 z-50 bg-white w-full max-w-[430px] mx-auto h-[100vh] overflow-y-auto">
+        <div className="!fixed inset-0 z-50 bg-white w-full max-w-[var(--frame-max)] mx-auto h-[100vh] overflow-y-auto">
           {/* 顶部标题栏 */}
           <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-paper-light/80 backdrop-blur sticky top-0 z-10">
             <button

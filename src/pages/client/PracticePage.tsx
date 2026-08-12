@@ -7,22 +7,14 @@ import {
 import { SUBJECTS, getTextbook } from "@/data/textbooks";
 import { useStore } from "@/store/useStore";
 import type { Subject, Question } from "@/data/types";
+import { shuffle, randomInRange } from "@/lib/utils";
 
 // 每次刷题题目数量范围（15-20 道随机）
 const MIN_QUESTIONS = 15;
 const MAX_QUESTIONS = 20;
 
 function randomSessionCount(): number {
-  return Math.floor(Math.random() * (MAX_QUESTIONS - MIN_QUESTIONS + 1)) + MIN_QUESTIONS;
-}
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
+  return randomInRange(MIN_QUESTIONS, MAX_QUESTIONS);
 }
 
 // 每题作答状态
@@ -626,7 +618,7 @@ export default function PracticePage() {
 
       {/* 答题卡：独立全屏页面，覆盖当前答题页 */}
       {showCard && (
-        <div className="!fixed inset-0 z-50 bg-white w-full max-w-[430px] mx-auto h-[100vh] overflow-y-auto">
+        <div className="!fixed inset-0 z-50 bg-white w-full max-w-[var(--frame-max)] mx-auto h-[100vh] overflow-y-auto">
           {/* 顶部标题栏 */}
           <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-paper-light/80 backdrop-blur sticky top-0 z-10">
             <button
