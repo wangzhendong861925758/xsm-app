@@ -8,8 +8,20 @@
 
 # API 路由：转发到 Netlify Functions
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  from = "/api/questions"
+  to = "/.netlify/functions/questions"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/accounts/*"
+  to = "/.netlify/functions/accounts/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/generate-analysis"
+  to = "/.netlify/functions/generate-analysis"
   status = 200
   force = true
 
