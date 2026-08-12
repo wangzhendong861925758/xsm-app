@@ -3,7 +3,7 @@
 // - 大题：生成 analysis（错题解析）和 solution（正确思路）
 // 环境变量 DEEPSEEK_API_KEY 需在 Netlify 后台设置
 const DEEPSEEK_URL = 'https://api.deepseek.com/v1/chat/completions';
-const MODEL = 'deepseek-chat';
+const MODEL = 'deepseek-v4-pro';
 
 function json(data, status = 200) {
   return Response.json(data, {
@@ -33,7 +33,7 @@ function normalizeAnswerIndexes(q) {
 }
 
 /** 调用 DeepSeek 为一批选择题生成每个选项的错因/正确思路 */
-async function callDeepSeekChoice(questions) {
+async function callDeepSeekChoice(questions, apiKey) {
   const items = questions.map((q, i) => {
     const { correctIndexes, opts } = normalizeAnswerIndexes(q);
     return {
@@ -65,7 +65,7 @@ ${JSON.stringify(items)}
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
       model: MODEL,
@@ -77,6 +77,9 @@ ${JSON.stringify(items)}
 
   if (!res.ok) {
     const err = await res.text();
+    if (res.status === 401) {
+      throw new Error(`DeepSeek 鉴权失败(401)：API Key 无效或已被吊销。Key 长度 ${apiKey.length}，末尾 "${apiKey.slice(-4)}"。请检查 Netlify 后台环境变量 DEEPSEEK_API_KEY 是否完整（应以 sk- 开头，无多余空格/引号/换行）。原始错误：${err}`);
+    }
     throw new Error(`DeepSeek API 错误 ${res.status}: ${err}`);
   }
 
@@ -88,7 +91,7 @@ ${JSON.stringify(items)}
 }
 
 /** 调用 DeepSeek 为一批大题生成错题解析+正确思路 */
-async function callDeepSeekEssay(questions) {
+async function callDeepSeekEssay(questions, apiKey) {
   const items = questions.map((q, i) => ({
     index: i,
     type: q.type,
@@ -116,7 +119,7 @@ ${JSON.stringify(items)}
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
       model: MODEL,
@@ -128,6 +131,9 @@ ${JSON.stringify(items)}
 
   if (!res.ok) {
     const err = await res.text();
+    if (res.status === 401) {
+      throw new Error(`DeepSeek 鉴权失败(401)：API Key 无效或已被吊销。Key 长度 ${apiKey.length}，末尾 "${apiKey.slice(-4)}"。原始错误：${err}`);
+    }
     throw new Error(`DeepSeek API 错误 ${res.status}: ${err}`);
   }
 
@@ -154,8 +160,16 @@ export default async (req) => {
     return json({ success: false, message: '仅支持 POST' }, 405);
   }
 
-  if (!process.env.DEEPSEEK_API_KEY) {
+  // ponytail: 自动去除前后空白/换行，避免复制 key 时带入的多余字符导致 401
+  const API_KEY = (process.env.DEEPSEEK_API_KEY || '').trim();
+  if (!API_KEY) {
     return json({ success: false, message: '未配置 DEEPSEEK_API_KEY 环境变量' }, 500);
+  }
+  if (!API_KEY.startsWith('sk-')) {
+    return json({
+      success: false,
+      message: `DEEPSEEK_API_KEY 格式错误：应以 sk- 开头。当前长度 ${API_KEY.length}，前缀 "${API_KEY.substring(0, 4)}"`,
+    }, 500);
   }
 
   try {
@@ -177,14 +191,14 @@ export default async (req) => {
     for (let i = 0; i < choiceQs.length; i += BATCH) {
       const batch = choiceQs.slice(i, i + BATCH);
       if (batch.length > 0) {
-        const r = await callDeepSeekChoice(batch);
+        const r = await callDeepSeekChoice(batch, API_KEY);
         choiceResults.push(...r);
       }
     }
     for (let i = 0; i < essayQs.length; i += BATCH) {
       const batch = essayQs.slice(i, i + BATCH);
       if (batch.length > 0) {
-        const r = await callDeepSeekEssay(batch);
+        const r = await callDeepSeekEssay(batch, API_KEY);
         essayResults.push(...r);
       }
     }
