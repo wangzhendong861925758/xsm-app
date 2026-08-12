@@ -179,14 +179,6 @@ const CHAPTER_TITLES: Record<Subject, Record<string, string[]>> = {
     "九年级上册": ["区域地理复习", "中国地理复习"],
     "九年级下册": ["中考地理冲刺一", "中考地理冲刺二"],
   },
-  science: {
-    "七年级上册": ["第一章 科学入门", "第二章 观察生物", "第三章 人类的家园——地球"],
-    "七年级下册": ["第一章 代代相传的生命", "第二章 对环境的察觉", "第三章 运动和力"],
-    "八年级上册": ["第一章 水和水的溶液", "第二章 天气与气候", "第三章 生命活动的调节"],
-    "八年级下册": ["第一章 电与磁", "第二章 粒子的模型与符号", "第三章 空气与生命"],
-    "九年级上册": ["第一章 物质及其变化", "第二章 物质转化与材料利用", "第三章 能量的转化与守恒"],
-    "九年级下册": ["第一章 生物与环境", "第二章 演化的自然", "第三章 宇宙的起源与演化"],
-  },
 };
 
 // 自定义课时标题映射：key = `${grade}|${subject}`，value = 二维数组（外层=章，内层=课时标题）
@@ -217,7 +209,7 @@ function buildAllChapters(): ChapterMap {
     "八年级上册", "八年级下册",
     "九年级上册", "九年级下册",
   ];
-  const subjects: Subject[] = ["biology", "politics", "history", "geography", "science"];
+  const subjects: Subject[] = ["biology", "politics", "history", "geography"];
   grades.forEach((grade) => {
     subjects.forEach((subject) => {
       const titles = CHAPTER_TITLES[subject]?.[grade];

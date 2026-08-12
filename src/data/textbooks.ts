@@ -1,6 +1,6 @@
 import type { Subject, SubjectInfo, TextbookConfig } from "./types";
 
-// 学科信息（小四门：生物/道法/历史/地理 + 科学）
+// 学科信息（小四门：生物/道法/历史/地理）
 // 全部统一为蓝白同色系，仅用深浅区分
 export const SUBJECTS: Record<Subject, SubjectInfo> = {
   biology: {
@@ -34,14 +34,6 @@ export const SUBJECTS: Record<Subject, SubjectInfo> = {
     color: "#0EA5E9",
     bgColor: "#E0F2FE",
     icon: "🌏",
-  },
-  science: {
-    key: "science",
-    name: "科学",
-    shortName: "科",
-    color: "#075985",
-    bgColor: "#E0F2FE",
-    icon: "🔬",
   },
 };
 
@@ -155,12 +147,6 @@ export const TEXTBOOKS: TextbookConfig[] = [
       "鲁教版（五四学制）",
     ],
   },
-  {
-    grade: "七年级上册",
-    subject: "science",
-    subjectName: "科学",
-    versions: ["浙教版", "华东师大版", "沪教版（上海）", "牛津上海版（五四学制）"],
-  },
   // ===== 七年级下册 =====
   {
     grade: "七年级下册",
@@ -207,12 +193,6 @@ export const TEXTBOOKS: TextbookConfig[] = [
       "鲁教版（五四学制）",
     ],
   },
-  {
-    grade: "七年级下册",
-    subject: "science",
-    subjectName: "科学",
-    versions: ["浙教版", "华东师大版", "沪教版（上海）", "牛津上海版（五四学制）"],
-  },
   // ===== 八年级上册 =====
   {
     grade: "八年级上册",
@@ -237,12 +217,6 @@ export const TEXTBOOKS: TextbookConfig[] = [
     subject: "geography",
     subjectName: "地理",
     versions: ["人教版", "湘教版", "商务星球版", "中图版", "粤人版", "晋教版", "中图版（北京）", "仁爱科普版"],
-  },
-  {
-    grade: "八年级上册",
-    subject: "science",
-    subjectName: "科学",
-    versions: ["浙教版", "华东师大版"],
   },
   // ===== 八年级下册 =====
   {
@@ -269,12 +243,6 @@ export const TEXTBOOKS: TextbookConfig[] = [
     subjectName: "地理",
     versions: ["人教版", "湘教版", "商务星球版", "中图版", "粤人版", "晋教版", "中图版（北京）", "仁爱科普版"],
   },
-  {
-    grade: "八年级下册",
-    subject: "science",
-    subjectName: "科学",
-    versions: ["浙教版", "华东师大版"],
-  },
   // ===== 九年级上册 =====
   {
     grade: "九年级上册",
@@ -294,12 +262,6 @@ export const TEXTBOOKS: TextbookConfig[] = [
     subjectName: "历史",
     versions: ["统编版"],
   },
-  {
-    grade: "九年级上册",
-    subject: "science",
-    subjectName: "科学",
-    versions: ["浙教版", "华东师大版"],
-  },
   // ===== 九年级下册 =====
   {
     grade: "九年级下册",
@@ -318,12 +280,6 @@ export const TEXTBOOKS: TextbookConfig[] = [
     subject: "history",
     subjectName: "历史",
     versions: ["统编版"],
-  },
-  {
-    grade: "九年级下册",
-    subject: "science",
-    subjectName: "科学",
-    versions: ["浙教版", "华东师大版"],
   },
 ];
 

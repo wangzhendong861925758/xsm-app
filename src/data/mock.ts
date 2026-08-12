@@ -88,7 +88,6 @@ export const SUBJECT_TODAY_COUNT: Record<string, number> = {
   politics: 8,
   history: 9,
   geography: 7,
-  science: 0,
 };
 
 // 考点速记统计

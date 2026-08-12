@@ -1,6 +1,6 @@
 // 核心类型定义
 
-export type Subject = "biology" | "politics" | "history" | "geography" | "science";
+export type Subject = "biology" | "politics" | "history" | "geography";
 
 export interface SubjectInfo {
   key: Subject;
