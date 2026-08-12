@@ -75,6 +75,7 @@ interface AppState {
   addQuestions: (qs: Question[]) => void; // 批量新增（Word 导入用）
   updateQuestion: (q: Question) => void;
   deleteQuestion: (id: string) => void;
+  clearQuestions: () => void; // 清空题库（重新上传前用）
   addAdminUser: (u: User) => void;
   updateAdminUser: (u: User) => void;
   deleteAdminUser: (id: string) => void;
@@ -143,6 +144,7 @@ export const useStore = create<AppState>()(
         set((s) => ({ questions: s.questions.map((item) => (item.id === q.id ? q : item)) })),
       deleteQuestion: (id) =>
         set((s) => ({ questions: s.questions.filter((q) => q.id !== id) })),
+      clearQuestions: () => set({ questions: [] }),
 
       addAdminUser: (u) => set((s) => ({ adminUsers: [...s.adminUsers, u] })),
       updateAdminUser: (u) =>
@@ -283,14 +285,18 @@ export const useStore = create<AppState>()(
         clientAccounts: s.clientAccounts,
         currentClientCode: s.currentClientCode,
       }),
-      // 合并策略：以代码里的最新 QUESTIONS 为准（含新增题目），
-      // 同时保留持久化的用户作答状态（mastered/collected）。
+      // 合并策略：
+      // - questions 以持久化数据为准（支持管理端清空/新增后客户端同步），
+      //   仅保留代码新增题目（id 在持久化中不存在时）并继承 mastered/collected
+      // - 其余用户作答状态以持久化为准，避免旧数据结构污染
       merge: (persisted, current) => {
         const p = (persisted as Partial<AppState>) || {};
-        const mergedQuestions = current.questions.map((q) => {
-          const old = p.questions?.find((x) => x.id === q.id);
-          if (old) {
-            return { ...q, mastered: old.mastered, collected: old.collected };
+        const persistedQs = Array.isArray(p.questions) ? p.questions : [];
+        // 以持久化题目为准，对每个持久化题目补全代码里可能新增的字段，并保留 mastered/collected
+        const mergedQuestions = persistedQs.map((q) => {
+          const codeQ = current.questions.find((x) => x.id === q.id);
+          if (codeQ) {
+            return { ...codeQ, mastered: q.mastered, collected: q.collected };
           }
           return q;
         });

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Plus, Pencil, Trash2, X, Upload, FileText } from "lucide-react";
+import { Search, Plus, Pencil, Trash2, X, Upload, FileText, Eraser } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import { SUBJECTS, GRADES, TEXTBOOKS } from "@/data/textbooks";
 import { getChapters } from "@/data/chapters";
@@ -7,7 +7,7 @@ import { parseDocxToQuestions } from "@/lib/wordParser";
 import type { Question, Subject, QuestionType } from "@/data/types";
 
 export default function AdminQuestions() {
-  const { questions, addQuestion, addQuestions, updateQuestion, deleteQuestion } = useStore();
+  const { questions, addQuestion, addQuestions, updateQuestion, deleteQuestion, clearQuestions } = useStore();
   const [keyword, setKeyword] = useState("");
   const [subjectFilter, setSubjectFilter] = useState<Subject | "">("");
   const [editing, setEditing] = useState<Question | null>(null);
@@ -56,6 +56,18 @@ export default function AdminQuestions() {
           <p className="font-kai text-xs text-navy-800/60">共 {questions.length} 道题目</p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
+          <button
+            onClick={() => {
+              if (questions.length === 0) return;
+              if (confirm(`确认清空全部 ${questions.length} 道题目？此操作不可恢复，客户端将同步清空。`)) {
+                clearQuestions();
+              }
+            }}
+            className="flex items-center gap-1 border border-gold/40 text-gold-dark px-3 py-2 rounded-lg font-kai text-sm hover:bg-gold/10"
+          >
+            <Eraser size={15} />
+            清空题库
+          </button>
           <button
             onClick={() => setShowUpload(true)}
             className="flex items-center gap-1 border border-navy-500/30 text-navy-700 px-3 py-2 rounded-lg font-kai text-sm hover:bg-navy-500/8"
