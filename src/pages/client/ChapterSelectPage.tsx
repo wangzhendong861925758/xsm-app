@@ -1,22 +1,58 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ChevronDown, BookOpen, FileText, Check, ListChecks, PenLine } from "lucide-react";
-import { SUBJECTS, getTextbook } from "@/data/textbooks";
-import { getChapters } from "@/data/chapters";
+import { SUBJECTS } from "@/data/textbooks";
 import { useStore } from "@/store/useStore";
 import type { Subject } from "@/data/types";
+
+/** 从实际题目数据中提取「单元 → 课时」结构，只展示有题目的内容 */
+interface DerivedLesson {
+  id: string;
+  title: string;
+}
+interface DerivedChapter {
+  id: string;
+  title: string;
+  lessons: DerivedLesson[];
+}
 
 export default function ChapterSelectPage() {
   const { subject = "biology" } = useParams<{ subject: string }>();
   const [searchParams] = useSearchParams();
   const version = searchParams.get("version") || "";
   const navigate = useNavigate();
-  const { currentUser, selectedGrade } = useStore();
+  const { currentUser, selectedGrade, questions } = useStore();
 
   const subjectKey = subject as Subject;
   const info = SUBJECTS[subjectKey];
-  const tb = getTextbook(currentUser.grade, subjectKey);
-  const chapters = getChapters(selectedGrade, subjectKey);
+
+  // 从题目数组中聚合出「单元/课时」结构，只展示有题目的单元和课时
+  const chapters = useMemo<DerivedChapter[]>(() => {
+    const matched = questions.filter(
+      (q) => q.subject === subjectKey && q.grade === currentUser.grade && (!version || q.version === version),
+    );
+    // ponytail: 用 Map 保序聚合，按首次出现顺序展示
+    const chapterMap = new Map<string, DerivedChapter>();
+    for (const q of matched) {
+      const chTitle = q.chapter || "未分单元";
+      if (!chapterMap.has(chTitle)) {
+        chapterMap.set(chTitle, { id: chTitle, title: chTitle, lessons: [] });
+      }
+      const ch = chapterMap.get(chTitle)!;
+      const lsTitle = q.section || "";
+      // 课时标题去重；空课时不作为单独课时，归到"整个单元"
+      if (lsTitle && !ch.lessons.some((l) => l.title === lsTitle)) {
+        ch.lessons.push({ id: `${chTitle}::${lsTitle}`, title: lsTitle });
+      }
+    }
+    // 没有课时的单元补一个"整个单元"占位，方便直接开始
+    return Array.from(chapterMap.values()).map((ch) => {
+      if (ch.lessons.length === 0) {
+        return { ...ch, lessons: [{ id: `${ch.title}::__whole`, title: "整个单元" }] };
+      }
+      return ch;
+    });
+  }, [questions, subjectKey, currentUser.grade, version]);
 
   const [openChapter, setOpenChapter] = useState<string | null>(chapters[0]?.id || null);
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
@@ -30,18 +66,17 @@ export default function ChapterSelectPage() {
 
   const handleChooseMode = (mode: "choice" | "essay") => {
     setShowModeSelect(false);
-    // 根据 lesson id 查找对应课时标题，用于题目过滤
-    const lessonObj = chapters
-      .flatMap((c) => c.lessons)
-      .find((l) => l.id === selectedLesson);
-    const lessonTitle = lessonObj?.title || "";
+    // lesson id 格式 "chapter::lesson"，还原出课时标题用于题目过滤
+    const lessonTitle = selectedLesson?.split("::")[1] || "";
+    // "整个单元" 占位传空，表示该单元全部题目
+    const filter = lessonTitle === "__whole" ? "" : lessonTitle;
     if (mode === "choice") {
       navigate(
-        `/app/practice/${subjectKey}?version=${encodeURIComponent(version)}&lesson=${encodeURIComponent(lessonTitle)}`,
+        `/app/practice/${subjectKey}?version=${encodeURIComponent(version)}&lesson=${encodeURIComponent(filter)}`,
       );
     } else {
       navigate(
-        `/app/essay/${subjectKey}?version=${encodeURIComponent(version)}&lesson=${encodeURIComponent(lessonTitle)}`,
+        `/app/essay/${subjectKey}?version=${encodeURIComponent(version)}&lesson=${encodeURIComponent(filter)}`,
       );
     }
   };
@@ -64,7 +99,7 @@ export default function ChapterSelectPage() {
             <h1 className="font-kai text-sm font-bold text-navy-900">{info.name} · 章节选择</h1>
           </div>
           <p className="text-[10px] text-navy-800/50 mt-0.5">
-            {selectedGrade} · {version || tb?.versions[0]}
+            {selectedGrade} · {version || "全部版本"}
           </p>
         </div>
       </header>
@@ -77,7 +112,7 @@ export default function ChapterSelectPage() {
 
         {chapters.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16">
-            <p className="font-kai text-sm text-navy-800/50">本学期暂无章节配置</p>
+            <p className="font-kai text-sm text-navy-800/50">暂无题目，请联系管理员上传题库</p>
           </div>
         ) : (
           <div className="space-y-2">

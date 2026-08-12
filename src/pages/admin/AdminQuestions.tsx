@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Search, Plus, Pencil, Trash2, X, Upload, FileText, Eraser } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import { SUBJECTS, GRADES, TEXTBOOKS } from "@/data/textbooks";
-import { getChapters } from "@/data/chapters";
 import { parseDocxToQuestions } from "@/lib/wordParser";
 import type { Question, Subject, QuestionType } from "@/data/types";
 
@@ -193,16 +192,14 @@ function WordUploadForm({
   const [subject, setSubject] = useState<Subject>("biology");
   const [grade, setGrade] = useState("七年级上册");
   const [version, setVersion] = useState("");
-  const [chapterIdx, setChapterIdx] = useState(0);
-  const [lessonIdx, setLessonIdx] = useState<number | "">("");
+  const [chapter, setChapter] = useState("");
+  const [lesson, setLesson] = useState("");
   const [mode, setMode] = useState<"choice" | "essay">("choice");
   const [file, setFile] = useState<File | null>(null);
   const [parsing, setParsing] = useState(false);
   const [result, setResult] = useState<{ ok: number; errors: string[] } | null>(null);
 
   const versions = TEXTBOOKS.filter((t) => t.grade === grade && t.subject === subject).flatMap((t) => t.versions);
-  const chapters = getChapters(grade, subject);
-  const lessons = chapters[chapterIdx]?.lessons || [];
 
   // 学科/学段切换时重置版本为第一个
   const ensureVersion = (g: string, s: Subject, cur: string) => {
@@ -213,14 +210,10 @@ function WordUploadForm({
   const handleSubjectChange = (s: Subject) => {
     setSubject(s);
     setVersion(ensureVersion(grade, s, version));
-    setChapterIdx(0);
-    setLessonIdx("");
   };
   const handleGradeChange = (g: string) => {
     setGrade(g);
     setVersion(ensureVersion(g, subject, version));
-    setChapterIdx(0);
-    setLessonIdx("");
   };
 
   const handleParse = async () => {
@@ -232,8 +225,8 @@ function WordUploadForm({
         subject,
         grade,
         version,
-        chapter: chapters[chapterIdx]?.title,
-        section: lessonIdx !== "" ? lessons[lessonIdx]?.title : undefined,
+        chapter: chapter.trim(),
+        section: lesson.trim() || undefined,
       };
       const { questions: qs, errors } = await parseDocxToQuestions(file, ctx, mode);
       if (qs.length > 0) onImport(qs);
@@ -319,32 +312,27 @@ function WordUploadForm({
             </div>
           </div>
 
-          {/* 单元 课时 */}
+          {/* 单元 课时（可编辑文本） */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-kai text-navy-800/60 mb-1">单元</label>
-              <select
-                value={chapterIdx}
-                onChange={(e) => { setChapterIdx(Number(e.target.value)); setLessonIdx(""); }}
-                className="w-full px-2 py-2 rounded-lg border border-navy-500/15 bg-paper font-kai text-sm"
-              >
-                {chapters.map((c, i) => (
-                  <option key={c.id} value={i}>{c.title}</option>
-                ))}
-              </select>
+              <label className="block text-xs font-kai text-navy-800/60 mb-1">单元（自填）</label>
+              <input
+                type="text"
+                value={chapter}
+                onChange={(e) => setChapter(e.target.value)}
+                placeholder="如：第一单元"
+                className="w-full px-2 py-2 rounded-lg border border-navy-500/15 bg-paper font-kai text-sm focus:outline-none focus:border-navy-500/50"
+              />
             </div>
             <div>
-              <label className="block text-xs font-kai text-navy-800/60 mb-1">课时（可选）</label>
-              <select
-                value={lessonIdx}
-                onChange={(e) => setLessonIdx(e.target.value === "" ? "" : Number(e.target.value))}
-                className="w-full px-2 py-2 rounded-lg border border-navy-500/15 bg-paper font-kai text-sm"
-              >
-                <option value="">不指定（整个单元）</option>
-                {lessons.map((l, i) => (
-                  <option key={l.id} value={i}>{l.title}</option>
-                ))}
-              </select>
+              <label className="block text-xs font-kai text-navy-800/60 mb-1">课时（自填，可选）</label>
+              <input
+                type="text"
+                value={lesson}
+                onChange={(e) => setLesson(e.target.value)}
+                placeholder="如：第1课 留空=整个单元"
+                className="w-full px-2 py-2 rounded-lg border border-navy-500/15 bg-paper font-kai text-sm focus:outline-none focus:border-navy-500/50"
+              />
             </div>
           </div>
 
