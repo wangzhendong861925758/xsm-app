@@ -76,8 +76,10 @@ export default function ErrorBookPage() {
               // 兼容：选择题从 q 读，大题从 item 本身读
               const stem = item.stem || q?.stem || "";
               const version = item.version || q?.version || "";
-              const analysis = item.analysis || q?.analysis || "";
               const isEssay = !q || q.type === "essay";
+              // 选择题：优先取错题本里存的"对应错因"和"正确思路"
+              const wrongReason = item.wrongReason;
+              const rightThought = item.rightThought || item.analysis || q?.analysis || "";
               return (
                 <div
                   key={item.id || item.questionId}
@@ -131,14 +133,29 @@ export default function ErrorBookPage() {
                     </div>
                   </div>
 
-                  <div className="pt-2 border-t border-navy-500/8">
-                    <p className="text-[10px] font-kai text-emerald-700 font-bold mb-1 flex items-center gap-1">
-                      <CheckCircle2 size={11} />
-                      正确思路
-                    </p>
-                    <p className="font-kai text-[11px] text-navy-800/70 leading-relaxed whitespace-pre-wrap">
-                      {analysis}
-                    </p>
+                  <div className="pt-2 border-t border-navy-500/8 space-y-2">
+                    {/* 选择/判断题展示对应错因 */}
+                    {wrongReason && (
+                      <div>
+                        <p className="text-[10px] font-kai text-red-700 font-bold mb-1 flex items-center gap-1">
+                          <XCircle size={11} />
+                          错题解析
+                        </p>
+                        <p className="font-kai text-[11px] text-red-700/90 leading-relaxed whitespace-pre-wrap">
+                          {wrongReason}
+                        </p>
+                      </div>
+                    )}
+                    {/* 正确思路 */}
+                    <div>
+                      <p className="text-[10px] font-kai text-emerald-700 font-bold mb-1 flex items-center gap-1">
+                        <CheckCircle2 size={11} />
+                        正确思路
+                      </p>
+                      <p className="font-kai text-[11px] text-navy-800/70 leading-relaxed whitespace-pre-wrap">
+                        {rightThought}
+                      </p>
+                    </div>
                     {item.solution && (
                       <p className="font-kai text-[11px] text-navy-800/70 leading-relaxed whitespace-pre-wrap mt-2 pt-2 border-t border-navy-500/8">
                         <span className="text-emerald-700 font-bold">推荐解题思路：</span>

@@ -200,12 +200,23 @@ export default function PracticePage() {
 
   const handleAddToErrorBook = () => {
     if (isInErrorBook || !currentAnswer) return;
+    // 计算"用户所选选项的错因"和"正确选项的思路"，存入错题本
+    const selIdx = currentAnswer.selected.charCodeAt(0) - 65;
+    const opts = currentQ.options;
+    const ans = Array.isArray(currentQ.answer) ? currentQ.answer.join("") : String(currentQ.answer);
+    const normalized = ans.replace(/[对√]/g, "A").replace(/[错×]/g, "B");
+    const letters = normalized.toUpperCase().match(/[A-Z]/g) || [];
+    const correctIdx = letters.map((l) => l.charCodeAt(0) - 65).find((i) => i >= 0 && i < opts.length);
+    const optAnalysis = currentQ.optionAnalysis;
     addToErrorBook({
       id: `err-${currentQ.id}-${Date.now()}`,
       questionId: currentQ.id,
       subject: subjectKey,
       selectedAnswer: letterToText(currentAnswer.selected),
       correctAnswer: correctAnswerText,
+      wrongReason: optAnalysis?.[selIdx],
+      rightThought: optAnalysis?.[correctIdx ?? -1] || currentQ.analysis,
+      solution: currentQ.solution,
       addedAt: Date.now(),
     });
   };
@@ -495,29 +506,49 @@ export default function PracticePage() {
               )}
             </div>
 
-            {/* 错题解析（仅答错时显示，简短提示错因） */}
-            {currentAnswer.status === "wrong" && (
-              <div className="mb-3 p-2.5 rounded-lg bg-red-50/60 border border-red-200">
-                <p className="text-[10px] font-kai text-red-700 font-bold mb-1 flex items-center gap-1">
-                  <XCircle size={11} />
-                  错题解析
-                </p>
-                <p className="font-kai text-[11px] text-red-700/90 leading-relaxed">
-                  你选择了「{letterToText(currentAnswer.selected)}」，该选项不符合题意。正确选项为「{correctAnswerText}」，请对照下方正确思路理解知识点。
-                </p>
-              </div>
-            )}
+            {/* 错题解析：根据所选选项展示对应错因（仅答错时显示） */}
+            {currentAnswer.status === "wrong" && (() => {
+              const selIdx = currentAnswer.selected.charCodeAt(0) - 65;
+              const optAnalysis = currentQ.optionAnalysis;
+              const wrongReason = optAnalysis?.[selIdx];
+              return (
+                <div className="mb-3 p-2.5 rounded-lg bg-red-50/60 border border-red-200">
+                  <p className="text-[10px] font-kai text-red-700 font-bold mb-1 flex items-center gap-1">
+                    <XCircle size={11} />
+                    错题解析
+                  </p>
+                  <p className="font-kai text-[11px] text-red-700/90 leading-relaxed">
+                    {wrongReason
+                      ? wrongReason
+                      : `你选择了「${letterToText(currentAnswer.selected)}」，该选项不符合题意。正确选项为「${correctAnswerText}」。`}
+                  </p>
+                </div>
+              );
+            })()}
 
-            {/* 正确思路 */}
-            <div className="mb-3 p-2.5 rounded-lg bg-emerald-50/50 border border-emerald-200">
-              <p className="text-[10px] font-kai text-emerald-700 font-bold mb-1 flex items-center gap-1">
-                <CheckCircle2 size={11} />
-                正确思路
-              </p>
-              <p className="font-kai text-[11px] text-navy-800 leading-relaxed">
-                {currentQ.analysis}
-              </p>
-            </div>
+            {/* 正确思路：取正确选项位置的解析，无则回退到 analysis */}
+            {(() => {
+              const correctIdx = (() => {
+                const opts = currentQ.options;
+                const ans = Array.isArray(currentQ.answer) ? currentQ.answer.join("") : String(currentQ.answer);
+                const normalized = ans.replace(/[对√]/g, "A").replace(/[错×]/g, "B");
+                const letters = normalized.toUpperCase().match(/[A-Z]/g) || [];
+                const idx = letters.map((l) => l.charCodeAt(0) - 65).find((i) => i >= 0 && i < opts.length);
+                return idx;
+              })();
+              const rightThought = currentQ.optionAnalysis?.[correctIdx ?? -1] || currentQ.analysis;
+              return (
+                <div className="mb-3 p-2.5 rounded-lg bg-emerald-50/50 border border-emerald-200">
+                  <p className="text-[10px] font-kai text-emerald-700 font-bold mb-1 flex items-center gap-1">
+                    <CheckCircle2 size={11} />
+                    正确思路
+                  </p>
+                  <p className="font-kai text-[11px] text-navy-800 leading-relaxed">
+                    {rightThought || "暂无正确思路，请管理员在题库管理中点击「AI生成解析」"}
+                  </p>
+                </div>
+              );
+            })()}
 
             {/* 加入错题集按钮（仅答错时显示） */}
             {currentAnswer.status === "wrong" && (

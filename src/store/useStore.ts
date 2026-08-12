@@ -26,6 +26,10 @@ export interface ErrorBookItem {
   correctAnswer: string;    // 正确答案
   analysis?: string;
   solution?: string;        // 大题推荐解题思路
+  /** 选择/判断题：用户所选选项对应的错因（写入时从 optionAnalysis[selIdx] 取） */
+  wrongReason?: string;
+  /** 选择/判断题：正确选项位置的"正确思路"（写入时从 optionAnalysis[correctIdx] 取） */
+  rightThought?: string;
   addedAt: number;
 }
 

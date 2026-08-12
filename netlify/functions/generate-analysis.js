@@ -1,4 +1,6 @@
-// AI 解析生成 API：调用 DeepSeek 为每道题生成错题解析和正确思路
+// AI 解析生成 API：调用 DeepSeek 一次性为每题生成所有选项的错因 + 正确思路
+// - 选择/判断题：生成 optionAnalysis 数组（顺序与 options 对齐，正确选项位置存"正确思路"）
+// - 大题：生成 analysis（错题解析）和 solution（正确思路）
 // 环境变量 DEEPSEEK_API_KEY 需在 Netlify 后台设置
 const DEEPSEEK_URL = 'https://api.deepseek.com/v1/chat/completions';
 const MODEL = 'deepseek-chat';
@@ -14,27 +16,100 @@ function json(data, status = 200) {
   });
 }
 
-/** 调用 DeepSeek 为一批题目生成解析 */
-async function callDeepSeek(questions) {
-  const prompt = `你是一位初中生物、道法、历史、地理学科的资深教师。请为以下每道题生成简短的"错题解析"和"正确思路"。
+/** 将题目的 answer 统一成单字母数组，便于定位正确选项下标 */
+function normalizeAnswerIndexes(q) {
+  const opts = q.options || [];
+  // answer 可能是 "A" / "AB" / "正确" / ["A","B"] / "对" 等
+  let ans = q.answer;
+  if (Array.isArray(ans)) ans = ans.join('');
+  if (!ans) return { correctIndexes: [], opts };
+  // 将"正确"/"错误"/"对"/"错" 映射到 A/B（判断题约定 options=["正确","错误"]）
+  const normalized = String(ans).replace(/[对√]/g, 'A').replace(/[错×]/g, 'B');
+  const letters = normalized.toUpperCase().match(/[A-Z]/g) || [];
+  const correctIndexes = letters
+    .map((l) => l.charCodeAt(0) - 65) // A->0, B->1 ...
+    .filter((i) => i >= 0 && i < opts.length);
+  return { correctIndexes, opts };
+}
+
+/** 调用 DeepSeek 为一批选择题生成每个选项的错因/正确思路 */
+async function callDeepSeekChoice(questions) {
+  const items = questions.map((q, i) => {
+    const { correctIndexes, opts } = normalizeAnswerIndexes(q);
+    return {
+      index: i,
+      type: q.type,
+      stem: q.stem,
+      options: opts,
+      correctLetters: correctIndexes.map((idx) => String.fromCharCode(65 + idx)),
+      subject: q.subject,
+    };
+  });
+
+  const prompt = `你是一位初中生物、道法、历史、地理学科的资深教师。请为以下每道选择题/判断题，为每个选项生成简短的"错因分析"，并在正确选项的位置生成"正确解题思路"。
 
 要求：
-- 错题解析：1-2句话，说明该题的易错点和考查知识点
-- 正确思路：1-2句话，说明解题的正确推理过程
+- 每个错误选项：1-2句话，说明选这个选项会犯什么错、混淆了什么知识点
+- 正确选项的位置：1-2句话，说明正确的解题思路和依据
 - 语言简洁，适合初中生理解
-- 严格按照 JSON 数组格式输出，不要有其他文字
+- 严格按照 JSON 数组格式输出，不要有任何其他文字
+- optionAnalysis 数组长度必须与该题 options 长度一致，顺序对齐
 
 题目列表：
-${JSON.stringify(questions.map((q, i) => ({
-  index: i,
-  type: q.type,
-  stem: q.stem,
-  options: q.options,
-  answer: q.answer,
-  subject: q.subject,
-})))}
+${JSON.stringify(items)}
 
-输出格式（JSON数组，每个元素对应一道题）：
+输出格式：
+[{"index":0,"optionAnalysis":["选A错因...","选B错因...","正确思路：C选项...","选D错因..."]}]`;
+
+  const res = await fetch(DEEPSEEK_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.3,
+      max_tokens: 6000,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`DeepSeek API 错误 ${res.status}: ${err}`);
+  }
+
+  const data = await res.json();
+  const content = data.choices?.[0]?.message?.content || '';
+  const match = content.match(/\[[\s\S]*\]/);
+  if (!match) throw new Error('AI 返回格式异常（选择）');
+  return JSON.parse(match[0]);
+}
+
+/** 调用 DeepSeek 为一批大题生成错题解析+正确思路 */
+async function callDeepSeekEssay(questions) {
+  const items = questions.map((q, i) => ({
+    index: i,
+    type: q.type,
+    stem: q.stem,
+    answer: q.answer,
+    keyPoints: q.keyPoints,
+    subject: q.subject,
+  }));
+
+  const prompt = `你是一位初中生物、道法、历史、地理学科的资深教师。请为以下每道大题/简答题生成"错题解析"和"正确思路"。
+
+要求：
+- 错题解析：1-2句话，说明本题常见失分点和考查知识点
+- 正确思路：1-2句话，说明解题的正确推理过程和答题要点
+- 语言简洁，适合初中生理解
+- 严格按照 JSON 数组格式输出，不要有任何其他文字
+
+题目列表：
+${JSON.stringify(items)}
+
+输出格式：
 [{"index":0,"analysis":"错题解析文本","solution":"正确思路文本"}]`;
 
   const res = await fetch(DEEPSEEK_URL, {
@@ -58,10 +133,8 @@ ${JSON.stringify(questions.map((q, i) => ({
 
   const data = await res.json();
   const content = data.choices?.[0]?.message?.content || '';
-
-  // 提取 JSON 数组（兼容 markdown 代码块包裹）
   const match = content.match(/\[[\s\S]*\]/);
-  if (!match) throw new Error('AI 返回格式异常');
+  if (!match) throw new Error('AI 返回格式异常（大题）');
   return JSON.parse(match[0]);
 }
 
@@ -92,24 +165,52 @@ export default async (req) => {
       return json({ success: false, message: 'questions 不能为空' }, 400);
     }
 
+    // 按题型分流：选择题/判断题走 optionAnalysis；大题走 analysis+solution
+    const choiceQs = questions.filter((q) => q.type === 'single' || q.type === 'multiple' || q.type === 'judge');
+    const essayQs = questions.filter((q) => q.type === 'essay');
+
     // ponytail: DeepSeek 单次最多处理约20题，超过则分批
     const BATCH = 20;
-    const results = [];
+    const choiceResults = [];
+    const essayResults = [];
 
-    for (let i = 0; i < questions.length; i += BATCH) {
-      const batch = questions.slice(i, i + BATCH);
-      const batchResults = await callDeepSeek(batch);
-      results.push(...batchResults);
+    for (let i = 0; i < choiceQs.length; i += BATCH) {
+      const batch = choiceQs.slice(i, i + BATCH);
+      if (batch.length > 0) {
+        const r = await callDeepSeekChoice(batch);
+        choiceResults.push(...r);
+      }
+    }
+    for (let i = 0; i < essayQs.length; i += BATCH) {
+      const batch = essayQs.slice(i, i + BATCH);
+      if (batch.length > 0) {
+        const r = await callDeepSeekEssay(batch);
+        essayResults.push(...r);
+      }
     }
 
-    // 将解析合并回题目
+    // 将结果合并回原题目
+    const choiceMap = new Map(choiceResults.map((r) => [r.index, r]));
+    const essayMap = new Map(essayResults.map((r) => [r.index, r]));
+
     const merged = questions.map((q, i) => {
-      const r = results.find((x) => x.index === i) || results[i];
-      return {
-        ...q,
-        analysis: r?.analysis || q.analysis || '',
-        solution: r?.solution || q.solution || '',
-      };
+      if (q.type === 'essay') {
+        const origIndex = essayQs.indexOf(q);
+        const r = essayMap.get(origIndex);
+        return {
+          ...q,
+          analysis: r?.analysis || q.analysis || '',
+          solution: r?.solution || q.solution || '',
+        };
+      } else {
+        const origIndex = choiceQs.indexOf(q);
+        const r = choiceMap.get(origIndex);
+        // 校验返回的 optionAnalysis 长度与 options 对齐
+        const optionAnalysis = Array.isArray(r?.optionAnalysis) && r.optionAnalysis.length === q.options.length
+          ? r.optionAnalysis
+          : q.optionAnalysis;
+        return { ...q, optionAnalysis };
+      }
     });
 
     return json({ success: true, data: merged });

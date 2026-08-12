@@ -85,6 +85,12 @@ export interface Question {
   lesson?: string;
   /** 所属课时，例如 "第1课时 奏响中学序曲" */
   section?: string;
+  /**
+   * 选择/判断题专用：每个选项对应的错因解析
+   * 数组顺序与 options 对齐；正确选项的位置存储"正确思路"而非错因
+   * 客户端选错时，根据所选选项下标取对应错因展示
+   */
+  optionAnalysis?: string[];
 }
 
 // 学情记录

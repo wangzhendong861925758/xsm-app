@@ -18,19 +18,22 @@ export default function AdminQuestions() {
 
   /** 一键为所有缺解析的题目调用 AI 生成解析+正确思路 */
   const handleGenerateAnalysis = async () => {
-    const need = questions.filter((q) => !q.analysis && !q.solution);
+    // 选择/判断题：缺 optionAnalysis 就需要生成；大题：缺 analysis 或 solution 就需要生成
+    const need = questions.filter((q) => {
+      if (q.type === "essay") return !q.analysis || !q.solution;
+      return !q.optionAnalysis || q.optionAnalysis.length !== q.options.length;
+    });
     if (need.length === 0) {
       setGenMsg({ type: "err", text: "所有题目都已有解析，无需生成" });
       return;
     }
-    if (!confirm(`将为 ${need.length} 道缺少解析的题目调用 AI 生成解析和正确思路，可能消耗少量 API 额度，是否继续？`)) return;
+    if (!confirm(`将为 ${need.length} 道缺少解析的题目调用 AI 生成（选择题按选项生成错因，大题生成解析+思路），可能消耗少量 API 额度，是否继续？`)) return;
     setGenLoading(true);
     setGenMsg(null);
     try {
       const updated = await generateAnalysis(need);
-      // 逐题合并回 store（保留原 mastered/collected 等状态）
       updated.forEach((q) => updateQuestion(q));
-      setGenMsg({ type: "ok", text: `已为 ${updated.length} 道题目生成解析和正确思路` });
+      setGenMsg({ type: "ok", text: `已为 ${updated.length} 道题目生成解析` });
     } catch (e) {
       setGenMsg({ type: "err", text: `生成失败：${(e as Error).message}` });
     } finally {
