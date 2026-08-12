@@ -3,6 +3,12 @@ import { persist } from "zustand/middleware";
 import type { User, Question, Subject, ClientAccount } from "@/data/types";
 import { CURRENT_USER, QUESTIONS, ADMIN_USERS, CAROUSEL_IMAGES } from "@/data/mock";
 import { SUBJECTS } from "@/data/textbooks";
+import {
+  isCloudReady,
+  syncQuestionsToCloud,
+  fetchQuestionsFromCloud,
+  subscribeToQuestions,
+} from "@/lib/leancloud";
 
 // 错题记录条目
 export interface ErrorBookItem {
@@ -102,6 +108,8 @@ interface AppState {
   revokeClientByCode: (code: string) => void;
   // 客户端：扫描所有账号，撤销已过期账号的权限，返回当前登录账号是否被撤销
   checkAndRevokeExpired: () => boolean;
+  // 云同步：从云端拉取题目并订阅实时更新（应用启动时调用一次）
+  initCloudSync: () => Promise<void>;
 }
 
 export const useStore = create<AppState>()(
@@ -139,13 +147,26 @@ export const useStore = create<AppState>()(
           ),
         })),
 
-      addQuestion: (q) => set((s) => ({ questions: [...s.questions, q] })),
-      addQuestions: (qs) => set((s) => ({ questions: [...s.questions, ...qs] })),
-      updateQuestion: (q) =>
-        set((s) => ({ questions: s.questions.map((item) => (item.id === q.id ? q : item)) })),
-      deleteQuestion: (id) =>
-        set((s) => ({ questions: s.questions.filter((q) => q.id !== id) })),
-      clearQuestions: () => set({ questions: [] }),
+      addQuestion: (q) => {
+        set((s) => ({ questions: [...s.questions, q] }));
+        syncQuestionsToCloud(useStore.getState().questions);
+      },
+      addQuestions: (qs) => {
+        set((s) => ({ questions: [...s.questions, ...qs] }));
+        syncQuestionsToCloud(useStore.getState().questions);
+      },
+      updateQuestion: (q) => {
+        set((s) => ({ questions: s.questions.map((item) => (item.id === q.id ? q : item)) }));
+        syncQuestionsToCloud(useStore.getState().questions);
+      },
+      deleteQuestion: (id) => {
+        set((s) => ({ questions: s.questions.filter((q) => q.id !== id) }));
+        syncQuestionsToCloud(useStore.getState().questions);
+      },
+      clearQuestions: () => {
+        set({ questions: [] });
+        syncQuestionsToCloud([]);
+      },
 
       addAdminUser: (u) => set((s) => ({ adminUsers: [...s.adminUsers, u] })),
       updateAdminUser: (u) =>
@@ -268,6 +289,29 @@ export const useStore = create<AppState>()(
           return { clientAccounts: next };
         });
         return currentRevoked;
+      },
+
+      initCloudSync: async () => {
+        if (!(await isCloudReady())) return;
+        // 拉取云端题目，合并本地 mastered/collected 状态
+        const cloudQuestions = await fetchQuestionsFromCloud();
+        if (cloudQuestions && cloudQuestions.length > 0) {
+          const local = useStore.getState().questions;
+          const merged = cloudQuestions.map((q) => {
+            const lq = local.find((x) => x.id === q.id);
+            return lq ? { ...q, mastered: lq.mastered, collected: lq.collected } : q;
+          });
+          set({ questions: merged });
+        }
+        // 订阅实时更新：管理端变更后所有客户端自动同步
+        await subscribeToQuestions((cloudQuestions) => {
+          const local = useStore.getState().questions;
+          const merged = cloudQuestions.map((q) => {
+            const lq = local.find((x) => x.id === q.id);
+            return lq ? { ...q, mastered: lq.mastered, collected: lq.collected } : q;
+          });
+          set({ questions: merged });
+        });
       },
     }),
     {

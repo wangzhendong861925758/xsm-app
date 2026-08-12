@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+.env.*
 
 # 下载的试题源文件（体积大，不进仓库）
 试题/**/*.docx
