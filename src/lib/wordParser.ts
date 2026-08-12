@@ -1,4 +1,3 @@
-import mammoth from "mammoth";
 import type { Question, QuestionType, Subject } from "@/data/types";
 
 /** 上传上下文：拆出的每道题都会带上这些字段 */
@@ -15,8 +14,9 @@ export interface ParseResult {
   errors: string[]; // 拆解失败的题块提示
 }
 
-/** 读取 .docx 文件为纯文本 */
+/** 读取 .docx 文件为纯文本（动态导入 mammoth，避免进主 bundle） */
 export async function readDocx(file: File): Promise<string> {
+  const { default: mammoth } = await import("mammoth");
   const arrayBuffer = await file.arrayBuffer();
   const result = await mammoth.extractRawText({ arrayBuffer });
   return result.value;

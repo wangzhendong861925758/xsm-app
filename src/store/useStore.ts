@@ -294,9 +294,14 @@ export const useStore = create<AppState>()(
           }
           return q;
         });
+        // 仅保留用户作答相关状态，其余字段以代码为准，避免旧持久化数据结构污染
         return {
           ...current,
-          ...p,
+          answeredHistory: p.answeredHistory ?? current.answeredHistory,
+          errorBook: p.errorBook ?? current.errorBook,
+          clientAccounts: p.clientAccounts ?? current.clientAccounts,
+          currentClientCode: p.currentClientCode ?? current.currentClientCode,
+          adminLoggedIn: p.adminLoggedIn ?? current.adminLoggedIn,
           questions: mergedQuestions,
         };
       },
