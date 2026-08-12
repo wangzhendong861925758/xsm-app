@@ -4,14 +4,14 @@ import type { User, Question, Subject, ClientAccount } from "@/data/types";
 import { CURRENT_USER, QUESTIONS, ADMIN_USERS, CAROUSEL_IMAGES } from "@/data/mock";
 import { SUBJECTS } from "@/data/textbooks";
 import {
-  isCloudReady,
-  syncQuestionsToCloud,
-  fetchQuestionsFromCloud,
-  subscribeToQuestions,
-  syncAccountToCloud,
-  fetchAccountsFromCloud,
-  subscribeToAccounts,
-} from "@/lib/cloud";
+  fetchQuestions,
+  saveQuestions,
+  fetchAccounts,
+  registerAccount,
+  loginAccount,
+  grantAccount,
+  revokeAccount,
+} from "@/lib/api";
 
 // 错题记录条目
 export interface ErrorBookItem {
@@ -100,15 +100,15 @@ interface AppState {
   addToErrorBook: (item: ErrorBookItem) => void;
   removeFromErrorBook: (questionId: string) => void;
   // 客户端账号：注册（返回新生成的 8 位 ID 或 null 表示用户名已存在）
-  registerClient: (username: string, password: string, studentName: string) => string | null;
+  registerClient: (username: string, password: string, studentName: string) => Promise<string | null>;
   // 客户端账号：登录（true=成功）
-  loginClient: (username: string, password: string) => boolean;
+  loginClient: (username: string, password: string) => Promise<boolean>;
   // 客户端账号：登出
   logoutClient: () => void;
   // 管理端：凭 8 位 ID 开放权限（true=找到并开放，false=ID 不存在）
-  grantClientByCode: (code: string, months: number) => boolean;
+  grantClientByCode: (code: string, months: number) => Promise<boolean>;
   // 管理端：凭 8 位 ID 撤销权限
-  revokeClientByCode: (code: string) => void;
+  revokeClientByCode: (code: string) => Promise<void>;
   // 客户端：扫描所有账号，撤销已过期账号的权限，返回当前登录账号是否被撤销
   checkAndRevokeExpired: () => boolean;
   // 云同步：从云端拉取题目并订阅实时更新（应用启动时调用一次）
@@ -152,23 +152,23 @@ export const useStore = create<AppState>()(
 
       addQuestion: (q) => {
         set((s) => ({ questions: [...s.questions, q] }));
-        syncQuestionsToCloud(useStore.getState().questions);
+        saveQuestions(useStore.getState().questions);
       },
       addQuestions: (qs) => {
         set((s) => ({ questions: [...s.questions, ...qs] }));
-        syncQuestionsToCloud(useStore.getState().questions);
+        saveQuestions(useStore.getState().questions);
       },
       updateQuestion: (q) => {
         set((s) => ({ questions: s.questions.map((item) => (item.id === q.id ? q : item)) }));
-        syncQuestionsToCloud(useStore.getState().questions);
+        saveQuestions(useStore.getState().questions);
       },
       deleteQuestion: (id) => {
         set((s) => ({ questions: s.questions.filter((q) => q.id !== id) }));
-        syncQuestionsToCloud(useStore.getState().questions);
+        saveQuestions(useStore.getState().questions);
       },
       clearQuestions: () => {
         set({ questions: [] });
-        syncQuestionsToCloud([]);
+        saveQuestions([]);
       },
 
       addAdminUser: (u) => set((s) => ({ adminUsers: [...s.adminUsers, u] })),
@@ -226,97 +226,69 @@ export const useStore = create<AppState>()(
       removeFromErrorBook: (questionId) =>
         set((s) => ({ errorBook: s.errorBook.filter((e) => e.questionId !== questionId) })),
 
-      registerClient: (username, password, studentName) => {
-        const state = useStore.getState();
-        if (state.clientAccounts.some((a) => a.username === username)) return null;
-        // 生成不重复的 8 位数字 ID
-        let code = "";
-        do {
-          code = Math.floor(10000000 + Math.random() * 90000000).toString();
-        } while (state.clientAccounts.some((a) => a.code === code));
-        const account: ClientAccount = {
-          code,
-          username,
-          password,
-          studentName,
-          granted: false,
-          expiresAt: null,
-          createdAt: Date.now(),
-        };
-        set((s) => ({ clientAccounts: [...s.clientAccounts, account], currentClientCode: code }));
-        syncAccountToCloud(account);
-        return code;
+      registerClient: async (username, password, studentName) => {
+        const account = await registerAccount(username, password, studentName);
+        if (!account) return null;
+        set((s) => ({
+          clientAccounts: [...s.clientAccounts.filter((a) => a.code !== account.code), account],
+          currentClientCode: account.code,
+        }));
+        return account.code;
       },
 
-      loginClient: (username, password) => {
-        const account = useStore.getState().clientAccounts.find(
-          (a) => a.username === username && a.password === password,
-        );
+      loginClient: async (username, password) => {
+        const account = await loginAccount(username, password);
         if (!account) return false;
-        set({ currentClientCode: account.code });
+        set((s) => ({
+          clientAccounts: [...s.clientAccounts.filter((a) => a.code !== account.code), account],
+          currentClientCode: account.code,
+        }));
         return true;
       },
 
       logoutClient: () => set({ currentClientCode: null }),
 
-      grantClientByCode: (code, months) => {
-        const exists = useStore.getState().clientAccounts.some((a) => a.code === code);
-        if (!exists) return false;
-        const expiresAt = Date.now() + months * 30 * 24 * 60 * 60 * 1000;
-        let updated: ClientAccount | null = null;
+      grantClientByCode: async (code, months) => {
+        const account = await grantAccount(code, months);
+        if (!account) return false;
         set((s) => ({
-          clientAccounts: s.clientAccounts.map((a) => {
-            if (a.code === code) {
-              updated = { ...a, granted: true, expiresAt };
-              return updated;
-            }
-            return a;
-          }),
+          clientAccounts: s.clientAccounts.map((a) => (a.code === code ? account : a)),
         }));
-        if (updated) syncAccountToCloud(updated);
         return true;
       },
 
-      revokeClientByCode: (code) => {
-        let updated: ClientAccount | null = null;
-        set((s) => ({
-          clientAccounts: s.clientAccounts.map((a) => {
-            if (a.code === code) {
-              updated = { ...a, granted: false, expiresAt: null };
-              return updated;
-            }
-            return a;
-          }),
-        }));
-        if (updated) syncAccountToCloud(updated);
+      revokeClientByCode: async (code) => {
+        const ok = await revokeAccount(code);
+        if (ok) {
+          set((s) => ({
+            clientAccounts: s.clientAccounts.map((a) =>
+              a.code === code ? { ...a, granted: false, expiresAt: null } : a,
+            ),
+          }));
+        }
       },
 
       checkAndRevokeExpired: () => {
         const now = Date.now();
         let currentRevoked = false;
-        const revoked: ClientAccount[] = [];
         set((s) => {
           const currentCode = s.currentClientCode;
           const next = s.clientAccounts.map((a) => {
             if (a.granted && a.expiresAt && a.expiresAt < now) {
               if (a.code === currentCode) currentRevoked = true;
-              const rev = { ...a, granted: false, expiresAt: null };
-              revoked.push(rev);
-              return rev;
+              return { ...a, granted: false, expiresAt: null };
             }
             return a;
           });
           return { clientAccounts: next };
         });
-        revoked.forEach((a) => syncAccountToCloud(a));
         return currentRevoked;
       },
 
       initCloudSync: async () => {
-        if (!isCloudReady()) return;
         // 拉取云端题目，合并本地 mastered/collected 状态
-        const cloudQuestions = await fetchQuestionsFromCloud();
-        if (cloudQuestions && cloudQuestions.length > 0) {
+        const cloudQuestions = await fetchQuestions();
+        if (cloudQuestions.length > 0) {
           const local = useStore.getState().questions;
           const merged = cloudQuestions.map((q) => {
             const lq = local.find((x) => x.id === q.id);
@@ -324,26 +296,29 @@ export const useStore = create<AppState>()(
           });
           set({ questions: merged });
         }
-        // 拉取云端账号，合并到本地（保留当前登录状态）
-        const cloudAccounts = await fetchAccountsFromCloud();
-        if (cloudAccounts) {
+        // 拉取云端账号
+        const cloudAccounts = await fetchAccounts();
+        if (cloudAccounts.length > 0) {
           const currentCode = useStore.getState().currentClientCode;
           set({ clientAccounts: cloudAccounts, currentClientCode: currentCode });
         }
-        // 订阅题目实时更新
-        subscribeToQuestions((cloudQuestions) => {
-          const local = useStore.getState().questions;
-          const merged = cloudQuestions.map((q) => {
-            const lq = local.find((x) => x.id === q.id);
-            return lq ? { ...q, mastered: lq.mastered, collected: lq.collected } : q;
-          });
-          set({ questions: merged });
-        });
-        // 订阅账号实时更新（管理端授权/撤销 → 客户端即时生效）
-        subscribeToAccounts((cloudAccounts) => {
-          const currentCode = useStore.getState().currentClientCode;
-          set({ clientAccounts: cloudAccounts, currentClientCode: currentCode });
-        });
+        // ponytail: REST API 无实时推送，用 30 秒轮询近似实时同步
+        setInterval(async () => {
+          const qs = await fetchQuestions();
+          if (qs.length > 0) {
+            const local = useStore.getState().questions;
+            const merged = qs.map((q) => {
+              const lq = local.find((x) => x.id === q.id);
+              return lq ? { ...q, mastered: lq.mastered, collected: lq.collected } : q;
+            });
+            set({ questions: merged });
+          }
+          const acs = await fetchAccounts();
+          if (acs.length > 0) {
+            const currentCode = useStore.getState().currentClientCode;
+            set({ clientAccounts: acs, currentClientCode: currentCode });
+          }
+        }, 30000);
       },
     }),
     {

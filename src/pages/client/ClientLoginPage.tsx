@@ -15,28 +15,29 @@ export default function ClientLoginPage() {
   // 注册成功后展示的 8 位 ID
   const [newCode, setNewCode] = useState<string | null>(null);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (!username || !password) {
       setError("请输入用户名和密码");
       return;
     }
-    if (loginClient(username, password)) {
+    const ok = await loginClient(username, password);
+    if (ok) {
       navigate("/app/home", { replace: true });
     } else {
       setError("用户名或密码错误");
     }
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (!username || !password || !studentName) {
       setError("请填写完整信息");
       return;
     }
-    const code = registerClient(username, password, studentName);
+    const code = await registerClient(username, password, studentName);
     if (!code) {
       setError("该用户名已存在");
       return;

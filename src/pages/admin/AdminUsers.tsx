@@ -15,13 +15,14 @@ export default function AdminUsers() {
   );
   const grantedCount = clientAccounts.filter((a) => a.granted).length;
 
-  const handleGrant = () => {
+  const handleGrant = async () => {
     const code = grantCode.trim();
     if (!/^\d{8}$/.test(code)) {
       setGrantMsg({ type: "err", text: "请输入 8 位数字 ID" });
       return;
     }
-    const ok = grantClientByCode(code, grantMonths);
+    setGrantMsg({ type: "ok", text: "正在查询..." });
+    const ok = await grantClientByCode(code, grantMonths);
     if (ok) {
       setGrantMsg({ type: "ok", text: `已为 ID ${code} 开放 ${grantMonths} 个月权限` });
       setGrantCode("");
@@ -30,9 +31,9 @@ export default function AdminUsers() {
     }
   };
 
-  const handleRevoke = (code: string, name: string) => {
+  const handleRevoke = async (code: string, name: string) => {
     if (confirm(`确认撤销 ${name}（${code}）的答题权限？`)) {
-      revokeClientByCode(code);
+      await revokeClientByCode(code);
     }
   };
 
