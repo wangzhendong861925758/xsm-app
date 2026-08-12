@@ -25,20 +25,68 @@ export async function readDocx(file: File): Promise<string> {
 /** 题号正则：行首 数字 + 点 */
 const NUM_PREFIX = /^\s*(\d+)\s*[.．、]/;
 
+/** 大题题号正则：行首 数字 + 点 + 问： */
+const ESSAY_QUESTION_PREFIX = /^\s*\d+\s*[.．、]\s*问\s*[:：]/;
+
 /**
- * 按题号把文本切成题块。
- * 以"行首数字+点"作为新题起点，合并后续非题号行。
+ * 选择判断题：按"答案："行切题。
+ * 每道选择判断题必有"答案："行，以它为分界不会被子序号干扰。
+ * 答案后的"解析："行归入当前题块，之后第一个非空行开始下一题。
  */
-function splitByNumber(text: string): string[] {
+function splitChoiceByAnswer(text: string): string[] {
+  const lines = text.replace(/\r\n/g, "\n").split("\n");
+  const blocks: string[] = [];
+  let current: string[] = [];
+  let foundAnswer = false;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    if (ANSWER_LABEL.test(trimmed)) {
+      current.push(line);
+      foundAnswer = true;
+      continue;
+    }
+
+    // 答案后的"解析："行归入当前题块
+    if (foundAnswer && ANALYSIS_LABEL.test(trimmed)) {
+      current.push(line);
+      continue;
+    }
+
+    // 已找到答案且当前行非空非解析 → 下一题开始
+    if (foundAnswer && trimmed !== "") {
+      blocks.push(current.join("\n"));
+      current = [line];
+      foundAnswer = false;
+      continue;
+    }
+
+    // 跳过纯空行开头的噪声
+    if (current.length === 0 && trimmed === "") continue;
+    current.push(line);
+  }
+
+  if (current.length > 0 && current.some((l) => l.trim())) {
+    blocks.push(current.join("\n"));
+  }
+  return blocks;
+}
+
+/**
+ * 大题：按"N.问："行切题。
+ * 用户指定大题格式为"1.问：题干 / 答：答案"，以"N.问："为分界，
+ * 答案中的子序号不会误判为新题。
+ */
+function splitEssayByQuestion(text: string): string[] {
   const lines = text.replace(/\r\n/g, "\n").split("\n");
   const blocks: string[] = [];
   let current: string[] = [];
   for (const line of lines) {
-    if (NUM_PREFIX.test(line)) {
+    if (ESSAY_QUESTION_PREFIX.test(line)) {
       if (current.length > 0) blocks.push(current.join("\n"));
       current = [line];
     } else {
-      // 跳过纯空行开头的噪声，但保留题块内的空行
       if (current.length === 0 && line.trim() === "") continue;
       current.push(line);
     }
@@ -192,7 +240,8 @@ export async function parseDocxToQuestions(
   mode: "choice" | "essay",
 ): Promise<ParseResult> {
   const text = await readDocx(file);
-  const blocks = splitByNumber(text);
+  // 选择判断题按"答案："行切分，大题按"N.问："行切分，避免子序号干扰
+  const blocks = mode === "choice" ? splitChoiceByAnswer(text) : splitEssayByQuestion(text);
   const questions: Question[] = [];
   const errors: string[] = [];
 
