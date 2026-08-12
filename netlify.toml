@@ -6,7 +6,14 @@
 [build.environment]
   NODE_VERSION = "18"
 
-# SPA 路由回退：/api/* 之外的路径返回 index.html
+# API 路由：转发到 Netlify Functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+# SPA 路由回退：非文件、非 API 路径返回 index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
