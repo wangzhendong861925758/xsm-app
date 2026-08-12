@@ -3,7 +3,7 @@
  * 管理端上传题目后保存到云端，所有客户端通过 realtime 订阅实时收到更新
  */
 import { createClient } from "@supabase/supabase-js";
-import type { Question } from "@/data/types";
+import type { Question, ClientAccount } from "@/data/types";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
@@ -80,6 +80,69 @@ export function subscribeToQuestions(onUpdate: (questions: Question[]) => void):
         if (questions && Array.isArray(questions)) {
           suppressSync = true;
           onUpdate(questions);
+          setTimeout(() => {
+            suppressSync = false;
+          }, 2000);
+        }
+      },
+    )
+    .subscribe();
+
+  return () => {
+    sb.removeChannel(channel);
+  };
+}
+
+/* ================ 客户端账号云同步 ================ */
+
+const ACCOUNTS_TABLE = "client_accounts";
+
+/** 单个账号 upsert 到云端 */
+export async function syncAccountToCloud(account: ClientAccount): Promise<void> {
+  if (suppressSync) return;
+  const sb = getClient();
+  if (!sb) return;
+  try {
+    const { error } = await sb.from(ACCOUNTS_TABLE).upsert(account as any, { onConflict: "code" });
+    if (error) console.error("Supabase account sync failed:", error.message);
+  } catch (e) {
+    console.error("Supabase account sync failed:", e);
+  }
+}
+
+/** 从云端拉取全部账号 */
+export async function fetchAccountsFromCloud(): Promise<ClientAccount[] | null> {
+  const sb = getClient();
+  if (!sb) return null;
+  try {
+    const { data, error } = await sb.from(ACCOUNTS_TABLE).select("*");
+    if (error) {
+      console.error("Supabase fetch accounts failed:", error.message);
+      return null;
+    }
+    return (data as ClientAccount[]) || [];
+  } catch (e) {
+    console.error("Supabase fetch accounts failed:", e);
+    return null;
+  }
+}
+
+/** 订阅账号表变更（管理端和客户端都可用） */
+export function subscribeToAccounts(onUpdate: (accounts: ClientAccount[]) => void): () => void {
+  const sb = getClient();
+  if (!sb) return () => {};
+
+  const channel = sb
+    .channel("client_accounts_changes")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: ACCOUNTS_TABLE },
+      async () => {
+        // 收到变更通知后拉取全量数据
+        const accounts = await fetchAccountsFromCloud();
+        if (accounts) {
+          suppressSync = true;
+          onUpdate(accounts);
           setTimeout(() => {
             suppressSync = false;
           }, 2000);

@@ -8,6 +8,9 @@ import {
   syncQuestionsToCloud,
   fetchQuestionsFromCloud,
   subscribeToQuestions,
+  syncAccountToCloud,
+  fetchAccountsFromCloud,
+  subscribeToAccounts,
 } from "@/lib/cloud";
 
 // 错题记录条目
@@ -241,6 +244,7 @@ export const useStore = create<AppState>()(
           createdAt: Date.now(),
         };
         set((s) => ({ clientAccounts: [...s.clientAccounts, account], currentClientCode: code }));
+        syncAccountToCloud(account);
         return code;
       },
 
@@ -259,35 +263,52 @@ export const useStore = create<AppState>()(
         const exists = useStore.getState().clientAccounts.some((a) => a.code === code);
         if (!exists) return false;
         const expiresAt = Date.now() + months * 30 * 24 * 60 * 60 * 1000;
+        let updated: ClientAccount | null = null;
         set((s) => ({
-          clientAccounts: s.clientAccounts.map((a) =>
-            a.code === code ? { ...a, granted: true, expiresAt } : a,
-          ),
+          clientAccounts: s.clientAccounts.map((a) => {
+            if (a.code === code) {
+              updated = { ...a, granted: true, expiresAt };
+              return updated;
+            }
+            return a;
+          }),
         }));
+        if (updated) syncAccountToCloud(updated);
         return true;
       },
 
-      revokeClientByCode: (code) =>
+      revokeClientByCode: (code) => {
+        let updated: ClientAccount | null = null;
         set((s) => ({
-          clientAccounts: s.clientAccounts.map((a) =>
-            a.code === code ? { ...a, granted: false, expiresAt: null } : a,
-          ),
-        })),
+          clientAccounts: s.clientAccounts.map((a) => {
+            if (a.code === code) {
+              updated = { ...a, granted: false, expiresAt: null };
+              return updated;
+            }
+            return a;
+          }),
+        }));
+        if (updated) syncAccountToCloud(updated);
+      },
 
       checkAndRevokeExpired: () => {
         const now = Date.now();
         let currentRevoked = false;
+        const revoked: ClientAccount[] = [];
         set((s) => {
           const currentCode = s.currentClientCode;
           const next = s.clientAccounts.map((a) => {
             if (a.granted && a.expiresAt && a.expiresAt < now) {
               if (a.code === currentCode) currentRevoked = true;
-              return { ...a, granted: false, expiresAt: null };
+              const rev = { ...a, granted: false, expiresAt: null };
+              revoked.push(rev);
+              return rev;
             }
             return a;
           });
           return { clientAccounts: next };
         });
+        revoked.forEach((a) => syncAccountToCloud(a));
         return currentRevoked;
       },
 
@@ -303,7 +324,13 @@ export const useStore = create<AppState>()(
           });
           set({ questions: merged });
         }
-        // 订阅实时更新：管理端变更后所有客户端自动同步
+        // 拉取云端账号，合并到本地（保留当前登录状态）
+        const cloudAccounts = await fetchAccountsFromCloud();
+        if (cloudAccounts) {
+          const currentCode = useStore.getState().currentClientCode;
+          set({ clientAccounts: cloudAccounts, currentClientCode: currentCode });
+        }
+        // 订阅题目实时更新
         subscribeToQuestions((cloudQuestions) => {
           const local = useStore.getState().questions;
           const merged = cloudQuestions.map((q) => {
@@ -311,6 +338,11 @@ export const useStore = create<AppState>()(
             return lq ? { ...q, mastered: lq.mastered, collected: lq.collected } : q;
           });
           set({ questions: merged });
+        });
+        // 订阅账号实时更新（管理端授权/撤销 → 客户端即时生效）
+        subscribeToAccounts((cloudAccounts) => {
+          const currentCode = useStore.getState().currentClientCode;
+          set({ clientAccounts: cloudAccounts, currentClientCode: currentCode });
         });
       },
     }),
