@@ -1,8 +1,8 @@
-// AI 解析生成 API：调用 DeepSeek 一次性为每题生成所有选项的错因 + 正确思路
+// AI 解析生成 API：调用第三方中转 API（token.xinhankr.com）一次性为每题生成所有选项的错因 + 正确思路
 // - 选择/判断题：生成 optionAnalysis 数组（顺序与 options 对齐，正确选项位置存"正确思路"）
 // - 大题：生成 analysis（错题解析）和 solution（正确思路）
-// 环境变量 DEEPSEEK_API_KEY 需在 Netlify 后台设置
-const DEEPSEEK_URL = 'https://api.deepseek.com/v1/chat/completions';
+// 环境变量 DEEPSEEK_API_KEY 需在 Netlify 后台设置（中转 API 的 key）
+const DEEPSEEK_URL = 'https://token.xinhankr.com/v1/chat/completions';
 const MODEL = 'deepseek-v4-pro';
 
 function json(data, status = 200) {
