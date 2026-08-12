@@ -67,7 +67,12 @@ export default function ProfilePage() {
             {account?.granted ? (
               <>
                 <ShieldCheck size={14} className="text-navy-600" />
-                <span className="font-kai text-[11px] text-navy-700">答题权限已开放</span>
+                <span className="font-kai text-[11px] text-navy-700">
+                  答题权限已开放
+                  {account.expiresAt && (
+                    <> · 到期 {new Date(account.expiresAt).toLocaleDateString("zh-CN")}</>
+                  )}
+                </span>
               </>
             ) : (
               <>

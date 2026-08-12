@@ -20,6 +20,7 @@ export default function HomePage() {
     setSelectedVersion,
     clientAccounts,
     currentClientCode,
+    checkAndRevokeExpired,
   } = useStore();
   const account = clientAccounts.find((a) => a.code === currentClientCode);
   const [carouselIndex, setCarouselIndex] = useState(0);
@@ -44,9 +45,11 @@ export default function HomePage() {
   };
 
   const handleStartLearn = (subject: Subject) => {
-    // 权限校验：未开放权限不允许答题
-    if (!account?.granted) {
-      alert("请联系管理员开放权限");
+    // 权限校验：先检查是否已到期，再判断是否授权
+    checkAndRevokeExpired();
+    const current = useStore.getState().clientAccounts.find((a) => a.code === currentClientCode);
+    if (!current?.granted) {
+      alert("请联系管理员开通权限");
       return;
     }
     const version = selectedVersions[subject] || textbooks.find((t) => t.subject === subject)?.versions[0] || "";

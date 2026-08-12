@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { Search, KeyRound, X, ShieldCheck, ShieldOff, UserCheck } from "lucide-react";
+import { Search, KeyRound, X, ShieldCheck, ShieldOff, UserCheck, Ban } from "lucide-react";
 import { useStore } from "@/store/useStore";
 
 export default function AdminUsers() {
-  const { clientAccounts, grantClientByCode } = useStore();
+  const { clientAccounts, grantClientByCode, revokeClientByCode } = useStore();
   const [keyword, setKeyword] = useState("");
   const [showGrant, setShowGrant] = useState(false);
   const [grantCode, setGrantCode] = useState("");
+  const [grantMonths, setGrantMonths] = useState(1);
   const [grantMsg, setGrantMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
   const filtered = clientAccounts.filter(
@@ -20,13 +21,25 @@ export default function AdminUsers() {
       setGrantMsg({ type: "err", text: "请输入 8 位数字 ID" });
       return;
     }
-    const ok = grantClientByCode(code);
+    const ok = grantClientByCode(code, grantMonths);
     if (ok) {
-      setGrantMsg({ type: "ok", text: `已为 ID ${code} 开放答题权限` });
+      setGrantMsg({ type: "ok", text: `已为 ID ${code} 开放 ${grantMonths} 个月权限` });
       setGrantCode("");
     } else {
       setGrantMsg({ type: "err", text: `ID ${code} 不存在，请确认客户端已注册` });
     }
+  };
+
+  const handleRevoke = (code: string, name: string) => {
+    if (confirm(`确认撤销 ${name}（${code}）的答题权限？`)) {
+      revokeClientByCode(code);
+    }
+  };
+
+  const formatExpiry = (expiresAt: number | null, granted: boolean) => {
+    if (!granted || !expiresAt) return "—";
+    const d = new Date(expiresAt);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   };
 
   return (
@@ -50,7 +63,7 @@ export default function AdminUsers() {
           />
         </div>
         <button
-          onClick={() => { setShowGrant(true); setGrantMsg(null); setGrantCode(""); }}
+          onClick={() => { setShowGrant(true); setGrantMsg(null); setGrantCode(""); setGrantMonths(1); }}
           className="flex items-center gap-1 btn-navy px-3 py-2 rounded-lg font-kai text-sm"
         >
           <KeyRound size={15} />
@@ -67,7 +80,9 @@ export default function AdminUsers() {
               <th className="px-4 py-3 font-kai text-xs text-navy-800/60 font-bold">学生姓名</th>
               <th className="px-4 py-3 font-kai text-xs text-navy-800/60 font-bold">用户名</th>
               <th className="px-4 py-3 font-kai text-xs text-navy-800/60 font-bold">权限状态</th>
+              <th className="px-4 py-3 font-kai text-xs text-navy-800/60 font-bold">到期时间</th>
               <th className="px-4 py-3 font-kai text-xs text-navy-800/60 font-bold">注册时间</th>
+              <th className="px-4 py-3 font-kai text-xs text-navy-800/60 font-bold text-right">操作</th>
             </tr>
           </thead>
           <tbody>
@@ -87,14 +102,28 @@ export default function AdminUsers() {
                     </span>
                   )}
                 </td>
+                <td className="px-4 py-3 font-kai text-xs text-navy-800/60">
+                  {formatExpiry(a.expiresAt, a.granted)}
+                </td>
                 <td className="px-4 py-3 font-kai text-xs text-navy-800/50">
                   {new Date(a.createdAt).toLocaleDateString("zh-CN")}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  {a.granted && (
+                    <button
+                      onClick={() => handleRevoke(a.code, a.studentName)}
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-kai text-gold-dark hover:bg-gold/10"
+                    >
+                      <Ban size={12} />
+                      撤销权限
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-12 text-center font-kai text-sm text-navy-800/60">
+                <td colSpan={7} className="px-4 py-12 text-center font-kai text-sm text-navy-800/60">
                   {clientAccounts.length === 0 ? "暂无注册用户，等待客户端注册" : "暂无匹配用户"}
                 </td>
               </tr>
@@ -125,6 +154,27 @@ export default function AdminUsers() {
                 className="w-full px-3 py-2.5 rounded-lg border border-navy-500/15 bg-paper font-mono text-lg tracking-[0.3em] text-navy-900 focus:outline-none focus:border-navy-500/50"
                 maxLength={8}
               />
+            </div>
+            <div>
+              <label className="block text-xs font-kai text-navy-800/60 mb-1.5">有效期限</label>
+              <div className="grid grid-cols-4 gap-2">
+                {[1, 3, 6, 12].map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setGrantMonths(m)}
+                    className={`py-2 rounded-lg font-kai text-sm transition-all ${
+                      grantMonths === m
+                        ? "btn-navy font-bold"
+                        : "border border-navy-500/15 text-navy-800/70 hover:border-navy-500/40"
+                    }`}
+                  >
+                    {m} 个月
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-navy-800/50 mt-1.5 font-kai">
+                到期后客户端将自动取消权限，需重新授权
+              </p>
             </div>
             {grantMsg && (
               <p className={`text-xs font-kai mt-2 ${grantMsg.type === "ok" ? "text-navy-600" : "text-gold-dark"}`}>

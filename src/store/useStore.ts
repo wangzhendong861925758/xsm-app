@@ -94,7 +94,11 @@ interface AppState {
   // 客户端账号：登出
   logoutClient: () => void;
   // 管理端：凭 8 位 ID 开放权限（true=找到并开放，false=ID 不存在）
-  grantClientByCode: (code: string) => boolean;
+  grantClientByCode: (code: string, months: number) => boolean;
+  // 管理端：凭 8 位 ID 撤销权限
+  revokeClientByCode: (code: string) => void;
+  // 客户端：扫描所有账号，撤销已过期账号的权限，返回当前登录账号是否被撤销
+  checkAndRevokeExpired: () => boolean;
 }
 
 export const useStore = create<AppState>()(
@@ -207,6 +211,7 @@ export const useStore = create<AppState>()(
           password,
           studentName,
           granted: false,
+          expiresAt: null,
           createdAt: Date.now(),
         };
         set((s) => ({ clientAccounts: [...s.clientAccounts, account], currentClientCode: code }));
@@ -224,15 +229,40 @@ export const useStore = create<AppState>()(
 
       logoutClient: () => set({ currentClientCode: null }),
 
-      grantClientByCode: (code) => {
+      grantClientByCode: (code, months) => {
         const exists = useStore.getState().clientAccounts.some((a) => a.code === code);
         if (!exists) return false;
+        const expiresAt = Date.now() + months * 30 * 24 * 60 * 60 * 1000;
         set((s) => ({
           clientAccounts: s.clientAccounts.map((a) =>
-            a.code === code ? { ...a, granted: true } : a,
+            a.code === code ? { ...a, granted: true, expiresAt } : a,
           ),
         }));
         return true;
+      },
+
+      revokeClientByCode: (code) =>
+        set((s) => ({
+          clientAccounts: s.clientAccounts.map((a) =>
+            a.code === code ? { ...a, granted: false, expiresAt: null } : a,
+          ),
+        })),
+
+      checkAndRevokeExpired: () => {
+        const now = Date.now();
+        let currentRevoked = false;
+        set((s) => {
+          const currentCode = s.currentClientCode;
+          const next = s.clientAccounts.map((a) => {
+            if (a.granted && a.expiresAt && a.expiresAt < now) {
+              if (a.code === currentCode) currentRevoked = true;
+              return { ...a, granted: false, expiresAt: null };
+            }
+            return a;
+          });
+          return { clientAccounts: next };
+        });
+        return currentRevoked;
       },
     }),
     {

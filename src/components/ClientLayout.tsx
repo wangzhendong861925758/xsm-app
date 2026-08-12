@@ -1,5 +1,7 @@
+import { useEffect, useRef } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { Home, BookOpen, BarChart3, User } from "lucide-react";
+import { useStore } from "@/store/useStore";
 
 const TABS = [
   { to: "/app/home", label: "首页", icon: Home },
@@ -12,6 +14,27 @@ const TABS = [
  * 客户端布局：竖屏容器 + 底部Tab栏
  */
 export default function ClientLayout() {
+  const checkAndRevokeExpired = useStore((s) => s.checkAndRevokeExpired);
+  // 标记本次会话是否已弹过到期提醒，避免重复弹窗
+  const alertedRef = useRef(false);
+
+  useEffect(() => {
+    const revoked = checkAndRevokeExpired();
+    if (revoked && !alertedRef.current) {
+      alertedRef.current = true;
+      alert("您的答题权限已到期，请联系管理员开通权限");
+    }
+    // 每分钟轮询一次，确保长时间停留也能及时撤销
+    const timer = setInterval(() => {
+      const r = checkAndRevokeExpired();
+      if (r && !alertedRef.current) {
+        alertedRef.current = true;
+        alert("您的答题权限已到期，请联系管理员开通权限");
+      }
+    }, 60_000);
+    return () => clearInterval(timer);
+  }, [checkAndRevokeExpired]);
+
   return (
     <div className="mobile-frame flex flex-col">
       {/* 主内容区 */}

@@ -47,6 +47,7 @@ export interface ClientAccount {
   password: string;    // 密码
   studentName: string; // 学生姓名
   granted: boolean;    // 是否已开放答题权限
+  expiresAt: number | null; // 权限到期时间戳（null 表示未授权或无期限）
   createdAt: number;
 }
 
