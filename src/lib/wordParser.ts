@@ -84,21 +84,33 @@ export function splitEssayByQuestion(text: string): string[] {
 }
 
 /**
- * 从文本中提取「答案：xxx」。答案可能在行首（独立行）或行尾（跟在选项后面）。
- * 匹配「答案」标签后，取后面到选项字母 / 行尾 / 「解析」之前的字母。
- * 返回 { answer, 答案前文本, 答案后文本 } 供调用方拆分。
+ * 从文本中提取「答案：xxx」。支持多种答案格式：
+ *   选择题：答案：A / 答案：ABC
+ *   判断题：答案：√ / 答案：× / 答案：✓ / 答案：对 / 答案：错 / 答案：正确 / 答案：错误
+ * 返回 { answer, beforeAnswer, afterAnswer }
+ * - answer: 标准化结果，选择题为 "A"/"B"等，判断题为 "A"(正确)/"B"(错误)
  */
-function extractAnswer(fullText: string): { answer: string; beforeAnswer: string; afterAnswer: string } {
+function extractAnswer(fullText: string): { answer: string; isJudge: boolean; beforeAnswer: string; afterAnswer: string } {
   const ansIdx = fullText.search(/答案\s*[:：]\s*/);
-  if (ansIdx === -1) return { answer: "", beforeAnswer: fullText, afterAnswer: "" };
+  if (ansIdx === -1) return { answer: "", isJudge: false, beforeAnswer: fullText, afterAnswer: "" };
   const before = fullText.slice(0, ansIdx);
   const after = fullText.slice(ansIdx);
-  // 取冒号后的字母，直到遇到「解析」或非字母字符
+
+  // 先尝试匹配判断题答案：√/×/✓/✗/对/错/正确/错误
+  const judgeMatch = after.match(/答案\s*[:：]\s*([√×✓✗对错]|正确|错误|T|F|true|false|TRUE|FALSE)/);
+  if (judgeMatch) {
+    const raw = judgeMatch[1];
+    const isCorrect = /^[√✓对正Tt]|^正确$|^true$|^TRUE$/.test(raw);
+    const answer = isCorrect ? "A" : "B";
+    const rest = after.replace(/答案\s*[:：]\s*([√×✓✗对错]|正确|错误|T|F|true|false|TRUE|FALSE)\s*/, "");
+    return { answer, isJudge: true, beforeAnswer: before, afterAnswer: rest };
+  }
+
+  // 选择题：取 A-D 字母
   const m = after.match(/答案\s*[:：]\s*([A-Da-d]+)/);
   const answer = m ? m[1].toUpperCase() : "";
-  // 答案后剩余部分：去掉「答案：X」本身，找「解析：」
   const rest = after.replace(/答案\s*[:：]\s*[A-Da-d]+\s*/, "");
-  return { answer, beforeAnswer: before, afterAnswer: rest };
+  return { answer, isJudge: false, beforeAnswer: before, afterAnswer: rest };
 }
 
 /**
@@ -170,46 +182,51 @@ function extractOptions(text: string): { stem: string; options: string[] } {
 }
 
 /**
- * 拆解选择判断题。
- * 支持两种格式：
- *   格式1（选项独立行）：
+ * 拆解选择判断题。支持三种格式：
+ *   格式1（选择题选项独立行）：
  *     1. 题干
  *     A．选项A
  *     B．选项B
  *     答案：A
  *   格式2（选项与答案挤在同行）：
  *     1. 题干（ ）A．选项A B．选项B C．选项C D．选项D答案：C
- *   还支持题干跨行（如第3题"D．生物能生长和繁殖"换行到下一行开头）。
+ *   格式3（判断题，无选项）：
+ *     102. 病毒是生物，但没有细胞结构。（ ）
+ *     答案：√
+ *   支持题干跨行、全角点选项、行内答案。
  */
 function parseChoiceBlock(block: string, ctx: UploadContext, idx: number): Question | null {
-  // 合并为单行处理：换行转为空格，但保留答案/解析标签可识别
-  // 先用换行 split，再逐行拼接
   const rawLines = block.split("\n").map((l) => l.trim()).filter((l) => l.length > 0);
   const fullText = rawLines.join(" ");
 
-  // 提取答案
-  const { answer, beforeAnswer, afterAnswer } = extractAnswer(fullText);
+  // 提取答案（支持 √/×/对/错/A-D）
+  const { answer, isJudge, beforeAnswer, afterAnswer } = extractAnswer(fullText);
   if (!answer) return null;
 
-  // 提取解析（在答案后找「解析：xxx」）
+  // 提取解析（在答案后找「解析：xxx」，支持括号包裹形式：（解析：xxx））
   let analysis = "";
-  const anaMatch = afterAnswer.match(/解析\s*[:：]\s*(.*)$/);
-  if (anaMatch) analysis = anaMatch[1].trim();
+  const anaMatch = afterAnswer.match(/解析\s*[:：]\s*(.*?)(?:[）)]\s*$|$)/);
+  if (anaMatch) analysis = anaMatch[1].replace(/[）)]\s*$/, "").trim();
 
   // 在答案之前的文本中提取题干和选项
-  const { stem, options } = extractOptions(beforeAnswer);
+  let { stem, options } = extractOptions(beforeAnswer);
 
-  if (!stem || options.length < 2) return null;
-
-  // 推断题型
+  // 判断题：无选项，自动补"正确/错误"两个选项
   let type: QuestionType;
-  if (options.length === 2) {
+  if (isJudge || options.length < 2) {
+    type = "judge";
+    options = ["正确", "错误"];
+    // 题干去掉题号前缀和末尾的括号（判断题常见"（  ）"）
+    stem = beforeAnswer.replace(NUM_PREFIX, "").trim().replace(/[（(]\s*[）)]\s*$/, "").trim();
+  } else if (options.length === 2) {
     type = "judge";
   } else if (answer.length >= 2) {
     type = "multiple";
   } else {
     type = "single";
   }
+
+  if (!stem) return null;
 
   let finalAnswer: string | string[] = answer;
   if (type === "multiple" && answer.length >= 2) {
