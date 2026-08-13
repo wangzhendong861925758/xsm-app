@@ -288,18 +288,20 @@ const shardLoading = new Map<string, Promise<Question[]>>();
 /** 按学科+年级+版本加载题目分片（带内存缓存） */
 export async function fetchQuestionsByShard(subject: string, grade: string, version: string): Promise<Question[]> {
   const key = `${subject}|${grade}|${version}`;
-  // 命中缓存直接返回
   if (shardCache.has(key)) return shardCache.get(key)!;
-  // 正在加载中，复用同一个 Promise 避免重复请求
   if (shardLoading.has(key)) return shardLoading.get(key)!;
 
   const p = (async () => {
     const versions = await fetchVersions(subject, grade);
-    const entry = versions.find((v) => v.version === version);
+    let entry = versions.find((v) => v.version === version);
+    if (!entry && versions.length > 0) {
+      const normalize = (s: string) => s.replace(/[（(].*?[）)]/g, '').replace(/\s+/g, '');
+      const targetNorm = normalize(version);
+      entry = versions.find((v) => normalize(v.version) === targetNorm) || versions[0];
+    }
     if (!entry) return [];
     const res = await fetch(`/data/questions/${entry.file}`);
     const questions: Question[] = await res.json();
-    // 写入缓存（保留最近3个分片，避免内存无限增长）
     shardCache.set(key, questions);
     if (shardCache.size > 3) {
       const firstKey = shardCache.keys().next().value;

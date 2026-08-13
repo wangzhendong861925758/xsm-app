@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Plus, Pencil, Trash2, X, Upload, FileText, Eraser, Sparkles } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import { SUBJECTS, GRADES, TEXTBOOKS } from "@/data/textbooks";
 import { parseDocxToQuestions, readDocx, splitChoiceByAnswer, splitEssayByQuestion } from "@/lib/wordParser";
-import { generateAnalysis, getAIKey, setAIKey } from "@/lib/api";
+import { generateAnalysis, getAIKey, setAIKey, fetchVersions } from "@/lib/api";
 import type { Question, Subject, QuestionType } from "@/data/types";
 
 export default function AdminQuestions() {
-  const { questions, addQuestion, addQuestions, updateQuestion, deleteQuestion, clearQuestions } = useStore();
+  const { questions, addQuestion, addQuestions, updateQuestion, deleteQuestion, clearQuestions, loadQuestions, questionsLoading, loadedQuestionKey } = useStore();
   const [keyword, setKeyword] = useState("");
   const [subjectFilter, setSubjectFilter] = useState<Subject | "">("");
   const [editing, setEditing] = useState<Question | null>(null);
@@ -18,6 +18,29 @@ export default function AdminQuestions() {
   const [hasKey, setHasKey] = useState(!!getAIKey());
   const [genLoading, setGenLoading] = useState(false);
   const [genMsg, setGenMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+
+  // 分片加载选择器
+  const [pickSubject, setPickSubject] = useState<Subject>("biology");
+  const [pickGrade, setPickGrade] = useState("七年级上册");
+  const [pickVersion, setPickVersion] = useState("");
+  const [versionOptions, setVersionOptions] = useState<string[]>([]);
+
+  // 加载某学科+年级的版本列表
+  useEffect(() => {
+    fetchVersions(pickSubject, pickGrade).then((vs) => {
+      setVersionOptions(vs.map((v) => v.version));
+      setPickVersion(vs[0]?.version || "");
+    });
+  }, [pickSubject, pickGrade]);
+
+  // 进入页面或切换学科年级时，自动加载第一个版本
+  useEffect(() => {
+    if (pickVersion) loadQuestions(pickSubject, pickGrade, pickVersion);
+  }, [pickSubject, pickGrade, pickVersion, loadQuestions]);
+
+  const handleLoadShard = () => {
+    if (pickVersion) loadQuestions(pickSubject, pickGrade, pickVersion);
+  };
 
   /** 一键为所有缺解析的题目调用 AI 生成解析+正确思路 */
   const handleGenerateAnalysis = async () => {
@@ -144,6 +167,50 @@ export default function AdminQuestions() {
           {genMsg.text}
         </div>
       )}
+
+      {/* 分片加载器：44万题已分片为静态 JSON，按学科+年级+版本加载 */}
+      <div className="ink-card rounded-2xl p-4 mb-4">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="font-kai text-xs text-navy-800/60">加载题库分片：</span>
+          <select
+            value={pickSubject}
+            onChange={(e) => setPickSubject(e.target.value as Subject)}
+            className="px-2 py-1.5 rounded-lg border border-navy-500/15 bg-navy-50/40 font-kai text-xs"
+          >
+            {Object.values(SUBJECTS).map((s) => (
+              <option key={s.key} value={s.key}>{s.name}</option>
+            ))}
+          </select>
+          <select
+            value={pickGrade}
+            onChange={(e) => setPickGrade(e.target.value)}
+            className="px-2 py-1.5 rounded-lg border border-navy-500/15 bg-navy-50/40 font-kai text-xs"
+          >
+            {GRADES.map((g) => (
+              <option key={g.key} value={g.key}>{g.short}</option>
+            ))}
+          </select>
+          <select
+            value={pickVersion}
+            onChange={(e) => setPickVersion(e.target.value)}
+            className="px-2 py-1.5 rounded-lg border border-navy-500/15 bg-navy-50/40 font-kai text-xs flex-1 min-w-[160px]"
+          >
+            {versionOptions.map((v) => (
+              <option key={v} value={v}>{v}</option>
+            ))}
+          </select>
+          <button
+            onClick={handleLoadShard}
+            disabled={questionsLoading || !pickVersion}
+            className="btn-navy px-3 py-1.5 rounded-lg font-kai text-xs"
+          >
+            {questionsLoading ? "加载中…" : "加载"}
+          </button>
+          <span className="font-kai text-[10px] text-navy-800/40 ml-auto">
+            {loadedQuestionKey ? `当前: ${loadedQuestionKey} (${questions.length}题)` : "未加载"}
+          </span>
+        </div>
+      </div>
 
       {/* 工具栏 */}
       <div className="ink-card rounded-2xl p-4 mb-4 flex items-center gap-3 flex-wrap">

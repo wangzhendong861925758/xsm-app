@@ -8,6 +8,7 @@ import { SUBJECTS } from "@/data/textbooks";
 import { useStore } from "@/store/useStore";
 import type { Subject, Question } from "@/data/types";
 import { shuffle, randomInRange } from "@/lib/utils";
+import { fetchVersions } from "@/lib/api";
 
 // 大题每次训练数量（5-8 题，大题作答时间长）
 const MIN_QUESTIONS = 5;
@@ -75,10 +76,25 @@ export default function EssayPracticePage() {
     addAnsweredQuestion,
     resetAnsweredBySubjectVersion,
     questions,
+    loadQuestions,
   } = useStore();
 
   const subjectKey = subject as Subject;
   const info = SUBJECTS[subjectKey];
+
+  // 按需加载题目分片
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      let v = version;
+      if (!v) {
+        const versions = await fetchVersions(subjectKey, selectedGrade);
+        v = versions[0]?.version || "";
+      }
+      if (v && !cancelled) loadQuestions(subjectKey, selectedGrade, v);
+    })();
+    return () => { cancelled = true; };
+  }, [subjectKey, selectedGrade, version, loadQuestions]);
 
   // 题库筛选：按学段+学科+版本+课时+大题类型
   const versionQuestions = useMemo(() => {
@@ -101,13 +117,14 @@ export default function EssayPracticePage() {
   const [sessionCount, setSessionCount] = useState<number>(randomSessionCount());
 
   useEffect(() => {
-    const key = `${subjectKey}|${version}|${lessonTitle}|${sessionCount}`;
-    if (sessionKeyRef.current === key) return;
-    sessionKeyRef.current = key;
+    // 题目分片还在加载中，不生成本轮题目（避免空数据时提前设置 sessionKey 导致后续跳过）
     if (versionQuestions.length === 0) {
       setSessionQuestions([]);
       return;
     }
+    const key = `${subjectKey}|${version}|${lessonTitle}|${sessionCount}`;
+    if (sessionKeyRef.current === key) return;
+    sessionKeyRef.current = key;
     // 题目轮转：优先未答过的题；答完一轮后重置记录
     const unanswered = versionQuestions.filter(
       (q) => !answeredHistory.includes(q.id),

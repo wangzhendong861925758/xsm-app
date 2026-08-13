@@ -179,6 +179,9 @@ const CHAPTER_TITLES: Record<Subject, Record<string, string[]>> = {
     "九年级上册": ["区域地理复习", "中国地理复习"],
     "九年级下册": ["中考地理冲刺一", "中考地理冲刺二"],
   },
+  // ponytail: 化学/物理章节由 ChapterSelectPage 从实际题目数据动态聚合，这里只放占位满足类型
+  chemistry: {},
+  physics: {},
 };
 
 // 自定义课时标题映射：key = `${grade}|${subject}`，value = 二维数组（外层=章，内层=课时标题）
@@ -209,7 +212,7 @@ function buildAllChapters(): ChapterMap {
     "八年级上册", "八年级下册",
     "九年级上册", "九年级下册",
   ];
-  const subjects: Subject[] = ["biology", "politics", "history", "geography"];
+  const subjects: Subject[] = ["biology", "politics", "history", "geography", "chemistry", "physics"];
   grades.forEach((grade) => {
     subjects.forEach((subject) => {
       const titles = CHAPTER_TITLES[subject]?.[grade];

@@ -8,6 +8,7 @@ import { SUBJECTS, getTextbook } from "@/data/textbooks";
 import { useStore } from "@/store/useStore";
 import type { Subject, Question } from "@/data/types";
 import { shuffle, randomInRange } from "@/lib/utils";
+import { fetchVersions } from "@/lib/api";
 
 // 每次刷题题目数量范围（15-20 道随机）
 const MIN_QUESTIONS = 15;
@@ -39,6 +40,8 @@ export default function PracticePage() {
     resetAnsweredBySubjectVersion,
     errorBook,
     addToErrorBook,
+    loadQuestions,
+    questionsLoading,
   } = useStore();
 
   const subjectKey = subject as Subject;
@@ -46,6 +49,21 @@ export default function PracticePage() {
   const tb = getTextbook(selectedGrade, subjectKey);
 
   const [sessionCount, setSessionCount] = useState(() => randomSessionCount());
+
+  // 按需加载题目分片
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      let v = version;
+      if (!v) {
+        // 版本未指定时，取该学科年级下第一个版本
+        const versions = await fetchVersions(subjectKey, selectedGrade);
+        v = versions[0]?.version || "";
+      }
+      if (v && !cancelled) loadQuestions(subjectKey, selectedGrade, v);
+    })();
+    return () => { cancelled = true; };
+  }, [subjectKey, selectedGrade, version, loadQuestions]);
 
   useEffect(() => {
     setSessionCount(randomSessionCount());
@@ -76,15 +94,16 @@ export default function PracticePage() {
 
   // 进入页面或切换学科/版本时，生成本轮题目（只计算一次，作答过程中不重算）
   useEffect(() => {
+    // 题目分片还在加载中，不生成本轮题目（避免空数据时提前设置 sessionKey 导致后续跳过）
+    if (versionQuestions.length === 0) {
+      setSessionQuestions([]);
+      return;
+    }
     const key = `${subjectKey}|${version}|${lessonTitle}|${sessionCount}`;
     // key 未变化则不重算（避免作答时 store 变化触发重入）
     if (key === sessionKeyRef.current) return;
     sessionKeyRef.current = key;
 
-    if (versionQuestions.length === 0) {
-      setSessionQuestions([]);
-      return;
-    }
     const unanswered = versionQuestions.filter(
       (q) => !answeredHistory.includes(q.id),
     );
@@ -506,11 +525,11 @@ export default function PracticePage() {
               )}
             </div>
 
-            {/* 错题解析：根据所选选项展示对应错因（仅答错时显示） */}
+            {/* 错题解析：答错时显示；优先选项级解析，回退到通用 analysis */}
             {currentAnswer.status === "wrong" && (() => {
               const selIdx = currentAnswer.selected.charCodeAt(0) - 65;
               const optAnalysis = currentQ.optionAnalysis;
-              const wrongReason = optAnalysis?.[selIdx];
+              const wrongReason = optAnalysis?.[selIdx] || currentQ.analysis;
               return (
                 <div className="mb-3 p-2.5 rounded-lg bg-red-50/60 border border-red-200">
                   <p className="text-[10px] font-kai text-red-700 font-bold mb-1 flex items-center gap-1">

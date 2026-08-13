@@ -22,7 +22,7 @@ export default function ChapterSelectPage() {
   const [searchParams] = useSearchParams();
   const version = searchParams.get("version") || "";
   const navigate = useNavigate();
-  const { selectedGrade, questions, loadQuestions } = useStore();
+  const { selectedGrade, questions, loadQuestions, questionsLoading } = useStore();
 
   const subjectKey = subject as Subject;
   const info = SUBJECTS[subjectKey];
@@ -125,10 +125,25 @@ export default function ChapterSelectPage() {
           <span className="font-kai text-xs">请选择章节和课时</span>
         </div>
 
-        {chapters.length === 0 ? (
+        {questionsLoading || chapters.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16">
-            <div className="w-8 h-8 border-2 border-navy-300 border-t-navy-700 rounded-full animate-spin mb-3" />
-            <p className="font-kai text-sm text-navy-800/60">正在加载题目...</p>
+            {questionsLoading ? (
+              <>
+                <div className="w-8 h-8 border-2 border-navy-300 border-t-navy-700 rounded-full animate-spin mb-3" />
+                <p className="font-kai text-sm text-navy-800/60">正在加载题目...</p>
+              </>
+            ) : (
+              <>
+                <BookOpen size={32} className="text-navy-300 mb-3" />
+                <p className="font-kai text-sm text-navy-800/60">暂无题目数据</p>
+                <button
+                  onClick={() => loadQuestions(subjectKey, selectedGrade, version)}
+                  className="mt-3 px-4 py-2 rounded-lg bg-navy-600 text-white text-xs font-kai"
+                >
+                  重新加载
+                </button>
+              </>
+            )}
           </div>
         ) : (
           <div className="space-y-2">

@@ -66,14 +66,18 @@ export default function HomePage() {
   };
 
   const handleStartLearn = (subject: Subject) => {
-    // 权限校验：先检查是否已到期，再判断是否授权
     checkAndRevokeExpired();
     const current = useStore.getState().clientAccounts.find((a) => a.code === currentClientCode);
     if (!current?.granted) {
       alert("请联系管理员开通权限");
       return;
     }
-    const version = selectedVersions[subject] || textbooks.find((t) => t.subject === subject)?.versions[0] || "";
+    const versions = realVersions[subject] || textbooks.find((t) => t.subject === subject)?.versions || [];
+    let version = selectedVersions[subject];
+    if (!version || !versions.includes(version)) {
+      version = versions[0] || "";
+      if (version) setSelectedVersion(subject, version);
+    }
     navigate(`/app/chapter/${subject}?version=${encodeURIComponent(version)}`);
   };
 
