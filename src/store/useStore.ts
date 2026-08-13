@@ -68,6 +68,8 @@ interface AppState {
   todayStats: Record<string, { correct: number; total: number }>;
   // 已答题目 ID 记录（用于去重，每次刷题不重复）
   answeredHistory: string[];
+  // 学习日期记录（YYYY-MM-DD），用于计算坚持天数
+  studyDates: string[];
   // 站点可视化配置
   siteConfig: SiteConfig;
   // 每个学科独立选择的教材版本 { [subject]: version }
@@ -135,9 +137,10 @@ export const useStore = create<AppState>()(
       questionsLoading: false,
       adminUsers: ADMIN_USERS,
       adminLoggedIn: false,
-      todayLearned: { biology: 12, politics: 8, history: 9, geography: 7, chemistry: 0, physics: 0 },
-      todayStats: { biology: { correct: 10, total: 12 }, politics: { correct: 6, total: 8 }, history: { correct: 7, total: 9 }, geography: { correct: 5, total: 7 }, chemistry: { correct: 0, total: 0 }, physics: { correct: 0, total: 0 } },
+      todayLearned: {},
+      todayStats: {},
       answeredHistory: [],
+      studyDates: [],
       siteConfig: DEFAULT_SITE_CONFIG,
       selectedVersions: {},
       errorBook: [],
@@ -194,11 +197,13 @@ export const useStore = create<AppState>()(
       recordTodayAnswer: (subject, correct) =>
         set((s) => {
           const cur = s.todayStats[subject] || { correct: 0, total: 0 };
+          const today = new Date().toISOString().slice(0, 10);
           return {
             todayStats: {
               ...s.todayStats,
               [subject]: { correct: cur.correct + (correct ? 1 : 0), total: cur.total + 1 },
             },
+            studyDates: s.studyDates.includes(today) ? s.studyDates : [...s.studyDates, today],
           };
         }),
 
@@ -330,13 +335,17 @@ export const useStore = create<AppState>()(
     }),
     {
       name: "xsm-app-store",
-      version: 2, // 升级版本号：旧版（400题全量持久化）→ 新版（静态分片按需加载），强制丢弃旧的 questions 缓存
-      // 版本升级时丢弃旧的 questions 持久化数据，只保留用户作答状态
+      version: 3,
       migrate: (persisted: any, version: number) => {
         if (version < 2) {
-          // v1 → v2：丢弃 questions，只保留用户状态
           const { questions: _q, loadedQuestionKey: _k, ...rest } = persisted || {};
-          return rest;
+          persisted = rest;
+        }
+        if (version < 3) {
+          // v2 → v3：强制刷新轮播图（旧缓存含失效的外部URL）
+          if (persisted?.siteConfig) {
+            persisted.siteConfig.carousel = CAROUSEL_IMAGES.map((c) => ({ ...c }));
+          }
         }
         return persisted;
       },
@@ -348,6 +357,7 @@ export const useStore = create<AppState>()(
         todayLearned: s.todayLearned,
         todayStats: s.todayStats,
         answeredHistory: s.answeredHistory,
+        studyDates: s.studyDates,
         siteConfig: s.siteConfig,
         selectedVersions: s.selectedVersions,
         errorBook: s.errorBook,
@@ -360,6 +370,7 @@ export const useStore = create<AppState>()(
         return {
           ...current,
           answeredHistory: p.answeredHistory ?? current.answeredHistory,
+          studyDates: p.studyDates ?? current.studyDates,
           errorBook: p.errorBook ?? current.errorBook,
           clientAccounts: p.clientAccounts ?? current.clientAccounts,
           currentClientCode: p.currentClientCode ?? current.currentClientCode,

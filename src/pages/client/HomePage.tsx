@@ -13,9 +13,9 @@ export default function HomePage() {
   const {
     selectedGrade,
     setSelectedGrade,
-    currentUser,
     todayLearned,
     todayStats,
+    studyDates,
     siteConfig,
     selectedVersions,
     setSelectedVersion,
@@ -29,6 +29,25 @@ export default function HomePage() {
   const [openVersionFor, setOpenVersionFor] = useState<Subject | null>(null);
 
   const carousel = siteConfig.carousel;
+
+  // 真实统计数据
+  const todayAnswered = Object.values(todayLearned).reduce((a, b) => a + b, 0);
+  const { correctSum, totalSum } = Object.values(todayStats).reduce(
+    (acc, s) => ({ correctSum: acc.correctSum + s.correct, totalSum: acc.totalSum + s.total }),
+    { correctSum: 0, totalSum: 0 },
+  );
+  const accuracy = totalSum > 0 ? Math.round((correctSum / totalSum) * 100) : 0;
+  const studyStreak = (() => {
+    if (!studyDates?.length) return 0;
+    const set = new Set(studyDates);
+    let streak = 0;
+    const d = new Date();
+    while (set.has(d.toISOString().slice(0, 10))) {
+      streak++;
+      d.setDate(d.getDate() - 1);
+    }
+    return streak;
+  })();
 
   useEffect(() => {
     if (carousel.length === 0) return;
@@ -94,7 +113,7 @@ export default function HomePage() {
       {/* 板块一：毛笔字标题 */}
       <header className="px-5 pt-6 pb-3 flex items-center justify-between">
         <BrushTitle size="lg" text={siteConfig.brandName} seal={siteConfig.heroBadge} />
-        <span className="text-[10px] text-navy-800/50 font-kai">{currentUser.grade}</span>
+        <span className="text-[10px] text-navy-800/50 font-kai">识途EVO</span>
       </header>
 
       {/* 板块二：横屏轮播图 */}
@@ -185,26 +204,26 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* 学习概况三栏 */}
+        {/* 学习概况三栏：真实数据 */}
         <div className="grid grid-cols-3 gap-2 mt-3 ink-card rounded-2xl p-3">
           <div className="flex flex-col items-center">
             <Flame size={18} className="text-navy-500 mb-1" />
             <span className="font-display text-2xl text-navy-900 leading-none">
-              {currentUser.stats.streakDays}
+              {studyStreak}
             </span>
             <span className="text-[10px] text-navy-800/50 mt-1">坚持天数</span>
           </div>
           <div className="flex flex-col items-center border-x border-navy-500/10">
             <Target size={18} className="text-navy-500 mb-1" />
             <span className="font-display text-2xl text-navy-900 leading-none">
-              {currentUser.stats.todayAnswered}
+              {todayAnswered}
             </span>
             <span className="text-[10px] text-navy-800/50 mt-1">今日答题</span>
           </div>
           <div className="flex flex-col items-center">
             <TrendingUp size={18} className="text-navy-600 mb-1" />
             <span className="font-display text-2xl text-navy-900 leading-none">
-              {currentUser.stats.accuracy}
+              {accuracy}
               <span className="text-sm">%</span>
             </span>
             <span className="text-[10px] text-navy-800/50 mt-1">正确率</span>
