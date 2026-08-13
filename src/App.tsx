@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import ClientLayout from "@/components/ClientLayout";
-import EntryPage from "@/pages/EntryPage";
 import HomePage from "@/pages/client/HomePage";
 import ExamPage from "@/pages/client/ExamPage";
 import NoteDetailPage from "@/pages/client/NoteDetailPage";
@@ -30,12 +29,18 @@ function RequireClient({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
+/** 根路径智能跳转：已登录进客户端首页，未登录进登录页 */
+function RootRedirect() {
+  const currentClientCode = useStore((s) => s.currentClientCode);
+  return <Navigate to={currentClientCode ? "/app/home" : "/login"} replace />;
+}
+
 export default function App() {
   return (
     <Router>
       <Routes>
-        {/* 入口选择页 */}
-        <Route path="/" element={<EntryPage />} />
+        {/* 客户端入口：根路径智能跳转（已登录进首页，未登录进登录页） */}
+        <Route path="/" element={<RootRedirect />} />
 
         {/* 客户端登录/注册 */}
         <Route path="/login" element={<ClientLoginPage />} />
@@ -56,6 +61,7 @@ export default function App() {
         <Route path="/app/practice/history" element={<RequireClient><PracticePage /></RequireClient>} />
         <Route path="/app/essay/:subject" element={<RequireClient><EssayPracticePage /></RequireClient>} />
         <Route path="/app/simulate" element={<RequireClient><SimulatePage /></RequireClient>} />
+        <Route path="/app/papers" element={<RequireClient><PaperSelectPage /></RequireClient>} />
         <Route path="/app/error-book" element={<RequireClient><ErrorBookPage /></RequireClient>} />
 
         {/* 管理端（独立入口 /admin） */}
