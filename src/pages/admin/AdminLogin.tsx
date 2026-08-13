@@ -12,12 +12,11 @@ export default function AdminLogin() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // 简单 Mock：admin / 123456
-    if (username === "admin" && password === "123456") {
+    if (username === "kexiaobang" && password === "123456") {
       setAdminLoggedIn(true);
       navigate("/admin/users");
     } else {
-      setError("账号或密码错误（提示：admin / 123456）");
+      setError("账号或密码错误");
     }
   };
 

@@ -168,13 +168,6 @@ export default function ClientLoginPage() {
             {mode === "login" ? "登 录" : "注 册"}
           </button>
         </form>
-
-        <button
-          onClick={() => navigate("/admin")}
-          className="w-full text-center text-xs text-navy-800/60 font-kai mt-4 hover:text-navy-600"
-        >
-          管理员入口 →
-        </button>
       </div>
     </div>
   );
