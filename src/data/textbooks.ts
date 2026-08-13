@@ -35,6 +35,22 @@ export const SUBJECTS: Record<Subject, SubjectInfo> = {
     bgColor: "#E0F2FE",
     icon: "🌏",
   },
+  chemistry: {
+    key: "chemistry",
+    name: "化学",
+    shortName: "化",
+    color: "#7C3AED",
+    bgColor: "#EDE9FE",
+    icon: "⚗️",
+  },
+  physics: {
+    key: "physics",
+    name: "物理",
+    shortName: "物",
+    color: "#DC2626",
+    bgColor: "#FEE2E2",
+    icon: "⚙️",
+  },
 };
 
 // 初中年级列表（7-9年级）
@@ -56,50 +72,62 @@ export const TEXTBOOKS: TextbookConfig[] = [
     grade: "六年级上册",
     subject: "biology",
     subjectName: "生物",
-    versions: ["人教版", "苏教版", "济南版"],
+    versions: ["人教版（五四制）", "鲁科版（五四学制）", "鲁科版（五四学制）2012"],
   },
   {
     grade: "六年级上册",
     subject: "politics",
     subjectName: "道法",
-    versions: ["统编版"],
+    versions: ["统编版(五四学制)", "统编版(五四学制)（2018）全一册"],
   },
   {
     grade: "六年级上册",
     subject: "history",
     subjectName: "历史",
-    versions: ["统编版"],
+    versions: ["统编版（五四学制）", "统编版（五四学制）（2018）"],
   },
   {
     grade: "六年级上册",
     subject: "geography",
     subjectName: "地理",
-    versions: ["人教版", "湘教版", "商务星球版"],
+    versions: [
+      "中华中图版（五四学制）",
+      "人教版（五四学制）（2012）",
+      "沪教版（上海）（2007）",
+      "鲁教版（五四学制）",
+      "鲁教版（五四学制）（2012）",
+    ],
   },
   // ===== 六年级下册（小升初衔接） =====
   {
     grade: "六年级下册",
     subject: "biology",
     subjectName: "生物",
-    versions: ["人教版", "苏教版", "济南版"],
+    versions: ["人教版（五四制）", "鲁科版（五四学制）", "鲁科版（五四学制）2012"],
   },
   {
     grade: "六年级下册",
     subject: "politics",
     subjectName: "道法",
-    versions: ["统编版"],
+    versions: ["统编版(五四学制)（2018）全一册", "统编版（五四学制）"],
   },
   {
     grade: "六年级下册",
     subject: "history",
     subjectName: "历史",
-    versions: ["统编版"],
+    versions: ["统编版（五四学制）", "统编版（五四学制）（2018）"],
   },
   {
     grade: "六年级下册",
     subject: "geography",
     subjectName: "地理",
-    versions: ["人教版", "湘教版", "商务星球版"],
+    versions: [
+      "中华中图版（五四学制）",
+      "人教版（五四学制）（2012）",
+      "沪教版（上海）（2007）",
+      "鲁教版（五四学制）",
+      "鲁教版（五四学制）（2012）",
+    ],
   },
   // ===== 七年级上册 =====
   {
@@ -280,6 +308,56 @@ export const TEXTBOOKS: TextbookConfig[] = [
     subject: "history",
     subjectName: "历史",
     versions: ["统编版"],
+  },
+  // ===== 化学（八~九年级） =====
+  {
+    grade: "八年级上册",
+    subject: "chemistry",
+    subjectName: "化学",
+    versions: ["人教版", "科粤版", "沪教版", "仁爱版"],
+  },
+  {
+    grade: "八年级下册",
+    subject: "chemistry",
+    subjectName: "化学",
+    versions: ["人教版", "科粤版", "沪教版", "仁爱版"],
+  },
+  {
+    grade: "九年级上册",
+    subject: "chemistry",
+    subjectName: "化学",
+    versions: ["人教版", "科粤版", "沪教版", "仁爱版"],
+  },
+  {
+    grade: "九年级下册",
+    subject: "chemistry",
+    subjectName: "化学",
+    versions: ["人教版", "科粤版", "沪教版", "仁爱版"],
+  },
+  // ===== 物理（八~九年级） =====
+  {
+    grade: "八年级上册",
+    subject: "physics",
+    subjectName: "物理",
+    versions: ["人教版", "沪科版", "教科版", "北师大版"],
+  },
+  {
+    grade: "八年级下册",
+    subject: "physics",
+    subjectName: "物理",
+    versions: ["人教版", "沪科版", "教科版", "北师大版"],
+  },
+  {
+    grade: "九年级上册",
+    subject: "physics",
+    subjectName: "物理",
+    versions: ["人教版", "沪科版", "教科版", "北师大版"],
+  },
+  {
+    grade: "九年级下册",
+    subject: "physics",
+    subjectName: "物理",
+    versions: ["人教版", "沪科版", "教科版", "北师大版"],
   },
 ];
 

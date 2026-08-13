@@ -5,6 +5,7 @@ import BrushTitle from "@/components/BrushTitle";
 import { SUBJECT_TODAY_COUNT } from "@/data/mock";
 import { GRADES, getTextbooksByGrade, SUBJECTS } from "@/data/textbooks";
 import { useStore } from "@/store/useStore";
+import { fetchVersions } from "@/lib/api";
 import type { Subject } from "@/data/types";
 
 export default function HomePage() {
@@ -38,6 +39,26 @@ export default function HomePage() {
   }, [carousel.length]);
 
   const textbooks = getTextbooksByGrade(selectedGrade);
+
+  // 从 manifest 拉取各学科+年级的真实教材版本（覆盖 textbooks.ts 的硬编码）
+  const [realVersions, setRealVersions] = useState<Record<string, string[]>>({});
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const entries = await Promise.all(
+        textbooks.map(async (tb) => {
+          const vs = await fetchVersions(tb.subject, selectedGrade);
+          return [tb.subject, vs.map((v) => v.version)] as [string, string[]];
+        }),
+      );
+      if (!cancelled) {
+        const map: Record<string, string[]> = {};
+        for (const [k, v] of entries) map[k] = v;
+        setRealVersions(map);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [selectedGrade]);
 
   const handleGradeClick = (grade: string) => {
     setSelectedGrade(grade);
@@ -199,8 +220,9 @@ export default function HomePage() {
             const todayCount = todayLearned[tb.subject] || 0;
             const stat = todayStats[tb.subject] || { correct: 0, total: 0 };
             const rate = stat.total > 0 ? Math.round((stat.correct / stat.total) * 100) : 0;
-            const selectedVer = selectedVersions[tb.subject] || tb.versions[0];
+            const selectedVer = selectedVersions[tb.subject] || realVersions[tb.subject]?.[0] || tb.versions[0];
             const isOpen = openVersionFor === tb.subject;
+            const versionsToShow = realVersions[tb.subject] || tb.versions;
 
             return (
               <div
@@ -301,7 +323,7 @@ export default function HomePage() {
                 {isOpen && (
                   <div className="absolute left-0 right-0 top-full z-20 mt-0.5 px-2.5 py-2 bg-paper-light rounded-xl shadow-card border animate-fade-in" style={{ borderColor: `${info.color}30` }}>
                     <div className="grid grid-cols-1 gap-1">
-                      {tb.versions.map((v) => {
+                      {versionsToShow.map((v) => {
                         const active = v === selectedVer;
                         return (
                           <button

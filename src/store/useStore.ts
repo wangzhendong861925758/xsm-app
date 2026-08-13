@@ -1,16 +1,15 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User, Question, Subject, ClientAccount } from "@/data/types";
-import { CURRENT_USER, QUESTIONS, ADMIN_USERS, CAROUSEL_IMAGES } from "@/data/mock";
+import { CURRENT_USER, ADMIN_USERS, CAROUSEL_IMAGES } from "@/data/mock";
 import { SUBJECTS } from "@/data/textbooks";
 import {
-  fetchQuestions,
-  saveQuestions,
   fetchAccounts,
   registerAccount,
   loginAccount,
   grantAccount,
   revokeAccount,
+  fetchQuestionsByShard,
 } from "@/lib/api";
 
 // 错题记录条目
@@ -115,8 +114,14 @@ interface AppState {
   revokeClientByCode: (code: string) => Promise<void>;
   // 客户端：扫描所有账号，撤销已过期账号的权限，返回当前登录账号是否被撤销
   checkAndRevokeExpired: () => boolean;
-  // 云同步：从云端拉取题目并订阅实时更新（应用启动时调用一次）
+  // 云同步：从云端拉取账号信息（题目已改为静态分片按需加载，不再全量拉取）
   initCloudSync: () => Promise<void>;
+  // 按需加载题目：从静态 JSON 分片加载某学科+年级+版本的题目
+  loadQuestions: (subject: Subject, grade: string, version: string) => Promise<void>;
+  // 当前已加载题目的分片标识 "subject|grade|version"
+  loadedQuestionKey: string | null;
+  // 题目加载状态
+  questionsLoading: boolean;
 }
 
 export const useStore = create<AppState>()(
@@ -125,11 +130,13 @@ export const useStore = create<AppState>()(
       currentUser: CURRENT_USER,
       selectedGrade: "七年级上册",
       selectedSubject: null,
-      questions: QUESTIONS,
+      questions: [],
+      loadedQuestionKey: null,
+      questionsLoading: false,
       adminUsers: ADMIN_USERS,
       adminLoggedIn: false,
-      todayLearned: { biology: 12, politics: 8, history: 9, geography: 7 },
-      todayStats: { biology: { correct: 10, total: 12 }, politics: { correct: 6, total: 8 }, history: { correct: 7, total: 9 }, geography: { correct: 5, total: 7 } },
+      todayLearned: { biology: 12, politics: 8, history: 9, geography: 7, chemistry: 0, physics: 0 },
+      todayStats: { biology: { correct: 10, total: 12 }, politics: { correct: 6, total: 8 }, history: { correct: 7, total: 9 }, geography: { correct: 5, total: 7 }, chemistry: { correct: 0, total: 0 }, physics: { correct: 0, total: 0 } },
       answeredHistory: [],
       siteConfig: DEFAULT_SITE_CONFIG,
       selectedVersions: {},
@@ -156,23 +163,19 @@ export const useStore = create<AppState>()(
 
       addQuestion: (q) => {
         set((s) => ({ questions: [...s.questions, q] }));
-        saveQuestions(useStore.getState().questions);
+        // ponytail: 静态 JSON 分片不可运行时写入，管理端编辑仅影响当前会话；如需永久新增请重新生成静态文件
       },
       addQuestions: (qs) => {
         set((s) => ({ questions: [...s.questions, ...qs] }));
-        saveQuestions(useStore.getState().questions);
       },
       updateQuestion: (q) => {
         set((s) => ({ questions: s.questions.map((item) => (item.id === q.id ? q : item)) }));
-        saveQuestions(useStore.getState().questions);
       },
       deleteQuestion: (id) => {
         set((s) => ({ questions: s.questions.filter((q) => q.id !== id) }));
-        saveQuestions(useStore.getState().questions);
       },
       clearQuestions: () => {
-        set({ questions: [] });
-        saveQuestions([]);
+        set({ questions: [], loadedQuestionKey: null });
       },
 
       addAdminUser: (u) => set((s) => ({ adminUsers: [...s.adminUsers, u] })),
@@ -290,33 +293,14 @@ export const useStore = create<AppState>()(
       },
 
       initCloudSync: async () => {
-        // 拉取云端题目，合并本地 mastered/collected 状态
-        const cloudQuestions = await fetchQuestions();
-        if (cloudQuestions.length > 0) {
-          const local = useStore.getState().questions;
-          const merged = cloudQuestions.map((q) => {
-            const lq = local.find((x) => x.id === q.id);
-            return lq ? { ...q, mastered: lq.mastered, collected: lq.collected } : q;
-          });
-          set({ questions: merged });
-        }
-        // 拉取云端账号
+        // 题目已改为静态分片按需加载，这里只拉取账号
         const cloudAccounts = await fetchAccounts();
         if (cloudAccounts.length > 0) {
           const currentCode = useStore.getState().currentClientCode;
           set({ clientAccounts: cloudAccounts, currentClientCode: currentCode });
         }
-        // ponytail: REST API 无实时推送，用 30 秒轮询近似实时同步
+        // ponytail: REST API 无实时推送，用 30 秒轮询近似实时同步账号
         setInterval(async () => {
-          const qs = await fetchQuestions();
-          if (qs.length > 0) {
-            const local = useStore.getState().questions;
-            const merged = qs.map((q) => {
-              const lq = local.find((x) => x.id === q.id);
-              return lq ? { ...q, mastered: lq.mastered, collected: lq.collected } : q;
-            });
-            set({ questions: merged });
-          }
           const acs = await fetchAccounts();
           if (acs.length > 0) {
             const currentCode = useStore.getState().currentClientCode;
@@ -324,12 +308,41 @@ export const useStore = create<AppState>()(
           }
         }, 30000);
       },
+
+      loadQuestions: async (subject, grade, version) => {
+        const key = `${subject}|${grade}|${version}`;
+        if (useStore.getState().loadedQuestionKey === key && useStore.getState().questions.length > 0) return;
+        set({ questionsLoading: true });
+        try {
+          const questions = await fetchQuestionsByShard(subject, grade, version);
+          // 合并本地用户状态（mastered/collected）
+          const local = useStore.getState().questions;
+          const merged = questions.map((q) => {
+            const lq = local.find((x) => x.id === q.id);
+            return lq ? { ...q, mastered: lq.mastered, collected: lq.collected } : q;
+          });
+          set({ questions: merged, loadedQuestionKey: key, questionsLoading: false });
+        } catch (e) {
+          console.error("加载题目失败:", e);
+          set({ questionsLoading: false });
+        }
+      },
     }),
     {
       name: "xsm-app-store",
+      version: 2, // 升级版本号：旧版（400题全量持久化）→ 新版（静态分片按需加载），强制丢弃旧的 questions 缓存
+      // 版本升级时丢弃旧的 questions 持久化数据，只保留用户作答状态
+      migrate: (persisted: any, version: number) => {
+        if (version < 2) {
+          // v1 → v2：丢弃 questions，只保留用户状态
+          const { questions: _q, loadedQuestionKey: _k, ...rest } = persisted || {};
+          return rest;
+        }
+        return persisted;
+      },
       partialize: (s) => ({
         selectedGrade: s.selectedGrade,
-        questions: s.questions,
+        // ponytail: 不持久化 44 万题全量数据（太大），按需加载即可
         adminUsers: s.adminUsers,
         adminLoggedIn: s.adminLoggedIn,
         todayLearned: s.todayLearned,
@@ -341,31 +354,9 @@ export const useStore = create<AppState>()(
         clientAccounts: s.clientAccounts,
         currentClientCode: s.currentClientCode,
       }),
-      // 合并策略：
-      // - 无持久化数据时，使用代码里的初始 QUESTIONS（保证首次访问有题）
-      // - 有持久化数据时，以持久化 questions 为准（支持管理端清空/新增后客户端同步），
-      //   过滤掉学科已不存在的旧题目（如已删除的 science），并继承 mastered/collected
-      // - 其余用户作答状态以持久化为准，避免旧数据结构污染
+      // 合并策略：题目改为静态分片按需加载，不再持久化；只继承用户作答状态
       merge: (persisted, current) => {
         const p = (persisted as Partial<AppState>) || {};
-        // 无持久化 questions 字段：首次访问，用代码初始题目
-        if (!Array.isArray(p.questions)) {
-          return {
-            ...current,
-            adminLoggedIn: p.adminLoggedIn ?? current.adminLoggedIn,
-          };
-        }
-        // 有持久化 questions：以持久化为准，过滤掉学科已不存在的旧题目
-        const validSubjects = new Set(Object.keys(SUBJECTS));
-        const mergedQuestions = p.questions
-          .filter((q) => validSubjects.has(q.subject))
-          .map((q) => {
-            const codeQ = current.questions.find((x) => x.id === q.id);
-            if (codeQ) {
-              return { ...codeQ, mastered: q.mastered, collected: q.collected };
-            }
-            return q;
-          });
         return {
           ...current,
           answeredHistory: p.answeredHistory ?? current.answeredHistory,
@@ -373,7 +364,12 @@ export const useStore = create<AppState>()(
           clientAccounts: p.clientAccounts ?? current.clientAccounts,
           currentClientCode: p.currentClientCode ?? current.currentClientCode,
           adminLoggedIn: p.adminLoggedIn ?? current.adminLoggedIn,
-          questions: mergedQuestions,
+          selectedGrade: p.selectedGrade ?? current.selectedGrade,
+          selectedVersions: p.selectedVersions ?? current.selectedVersions,
+          siteConfig: p.siteConfig ?? current.siteConfig,
+          adminUsers: p.adminUsers ?? current.adminUsers,
+          todayLearned: p.todayLearned ?? current.todayLearned,
+          todayStats: p.todayStats ?? current.todayStats,
         };
       },
     },

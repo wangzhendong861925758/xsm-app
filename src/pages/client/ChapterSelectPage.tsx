@@ -1,8 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ChevronDown, BookOpen, FileText, Check, ListChecks, PenLine } from "lucide-react";
 import { SUBJECTS } from "@/data/textbooks";
 import { useStore } from "@/store/useStore";
+import { fetchVersions } from "@/lib/api";
 import type { Subject } from "@/data/types";
 
 /** 从实际题目数据中提取「单元 → 课时」结构，只展示有题目的内容 */
@@ -21,10 +22,24 @@ export default function ChapterSelectPage() {
   const [searchParams] = useSearchParams();
   const version = searchParams.get("version") || "";
   const navigate = useNavigate();
-  const { selectedGrade, questions } = useStore();
+  const { selectedGrade, questions, loadQuestions } = useStore();
 
   const subjectKey = subject as Subject;
   const info = SUBJECTS[subjectKey];
+
+  // 按需加载题目分片
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      let v = version;
+      if (!v) {
+        const versions = await fetchVersions(subjectKey, selectedGrade);
+        v = versions[0]?.version || "";
+      }
+      if (v && !cancelled) loadQuestions(subjectKey, selectedGrade, v);
+    })();
+    return () => { cancelled = true; };
+  }, [subjectKey, selectedGrade, version, loadQuestions]);
 
   // 从题目数组中聚合出「单元/课时」结构，只展示有题目的单元和课时
   const chapters = useMemo<DerivedChapter[]>(() => {
@@ -112,7 +127,8 @@ export default function ChapterSelectPage() {
 
         {chapters.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16">
-            <p className="font-kai text-sm text-navy-800/50">暂无题目，请联系管理员上传题库</p>
+            <div className="w-8 h-8 border-2 border-navy-300 border-t-navy-700 rounded-full animate-spin mb-3" />
+            <p className="font-kai text-sm text-navy-800/60">正在加载题目...</p>
           </div>
         ) : (
           <div className="space-y-2">
