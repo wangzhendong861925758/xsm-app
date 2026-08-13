@@ -1,11 +1,15 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import ClientLayout from "@/components/ClientLayout";
+import EntryPage from "@/pages/EntryPage";
 import HomePage from "@/pages/client/HomePage";
 import ExamPage from "@/pages/client/ExamPage";
+import NoteDetailPage from "@/pages/client/NoteDetailPage";
 import DashboardPage from "@/pages/client/DashboardPage";
 import ProfilePage from "@/pages/client/ProfilePage";
 import PracticePage from "@/pages/client/PracticePage";
 import SimulatePage from "@/pages/client/SimulatePage";
+import PaperSelectPage from "@/pages/client/PaperSelectPage";
+import NotesListPage from "@/pages/client/NotesListPage";
 import ErrorBookPage from "@/pages/client/ErrorBookPage";
 import ChapterSelectPage from "@/pages/client/ChapterSelectPage";
 import EssayPracticePage from "@/pages/client/EssayPracticePage";
@@ -30,17 +34,19 @@ export default function App() {
   return (
     <Router>
       <Routes>
+        {/* 入口选择页 */}
+        <Route path="/" element={<EntryPage />} />
+
         {/* 客户端登录/注册 */}
         <Route path="/login" element={<ClientLoginPage />} />
 
-        {/* 客户端（默认入口，需登录） */}
-        <Route path="/" element={<RequireClient><ClientLayout /></RequireClient>}>
-          <Route index element={<Navigate to="/app/home" replace />} />
-        </Route>
+        {/* 客户端（需登录） */}
         <Route path="/app" element={<RequireClient><ClientLayout /></RequireClient>}>
           <Route index element={<Navigate to="/app/home" replace />} />
           <Route path="home" element={<HomePage />} />
           <Route path="exam" element={<ExamPage />} />
+          <Route path="note/:id" element={<NoteDetailPage />} />
+          <Route path="notes" element={<NotesListPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="profile" element={<ProfilePage />} />
         </Route>
@@ -67,7 +73,7 @@ export default function App() {
           <Route index element={<AdminVisual />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/app/home" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

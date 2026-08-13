@@ -32,6 +32,17 @@ export interface ErrorBookItem {
   addedAt: number;
 }
 
+// 考试记录（模拟+真题）
+export interface ExamRecord {
+  paperId: string;
+  title: string;
+  type: "mock" | "real";
+  score: number;          // 百分制
+  correctCount: number;
+  totalQuestions: number;
+  completedAt: number;    // 时间戳
+}
+
 // 站点可视化配置
 export interface CarouselItem {
   url: string;
@@ -76,10 +87,12 @@ interface AppState {
   selectedVersions: Record<string, string>;
   // 错题集
   errorBook: ErrorBookItem[];
-  // 客户端注册账号列表
+  // 客户端账号列表
   clientAccounts: ClientAccount[];
   // 当前登录的客户端账号 8 位 ID（null 表示未登录）
   currentClientCode: string | null;
+  // 考试记录（模拟+真题），用于实时统计
+  examRecords: ExamRecord[];
 
   // Actions
   setSelectedGrade: (grade: string) => void;
@@ -124,6 +137,8 @@ interface AppState {
   loadedQuestionKey: string | null;
   // 题目加载状态
   questionsLoading: boolean;
+  // 记录一次考试结果
+  recordExamResult: (record: ExamRecord) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -146,6 +161,7 @@ export const useStore = create<AppState>()(
       errorBook: [],
       clientAccounts: [],
       currentClientCode: null,
+      examRecords: [],
 
       setSelectedGrade: (grade) => set({ selectedGrade: grade }),
       setSelectedSubject: (subject) => set({ selectedSubject: subject }),
@@ -237,6 +253,9 @@ export const useStore = create<AppState>()(
         })),
       removeFromErrorBook: (questionId) =>
         set((s) => ({ errorBook: s.errorBook.filter((e) => e.questionId !== questionId) })),
+
+      recordExamResult: (record) =>
+        set((s) => ({ examRecords: [...s.examRecords, record] })),
 
       registerClient: async (username, password, studentName) => {
         const account = await registerAccount(username, password, studentName);
@@ -374,6 +393,7 @@ export const useStore = create<AppState>()(
           errorBook: p.errorBook ?? current.errorBook,
           clientAccounts: p.clientAccounts ?? current.clientAccounts,
           currentClientCode: p.currentClientCode ?? current.currentClientCode,
+          examRecords: p.examRecords ?? current.examRecords,
           adminLoggedIn: p.adminLoggedIn ?? current.adminLoggedIn,
           selectedGrade: p.selectedGrade ?? current.selectedGrade,
           selectedVersions: p.selectedVersions ?? current.selectedVersions,
