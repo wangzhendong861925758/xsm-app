@@ -12,19 +12,19 @@ import { GRADE6A_QUESTIONS } from "./questions/grade6a";
 import { GRADE6B_QUESTIONS } from "./questions/grade6b";
 import { ESSAY_QUESTIONS } from "./questions/essay";
 
-// 首页轮播图（深蓝学术风）
+// 首页轮播图（本地图片）
 export const CAROUSEL_IMAGES = [
   {
-    url: "https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=Chinese middle school students studying biology history geography politics, deep navy blue academic theme, books and globe, scholarly atmosphere, horizontal banner&image_size=landscape_16_9",
-    title: "小四门精练 · 中考必胜",
+    url: "/images/slide1.jpg",
+    title: "高效学习三步法",
   },
   {
-    url: "https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=Deep blue navy academic banner with Chinese calligraphy brush writing, ink wash aesthetic, scholarly elegant, horizontal composition&image_size=landscape_16_9",
-    title: "学海无涯 · 勤学不辍",
+    url: "/images/slide2.jpg",
+    title: "高效学习四步法",
   },
   {
-    url: "https://console.enterprise.trae.cn/api/ide/v1/text_to_image?prompt=Modern Chinese classroom with students reading textbooks, deep blue and gold color scheme, scholarly library atmosphere, horizontal banner&image_size=landscape_16_9",
-    title: "金榜题名时",
+    url: "/images/slide3.jpg",
+    title: "好习惯学习卡",
   },
 ];
 
