@@ -1,6 +1,6 @@
 ﻿import { useNavigate } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { Clock, AlertCircle, BookX, FileText, Bookmark, Trophy, BookOpen } from "lucide-react";
+import { Clock, AlertCircle, BookX, FileText, Bookmark, Trophy } from "lucide-react";
 import BrushTitle from "@/components/BrushTitle";
 import { WEEKLY_RECORDS } from "@/data/mock";
 import { useStore } from "@/store/useStore";
@@ -183,19 +183,6 @@ export default function DashboardPage() {
             <span className="text-[10px] text-navy-600 font-bold bg-navy-600/10 px-2 py-0.5 rounded-full">
               {collectedCount} 题
             </span>
-          </button>
-
-          <button
-            onClick={() => navigate("/app/notes?title=library")}
-            className="w-full ink-card rounded-2xl p-3 flex items-center gap-3 hover:border-navy-600/40 transition-all"
-          >
-            <div className="w-10 h-10 rounded-xl bg-gold-500/15 flex items-center justify-center">
-              <BookOpen size={18} className="text-gold-dark" />
-            </div>
-            <div className="flex-1 text-left">
-              <p className="font-kai text-sm font-bold text-navy-900">资料库</p>
-              <p className="text-[10px] text-navy-800/50 font-kai">各学科重点知识点</p>
-            </div>
           </button>
         </div>
       </section>

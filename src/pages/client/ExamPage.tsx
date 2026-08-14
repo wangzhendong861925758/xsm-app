@@ -170,14 +170,14 @@ export default function ExamPage() {
             <p className="text-[10px] text-navy-800/50 font-kai">{realPapers.length}套·精准演练</p>
           </button>
           <button
-            onClick={() => navigate("/app/dashboard")}
+            onClick={() => navigate("/app/notes?title=library")}
             className="ink-card rounded-2xl p-4 text-left hover:border-navy-500/40 transition-all"
           >
             <div className="w-9 h-9 rounded-xl bg-navy-500/15 flex items-center justify-center mb-2">
               <Library size={18} className="text-navy-600" />
             </div>
             <h3 className="font-kai text-base font-bold text-navy-900 mb-0.5">资料库</h3>
-            <p className="text-[10px] text-navy-800/50 font-kai">预复习·重点汇总</p>
+            <p className="text-[10px] text-navy-800/50 font-kai">重点知识点·各学科汇总</p>
           </button>
         </div>
       </section>

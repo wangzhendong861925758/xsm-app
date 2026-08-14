@@ -1,7 +1,7 @@
 ﻿import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import {
-  ChevronLeft, ChevronRight, Bookmark, CheckCircle2, XCircle,
+  ChevronLeft, ChevronRight, Star, CheckCircle2, XCircle,
   RotateCcw, Shuffle, Grid3x3, Plus, Check,
 } from "lucide-react";
 import { SUBJECTS, getTextbook } from "@/data/textbooks";
@@ -49,6 +49,14 @@ export default function PracticePage() {
   const tb = getTextbook(selectedGrade, subjectKey);
 
   const [sessionCount, setSessionCount] = useState(() => randomSessionCount());
+  const [collectToast, setCollectToast] = useState<{ show: boolean; text: string }>({ show: false, text: "" });
+  const collectToastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showCollectToast = (collected: boolean) => {
+    if (collectToastTimer.current) clearTimeout(collectToastTimer.current);
+    setCollectToast({ show: true, text: collected ? "⭐ 已收藏" : "已取消收藏" });
+    collectToastTimer.current = setTimeout(() => setCollectToast({ show: false, text: "" }), 1500);
+  };
 
   // 按需加载题目分片
   useEffect(() => {
@@ -436,7 +444,7 @@ export default function PracticePage() {
       </div>
 
       <main className="flex-1 overflow-y-auto px-5 py-4">
-        {/* 题型 + 收藏 */}
+        {/* 题型版本 + 收藏（最右） */}
         <div className="flex items-center gap-2 mb-3">
           <span
             className="text-[10px] px-2 py-0.5 rounded-full font-bold"
@@ -447,15 +455,16 @@ export default function PracticePage() {
           <span className="text-[10px] px-2 py-0.5 rounded-full bg-navy-500/8 text-navy-800/50 font-kai">
             {currentQ.version}
           </span>
+          <div className="flex-1" />
           <button
-            onClick={() => toggleCollect(currentQ.id)}
-            className={`flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full transition-colors ${
+            onClick={() => { toggleCollect(currentQ.id); showCollectToast(!currentQ.collected); }}
+            className={`flex items-center gap-1 text-[12px] px-2.5 py-1 rounded-full transition-all ${
               currentQ.collected
-                ? "bg-navy-500/15 text-navy-600"
-                : "bg-navy-500/8 text-navy-800/50"
+                ? "bg-amber-50 text-amber-600 border border-amber-200"
+                : "bg-white text-navy-800/60 border border-navy-500/15"
             }`}
           >
-            <Bookmark size={11} fill={currentQ.collected ? "currentColor" : "none"} />
+            <Star size={13} fill={currentQ.collected ? "currentColor" : "none"} strokeWidth={currentQ.collected ? 2.5 : 2} />
             {currentQ.collected ? "已收藏" : "收藏"}
           </button>
         </div>
@@ -768,6 +777,13 @@ export default function PracticePage() {
               返回答题
             </button>
           </div>
+        </div>
+      )}
+
+      {/* 收藏成功/取消提示 */}
+      {collectToast.show && (
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] bg-navy-900/80 text-white px-5 py-2.5 rounded-xl text-sm font-kai shadow-lg animate-fade-in pointer-events-none">
+          {collectToast.text}
         </div>
       )}
     </div>

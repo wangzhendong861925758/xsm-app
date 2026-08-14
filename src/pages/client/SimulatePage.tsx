@@ -1,6 +1,6 @@
-﻿import { useState, useMemo } from "react";
+﻿import { useState, useMemo, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { ChevronLeft, Clock, Award, RotateCcw, CheckCircle2, XCircle, BookOpen, Bookmark } from "lucide-react";
+import { ChevronLeft, Clock, Award, RotateCcw, CheckCircle2, XCircle, BookOpen, Star } from "lucide-react";
 import { EXAM_PAPERS } from "@/data/examPapers";
 import type { ExamQuestion } from "@/data/examPapers";
 import { useStore } from "@/store/useStore";
@@ -65,6 +65,14 @@ export default function SimulatePage() {
   // 统一用 string[] 存储答案：single/judge 长度为1，multiple 可多选
   const [answers, setAnswers] = useState<Record<number, string[]>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [collectToast, setCollectToast] = useState<{ show: boolean; text: string }>({ show: false, text: "" });
+  const collectToastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showCollectToast = (collected: boolean) => {
+    if (collectToastTimer.current) clearTimeout(collectToastTimer.current);
+    setCollectToast({ show: true, text: collected ? "⭐ 已收藏" : "已取消收藏" });
+    collectToastTimer.current = setTimeout(() => setCollectToast({ show: false, text: "" }), 1500);
+  };
 
   // 试卷不存在
   if (!paper) {
@@ -153,8 +161,8 @@ export default function SimulatePage() {
   const handleToggleCollectExam = (q: ExamQuestion) => {
     const qid = `exam-${paper.id}-${q.id}`;
     if (isCollected(q)) {
-      // 已收藏则移除
       useStore.getState().removeCollectedQuestion(qid);
+      showCollectToast(false);
     } else {
       addCollectedQuestion({
         id: qid,
@@ -168,6 +176,7 @@ export default function SimulatePage() {
         analysis: q.analysis,
         collected: true,
       } as any);
+      showCollectToast(true);
     }
   };
 
@@ -250,14 +259,15 @@ export default function SimulatePage() {
                         </p>
                         <button
                           onClick={() => handleToggleCollectExam(q)}
-                          className={`flex-shrink-0 p-1 rounded transition-all ${
+                          className={`flex-shrink-0 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] transition-all ${
                             isCollected(q)
-                              ? "text-gold-dark"
-                              : "text-navy-800/40 hover:text-navy-900"
+                              ? "bg-amber-50 text-amber-600 border border-amber-200"
+                              : "text-navy-800/50 border border-navy-500/10"
                           }`}
                           title={isCollected(q) ? "已收藏，点击取消" : "收藏"}
                         >
-                          <Bookmark size={13} fill={isCollected(q) ? "currentColor" : "none"} />
+                          <Star size={11} fill={isCollected(q) ? "currentColor" : "none"} />
+                          {isCollected(q) ? "已收藏" : "收藏"}
                         </button>
                       </div>
                       <p className={`text-[10px] font-kai ${correct ? "text-green-600" : "text-red-500"}`}>
@@ -307,6 +317,13 @@ export default function SimulatePage() {
             </button>
           </div>
         </footer>
+
+        {/* 收藏成功/取消提示 */}
+        {collectToast.show && (
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] bg-navy-900/80 text-white px-5 py-2.5 rounded-xl text-sm font-kai shadow-lg animate-fade-in pointer-events-none">
+            {collectToast.text}
+          </div>
+        )}
       </div>
     );
   }
@@ -345,40 +362,39 @@ export default function SimulatePage() {
       </div>
 
       <main className="flex-1 overflow-y-auto px-5 py-4">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2 mb-3">
           <span className="font-display text-sm text-navy-900 font-bold">
             第 {currentIndex + 1} 题
           </span>
-          <div className="flex items-center gap-2">
-            <span className="seal-stamp text-[9px] px-1.5 py-0.5">
-              {currentQ.type === "single"
-                ? "单选"
-                : currentQ.type === "multiple"
-                ? "多选"
-                : "判断"}
-            </span>
-            {isMultiple && (
-              <span className="text-[10px] text-gold-dark font-kai">可多选</span>
-            )}
-          </div>
-        </div>
-
-        {/* 题干 + 收藏按钮 */}
-        <div className="ink-card rounded-2xl p-4 mb-4 relative">
-          <p className="font-kai text-base text-navy-900 leading-relaxed pr-10">
-            {currentQ.stem}
-          </p>
+          <span className="seal-stamp text-[9px] px-1.5 py-0.5">
+            {currentQ.type === "single"
+              ? "单选"
+              : currentQ.type === "multiple"
+              ? "多选"
+              : "判断"}
+          </span>
+          {isMultiple && (
+            <span className="text-[10px] text-gold-dark font-kai">可多选</span>
+          )}
+          <div className="flex-1" />
           <button
             onClick={() => handleToggleCollectExam(currentQ)}
-            className={`absolute top-3 right-3 p-1.5 rounded-lg transition-all ${
+            className={`flex items-center gap-1 text-[12px] px-2.5 py-1 rounded-full transition-all ${
               isCollected(currentQ)
-                ? "bg-gold-500/15 text-gold-dark"
-                : "bg-navy-500/8 text-navy-800/50 hover:text-navy-900"
+                ? "bg-amber-50 text-amber-600 border border-amber-200"
+                : "bg-white text-navy-800/60 border border-navy-500/15"
             }`}
-            title={isCollected(currentQ) ? "已收藏，点击取消" : "收藏到我的收藏"}
           >
-            <Bookmark size={16} fill={isCollected(currentQ) ? "currentColor" : "none"} />
+            <Star size={13} fill={isCollected(currentQ) ? "currentColor" : "none"} strokeWidth={isCollected(currentQ) ? 2.5 : 2} />
+            {isCollected(currentQ) ? "已收藏" : "收藏"}
           </button>
+        </div>
+
+        {/* 题干 */}
+        <div className="ink-card rounded-2xl p-4 mb-4">
+          <p className="font-kai text-base text-navy-900 leading-relaxed">
+            {currentQ.stem}
+          </p>
         </div>
 
         {/* 选项 */}
@@ -466,6 +482,13 @@ export default function SimulatePage() {
           )}
         </div>
       </footer>
+
+      {/* 收藏成功/取消提示 */}
+      {collectToast.show && (
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] bg-navy-900/80 text-white px-5 py-2.5 rounded-xl text-sm font-kai shadow-lg animate-fade-in pointer-events-none">
+          {collectToast.text}
+        </div>
+      )}
     </div>
   );
 }
