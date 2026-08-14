@@ -1,4 +1,4 @@
-import type { Subject, SubjectInfo, TextbookConfig } from "./types";
+﻿import type { Subject, SubjectInfo, TextbookConfig } from "./types";
 
 // 学科信息（小四门：生物/道法/历史/地理）
 // 全部统一为蓝白同色系，仅用深浅区分

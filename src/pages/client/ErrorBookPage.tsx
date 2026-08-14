@@ -1,6 +1,6 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, Trash2, BookX, CheckCircle2, XCircle } from "lucide-react";
+import { ChevronLeft, Trash2, BookX, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import { SUBJECTS } from "@/data/textbooks";
 import type { Subject } from "@/data/types";
@@ -17,8 +17,8 @@ export default function ErrorBookPage() {
   const subjects = Array.from(new Set(errorBook.map((e) => e.subject)));
 
   return (
-    <div className="mobile-frame flex flex-col bg-paper bg-navy-radial">
-      <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-paper-light/80 backdrop-blur sticky top-0 z-30">
+    <div className="mobile-frame flex flex-col bg-white">
+      <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-white sticky top-0 z-30">
         <button onClick={() => navigate(-1)} className="p-1 -ml-1">
           <ChevronLeft size={22} className="text-navy-900" />
         </button>
@@ -31,13 +31,13 @@ export default function ErrorBookPage() {
         </div>
       </header>
 
-      {/* 学科筛选 */}
+      {/* 学科筛选：纯白背景，文字清晰可读 */}
       {subjects.length > 0 && (
-        <div className="px-4 py-2 border-b border-navy-500/8 flex gap-1.5 overflow-x-auto scrollbar-hide">
+        <div className="px-4 py-2 border-b border-navy-500/8 flex gap-1.5 overflow-x-auto scrollbar-hide bg-white z-20 sticky top-[65px]">
           <button
             onClick={() => setFilter("all")}
             className={`flex-shrink-0 px-3 py-1 rounded-full text-[11px] font-kai transition-all ${
-              filter === "all" ? "bg-navy-600 text-paper" : "bg-navy-500/8 text-navy-800/60"
+              filter === "all" ? "bg-navy-600 text-white" : "bg-navy-500/10 text-navy-800"
             }`}
           >
             全部
@@ -49,7 +49,7 @@ export default function ErrorBookPage() {
                 key={s}
                 onClick={() => setFilter(s)}
                 className={`flex-shrink-0 px-3 py-1 rounded-full text-[11px] font-kai transition-all ${
-                  filter === s ? "text-paper" : "bg-navy-500/8 text-navy-800/60"
+                  filter === s ? "text-white" : "bg-navy-500/10 text-navy-800"
                 }`}
                 style={filter === s ? { background: info.color } : {}}
               >
@@ -102,12 +102,26 @@ export default function ErrorBookPage() {
                       </span>
                     )}
                     <span className="text-[10px] text-navy-800/40 font-kai">{version}</span>
-                    <button
-                      onClick={() => removeFromErrorBook(item.questionId)}
-                      className="ml-auto text-navy-800/30 hover:text-red-500 p-1"
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                    <div className="ml-auto flex items-center gap-1">
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `/app/redo?source=errorbook&questionId=${encodeURIComponent(item.questionId)}`,
+                          )
+                        }
+                        className="text-navy-600 hover:text-navy-900 p-1 rounded hover:bg-navy-500/10"
+                        title="重做此题"
+                      >
+                        <RotateCcw size={13} />
+                      </button>
+                      <button
+                        onClick={() => removeFromErrorBook(item.questionId)}
+                        className="text-navy-800/30 hover:text-red-500 p-1"
+                        title="移出错题本"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
                   </div>
 
                   <p className="font-kai text-sm text-navy-900 leading-relaxed mb-3 whitespace-pre-wrap">{stem}</p>

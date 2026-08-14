@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Shield, Lock, User } from "lucide-react";
 import { useStore } from "@/store/useStore";
@@ -21,7 +21,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-paper bg-navy-radial flex items-center justify-center p-6">
+    <div className="min-h-screen bg-white flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         {/* 标题 */}
         <div className="text-center mb-8">

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, ChevronDown, Flame, Target, TrendingUp, BookOpen, Check } from "lucide-react";
 import BrushTitle from "@/components/BrushTitle";
@@ -109,7 +109,7 @@ export default function HomePage() {
   const currentGradeShort = GRADES.find((g) => g.key === selectedGrade)?.short || selectedGrade;
 
   return (
-    <div className="min-h-full bg-paper bg-navy-radial">
+    <div className="min-h-full bg-white">
       {/* 板块一：毛笔字标题 */}
       <header className="px-5 pt-6 pb-3 flex items-center justify-between">
         <BrushTitle size="lg" text={siteConfig.brandName} seal={siteConfig.heroBadge} />

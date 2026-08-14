@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+﻿import { useParams, useNavigate } from "react-router-dom";
 import { ChevronLeft, Tag } from "lucide-react";
 import { EXPERT_NOTES } from "@/data/expertNotes";
 import { useStore } from "@/store/useStore";
@@ -27,8 +27,8 @@ export default function NoteDetailPage() {
   const color = subjectColors[note.subject] || "#0369A1";
 
   return (
-    <div className="min-h-full bg-paper bg-navy-radial">
-      <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/10 sticky top-0 bg-paper-light/95 backdrop-blur z-30">
+    <div className="min-h-full bg-white">
+      <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/10 sticky top-0 bg-white z-30">
         <button onClick={() => navigate(-1)} className="p-1 -ml-1">
           <ChevronLeft size={22} className="text-navy-900" />
         </button>

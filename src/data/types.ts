@@ -1,4 +1,4 @@
-// 核心类型定义
+﻿// 核心类型定义
 
 export type Subject = "biology" | "politics" | "history" | "geography" | "chemistry" | "physics";
 

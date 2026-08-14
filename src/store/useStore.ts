@@ -1,4 +1,4 @@
-import { create } from "zustand";
+﻿import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User, Question, Subject, ClientAccount } from "@/data/types";
 import { CURRENT_USER, ADMIN_USERS, CAROUSEL_IMAGES } from "@/data/mock";
@@ -17,6 +17,8 @@ export interface ErrorBookItem {
   id: string;
   questionId: string;
   subject: Subject;
+  /** 题目类型（重做时需要） */
+  type?: "single" | "multiple" | "judge";
   grade?: string;
   version?: string;
   stem?: string;
@@ -29,6 +31,8 @@ export interface ErrorBookItem {
   wrongReason?: string;
   /** 选择/判断题：正确选项位置的"正确思路"（写入时从 optionAnalysis[correctIdx] 取） */
   rightThought?: string;
+  /** 来源：学科练习 或 考试（模拟/真题） */
+  source?: "practice" | "exam";
   addedAt: number;
 }
 
@@ -87,6 +91,8 @@ interface AppState {
   selectedVersions: Record<string, string>;
   // 错题集
   errorBook: ErrorBookItem[];
+  // 我的收藏：独立存储完整题目，跨学科/跨会话可访问
+  collectedQuestions: Question[];
   // 客户端账号列表
   clientAccounts: ClientAccount[];
   // 当前登录的客户端账号 8 位 ID（null 表示未登录）
@@ -117,6 +123,9 @@ interface AppState {
   setSelectedVersion: (subject: string, version: string) => void;
   addToErrorBook: (item: ErrorBookItem) => void;
   removeFromErrorBook: (questionId: string) => void;
+  // 收藏题目（与 questions.collected 双向同步）
+  addCollectedQuestion: (q: Question) => void;
+  removeCollectedQuestion: (questionId: string) => void;
   // 客户端账号：注册（返回新生成的 8 位 ID 或 null 表示用户名已存在）
   registerClient: (username: string, password: string, studentName: string) => Promise<string | null>;
   // 客户端账号：登录（true=成功）
@@ -124,7 +133,11 @@ interface AppState {
   // 客户端账号：登出
   logoutClient: () => void;
   // 管理端：凭 8 位 ID 开放权限（true=找到并开放，false=ID 不存在）
-  grantClientByCode: (code: string, months: number) => Promise<boolean>;
+  // period: { months?: number; years?: number }，years 优先（年会员按次年同一天）
+  grantClientByCode: (
+    code: string,
+    period: { months?: number; years?: number },
+  ) => Promise<boolean>;
   // 管理端：凭 8 位 ID 撤销权限
   revokeClientByCode: (code: string) => Promise<void>;
   // 客户端：扫描所有账号，撤销已过期账号的权限，返回当前登录账号是否被撤销
@@ -159,6 +172,7 @@ export const useStore = create<AppState>()(
       siteConfig: DEFAULT_SITE_CONFIG,
       selectedVersions: {},
       errorBook: [],
+      collectedQuestions: [],
       clientAccounts: [],
       currentClientCode: null,
       examRecords: [],
@@ -167,9 +181,38 @@ export const useStore = create<AppState>()(
       setSelectedSubject: (subject) => set({ selectedSubject: subject }),
 
       toggleCollect: (questionId) =>
+        set((s) => {
+          const q = s.questions.find((x) => x.id === questionId);
+          if (!q) return {};
+          const willCollect = !q.collected;
+          return {
+            questions: s.questions.map((x) =>
+              x.id === questionId ? { ...x, collected: willCollect } : x,
+            ),
+            // 同步独立收藏列表（去重）
+            collectedQuestions: willCollect
+              ? s.collectedQuestions.some((c) => c.id === questionId)
+                ? s.collectedQuestions
+                : [...s.collectedQuestions, { ...q, collected: true }]
+              : s.collectedQuestions.filter((c) => c.id !== questionId),
+          };
+        }),
+
+      addCollectedQuestion: (q) =>
         set((s) => ({
-          questions: s.questions.map((q) =>
-            q.id === questionId ? { ...q, collected: !q.collected } : q,
+          collectedQuestions: s.collectedQuestions.some((c) => c.id === q.id)
+            ? s.collectedQuestions
+            : [...s.collectedQuestions, { ...q, collected: true }],
+          questions: s.questions.map((x) =>
+            x.id === q.id ? { ...x, collected: true } : x,
+          ),
+        })),
+
+      removeCollectedQuestion: (questionId) =>
+        set((s) => ({
+          collectedQuestions: s.collectedQuestions.filter((c) => c.id !== questionId),
+          questions: s.questions.map((x) =>
+            x.id === questionId ? { ...x, collected: false } : x,
           ),
         })),
 
@@ -279,8 +322,8 @@ export const useStore = create<AppState>()(
 
       logoutClient: () => set({ currentClientCode: null }),
 
-      grantClientByCode: async (code, months) => {
-        const account = await grantAccount(code, months);
+      grantClientByCode: async (code, period) => {
+        const account = await grantAccount(code, period);
         if (!account) return false;
         set((s) => ({
           clientAccounts: s.clientAccounts.map((a) => (a.code === code ? account : a)),
@@ -391,6 +434,7 @@ export const useStore = create<AppState>()(
           answeredHistory: p.answeredHistory ?? current.answeredHistory,
           studyDates: p.studyDates ?? current.studyDates,
           errorBook: p.errorBook ?? current.errorBook,
+          collectedQuestions: p.collectedQuestions ?? current.collectedQuestions,
           clientAccounts: p.clientAccounts ?? current.clientAccounts,
           currentClientCode: p.currentClientCode ?? current.currentClientCode,
           examRecords: p.examRecords ?? current.examRecords,

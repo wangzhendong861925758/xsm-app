@@ -1,4 +1,4 @@
-import type { Question } from "../types";
+﻿import type { Question } from "../types";
 
 // 九年级下册题库 · 历史 + 道法
 // 共 90 题：历史 45 题（3 版本 × 15） + 道法 45 题（3 版本 × 15）

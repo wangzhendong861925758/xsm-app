@@ -1,4 +1,4 @@
-import type { Question } from "../types";
+﻿import type { Question } from "../types";
 
 export const GEOGRAPHY_QUESTIONS: Question[] = [
   // ===== 人教版 =====

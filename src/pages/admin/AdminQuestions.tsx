@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Search, Plus, Pencil, Trash2, X, Upload, FileText, Eraser, Sparkles } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import { SUBJECTS, GRADES, TEXTBOOKS } from "@/data/textbooks";
@@ -590,7 +590,7 @@ function WordUploadForm({
               </div>
               <div>
                 <p className="font-kai text-[11px] text-navy-800/60 mb-1">① mammoth 提取的纯文本（前 800 字）：</p>
-                <pre className="text-[10px] bg-navy-50/60 rounded p-2 max-h-40 overflow-auto whitespace-pre-wrap font-mono">{debugText.slice(0, 800)}{debugText.length > 800 ? "…" : ""}</pre>
+                <pre className="text-[10px] bg-white rounded p-2 max-h-40 overflow-auto whitespace-pre-wrap font-mono">{debugText.slice(0, 800)}{debugText.length > 800 ? "…" : ""}</pre>
               </div>
               <div>
                 <p className="font-kai text-[11px] text-navy-800/60 mb-1">② 切分出的题块（每个块前 200 字）：</p>
@@ -599,7 +599,7 @@ function WordUploadForm({
                     <p className="text-[10px] text-gold-dark font-kai">⚠ 没有切出任何题块。选择判断题需要每题有"答案："行；大题需要每题以"N.问："开头。</p>
                   ) : (
                     debugBlocks.map((b, i) => (
-                      <div key={i} className="text-[10px] bg-navy-50/60 rounded p-2">
+                      <div key={i} className="text-[10px] bg-white rounded p-2">
                         <p className="font-bold text-navy-700 mb-0.5">块 {i + 1}：</p>
                         <pre className="whitespace-pre-wrap font-mono">{b.slice(0, 200)}{b.length > 200 ? "…" : ""}</pre>
                       </div>

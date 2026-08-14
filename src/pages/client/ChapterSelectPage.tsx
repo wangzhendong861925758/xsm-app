@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+﻿import { useState, useMemo, useEffect } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ChevronDown, BookOpen, FileText, Check, ListChecks, PenLine } from "lucide-react";
 import { SUBJECTS } from "@/data/textbooks";
@@ -97,9 +97,9 @@ export default function ChapterSelectPage() {
   };
 
   return (
-    <div className="mobile-frame flex flex-col bg-paper bg-navy-radial">
+    <div className="mobile-frame flex flex-col bg-white">
       {/* 顶部 */}
-      <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-paper-light/80 backdrop-blur sticky top-0 z-30">
+      <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-white sticky top-0 z-30">
         <button onClick={() => navigate(-1)} className="p-1 -ml-1">
           <ChevronLeft size={22} className="text-navy-900" />
         </button>
@@ -207,7 +207,7 @@ export default function ChapterSelectPage() {
       </main>
 
       {/* 底部：开始答题 */}
-      <footer className="px-5 py-3 border-t border-navy-500/8 bg-paper-light/90 backdrop-blur pb-[calc(12px+env(safe-area-inset-bottom))]">
+      <footer className="px-5 py-3 border-t border-navy-500/8 bg-white pb-[calc(12px+env(safe-area-inset-bottom))]">
         <button
           onClick={handleStartClick}
           disabled={!selectedLesson}
@@ -224,7 +224,7 @@ export default function ChapterSelectPage() {
       {showModeSelect && (
         <div className="!fixed inset-0 z-50 bg-white w-full max-w-[var(--frame-max)] mx-auto h-[100vh] overflow-y-auto">
           {/* 顶部标题栏 */}
-          <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-paper-light/80 backdrop-blur sticky top-0 z-10">
+          <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-white sticky top-0 z-10">
             <button
               onClick={() => setShowModeSelect(false)}
               className="p-1 -ml-1 flex items-center gap-1 text-navy-900 font-kai text-sm"

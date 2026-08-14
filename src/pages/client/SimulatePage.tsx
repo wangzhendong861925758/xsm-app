@@ -1,9 +1,18 @@
-import { useState, useMemo } from "react";
+﻿import { useState, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { ChevronLeft, Clock, Award, RotateCcw, CheckCircle2, XCircle, BookOpen } from "lucide-react";
+import { ChevronLeft, Clock, Award, RotateCcw, CheckCircle2, XCircle, BookOpen, Bookmark } from "lucide-react";
 import { EXAM_PAPERS } from "@/data/examPapers";
 import type { ExamQuestion } from "@/data/examPapers";
 import { useStore } from "@/store/useStore";
+import type { Subject } from "@/data/types";
+
+// 考试题学科映射到 store Subject
+const SUBJECT_MAP: Record<string, Subject> = {
+  biology: "biology",
+  history: "history",
+  geography: "geography",
+  politics: "politics",
+};
 
 // 评语生成
 function getComment(score: number): { title: string; detail: string } {
@@ -45,7 +54,7 @@ export default function SimulatePage() {
   const [searchParams] = useSearchParams();
   const paperId = searchParams.get("paperId");
   const navigate = useNavigate();
-  const { recordExamResult } = useStore();
+  const { recordExamResult, addToErrorBook, errorBook, collectedQuestions, addCollectedQuestion } = useStore();
 
   const paper = useMemo(
     () => EXAM_PAPERS.find((p) => p.id === paperId),
@@ -60,7 +69,7 @@ export default function SimulatePage() {
   // 试卷不存在
   if (!paper) {
     return (
-      <div className="min-h-full flex flex-col items-center justify-center bg-paper bg-navy-radial px-6">
+      <div className="min-h-full flex flex-col items-center justify-center bg-white px-6">
         <p className="font-kai text-sm text-navy-800/60 mb-4">试卷不存在</p>
         <button
           onClick={() => navigate("/app/exam")}
@@ -99,7 +108,7 @@ export default function SimulatePage() {
     }
   };
 
-  // 提交试卷
+  // 提交试卷：记录成绩 + 错题自动加入错题本
   const handleSubmit = () => {
     setSubmitted(true);
     recordExamResult({
@@ -111,7 +120,55 @@ export default function SimulatePage() {
       totalQuestions: questions.length,
       completedAt: Date.now(),
     });
+    // 错题自动加入错题本（去重）
+    questions.forEach((q, i) => {
+      const userAns = answers[i] || [];
+      if (isCorrect(q, userAns)) return; // 只处理错题
+      const qid = `exam-${paper.id}-${q.id}`;
+      if (errorBook.some((e) => e.questionId === qid)) return;
+      const correctAns = Array.isArray(q.answer) ? q.answer : [q.answer];
+      addToErrorBook({
+        id: `err-${qid}-${Date.now()}`,
+        questionId: qid,
+        subject: SUBJECT_MAP[q.subject] || "biology",
+        type: q.type,
+        stem: q.stem,
+        options: q.options,
+        selectedAnswer: userAns.length > 0 ? userAns.join("，") : "未作答",
+        correctAnswer: correctAns.join("，"),
+        analysis: q.analysis,
+        rightThought: q.analysis,
+        source: "exam",
+        addedAt: Date.now(),
+      });
+    });
     window.scrollTo({ top: 0 });
+  };
+
+  // 收藏考试题（独立存储，与题库题区分）
+  const isCollected = (q: ExamQuestion) => {
+    const qid = `exam-${paper.id}-${q.id}`;
+    return collectedQuestions.some((c) => c.id === qid);
+  };
+  const handleToggleCollectExam = (q: ExamQuestion) => {
+    const qid = `exam-${paper.id}-${q.id}`;
+    if (isCollected(q)) {
+      // 已收藏则移除
+      useStore.getState().removeCollectedQuestion(qid);
+    } else {
+      addCollectedQuestion({
+        id: qid,
+        subject: SUBJECT_MAP[q.subject] || "biology",
+        grade: "考试题",
+        version: paper.title,
+        type: q.type,
+        stem: q.stem,
+        options: q.options,
+        answer: q.answer,
+        analysis: q.analysis,
+        collected: true,
+      } as any);
+    }
   };
 
   // 答题完成数
@@ -122,8 +179,8 @@ export default function SimulatePage() {
   // ===== 结果页 =====
   if (submitted) {
     return (
-      <div className="min-h-full bg-paper bg-navy-radial">
-        <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/10 sticky top-0 bg-paper-light/95 backdrop-blur z-30">
+      <div className="min-h-full bg-white">
+        <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/10 sticky top-0 bg-white z-30">
           <button onClick={() => navigate("/app/exam")} className="p-1 -ml-1">
             <ChevronLeft size={22} className="text-navy-900" />
           </button>
@@ -187,9 +244,22 @@ export default function SimulatePage() {
                       {correct ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p className="font-kai text-xs text-navy-900 line-clamp-2 mb-1">
-                        {i + 1}. {q.stem}
-                      </p>
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="font-kai text-xs text-navy-900 line-clamp-2 mb-1 flex-1">
+                          {i + 1}. {q.stem}
+                        </p>
+                        <button
+                          onClick={() => handleToggleCollectExam(q)}
+                          className={`flex-shrink-0 p-1 rounded transition-all ${
+                            isCollected(q)
+                              ? "text-gold-dark"
+                              : "text-navy-800/40 hover:text-navy-900"
+                          }`}
+                          title={isCollected(q) ? "已收藏，点击取消" : "收藏"}
+                        >
+                          <Bookmark size={13} fill={isCollected(q) ? "currentColor" : "none"} />
+                        </button>
+                      </div>
                       <p className={`text-[10px] font-kai ${correct ? "text-green-600" : "text-red-500"}`}>
                         你的答案：{userAns.length > 0 ? userAns.join("，") : "未作答"}
                       </p>
@@ -210,7 +280,7 @@ export default function SimulatePage() {
           </div>
         </main>
 
-        <footer className="px-5 py-3 border-t border-navy-500/10 bg-navy-50/60 sticky bottom-0 pb-[calc(12px+env(safe-area-inset-bottom))]">
+        <footer className="px-5 py-3 border-t border-navy-500/10 bg-white sticky bottom-0 pb-[calc(12px+env(safe-area-inset-bottom))]">
           <div className="flex gap-2">
             <button
               onClick={() => {
@@ -246,9 +316,9 @@ export default function SimulatePage() {
   const isMultiple = currentQ.type === "multiple";
 
   return (
-    <div className="min-h-full bg-paper bg-navy-radial flex flex-col">
+    <div className="min-h-full bg-white flex flex-col">
       {/* 顶部 */}
-      <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/10 bg-navy-50/60 backdrop-blur sticky top-0 z-30">
+      <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/10 bg-white sticky top-0 z-30">
         <button onClick={() => navigate(-1)} className="p-1 -ml-1">
           <ChevronLeft size={22} className="text-navy-900" />
         </button>
@@ -293,11 +363,22 @@ export default function SimulatePage() {
           </div>
         </div>
 
-        {/* 题干 */}
-        <div className="ink-card rounded-2xl p-4 mb-4">
-          <p className="font-kai text-base text-navy-900 leading-relaxed">
+        {/* 题干 + 收藏按钮 */}
+        <div className="ink-card rounded-2xl p-4 mb-4 relative">
+          <p className="font-kai text-base text-navy-900 leading-relaxed pr-10">
             {currentQ.stem}
           </p>
+          <button
+            onClick={() => handleToggleCollectExam(currentQ)}
+            className={`absolute top-3 right-3 p-1.5 rounded-lg transition-all ${
+              isCollected(currentQ)
+                ? "bg-gold-500/15 text-gold-dark"
+                : "bg-navy-500/8 text-navy-800/50 hover:text-navy-900"
+            }`}
+            title={isCollected(currentQ) ? "已收藏，点击取消" : "收藏到我的收藏"}
+          >
+            <Bookmark size={16} fill={isCollected(currentQ) ? "currentColor" : "none"} />
+          </button>
         </div>
 
         {/* 选项 */}
@@ -354,7 +435,7 @@ export default function SimulatePage() {
         </div>
       </main>
 
-      <footer className="px-5 py-3 border-t border-navy-500/10 bg-navy-50/60 pb-[calc(12px+env(safe-area-inset-bottom))]">
+      <footer className="px-5 py-3 border-t border-navy-500/10 bg-white pb-[calc(12px+env(safe-area-inset-bottom))]">
         <div className="flex gap-2">
           {currentIndex > 0 && (
             <button

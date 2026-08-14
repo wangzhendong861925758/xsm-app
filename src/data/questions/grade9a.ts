@@ -1,4 +1,4 @@
-import type { Question } from "../types";
+﻿import type { Question } from "../types";
 
 // 九年级上册题库（历史 + 道法 2 个学科，生物地理已结业）
 // 共 90 题：

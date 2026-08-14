@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+﻿import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import {
   ChevronLeft, ChevronRight, Bookmark, CheckCircle2, XCircle,
@@ -140,7 +140,7 @@ export default function PracticePage() {
 
   if (versionQuestions.length === 0) {
     return (
-      <div className="mobile-frame flex flex-col items-center justify-center bg-paper bg-navy-radial">
+      <div className="mobile-frame flex flex-col items-center justify-center bg-white">
         <p className="font-kai text-navy-800/50 mb-2">该版本暂无题目</p>
         <p className="text-[10px] text-navy-800/40 mb-4">{info.name} · {version}</p>
         <button
@@ -171,6 +171,10 @@ export default function PracticePage() {
     addAnsweredQuestion(currentQ.id);
     incrementTodayLearned(subjectKey);
     recordTodayAnswer(subjectKey, isCorrect);
+    // 答错时自动加入错题本（去重）
+    if (!isCorrect && !errorBook.some((e) => e.questionId === currentQ.id)) {
+      handleAddToErrorBook(letter);
+    }
   };
 
   const isInErrorBook = errorBook.some((e) => e.questionId === currentQ.id);
@@ -217,10 +221,13 @@ export default function PracticePage() {
         return a.length === 1 && aIdx >= 0 && aIdx < 26 ? letterToText(a) : a;
       })();
 
-  const handleAddToErrorBook = () => {
-    if (isInErrorBook || !currentAnswer) return;
+  // 答错时自动加入错题本（去重），传入用户所选字母
+  const handleAddToErrorBook = (letter?: string) => {
+    const sel = letter || currentAnswer?.selected;
+    if (!sel) return;
+    if (errorBook.some((e) => e.questionId === currentQ.id)) return;
     // 计算"用户所选选项的错因"和"正确选项的思路"，存入错题本
-    const selIdx = currentAnswer.selected.charCodeAt(0) - 65;
+    const selIdx = sel.charCodeAt(0) - 65;
     const opts = currentQ.options;
     const ans = Array.isArray(currentQ.answer) ? currentQ.answer.join("") : String(currentQ.answer);
     const normalized = ans.replace(/[对√]/g, "A").replace(/[错×]/g, "B");
@@ -231,11 +238,18 @@ export default function PracticePage() {
       id: `err-${currentQ.id}-${Date.now()}`,
       questionId: currentQ.id,
       subject: subjectKey,
-      selectedAnswer: letterToText(currentAnswer.selected),
+      type: currentQ.type as "single" | "multiple" | "judge",
+      grade: currentQ.grade,
+      version: currentQ.version,
+      stem: currentQ.stem,
+      options: currentQ.options,
+      selectedAnswer: letterToText(sel),
       correctAnswer: correctAnswerText,
+      analysis: currentQ.analysis,
       wrongReason: optAnalysis?.[selIdx],
       rightThought: optAnalysis?.[correctIdx ?? -1] || currentQ.analysis,
       solution: currentQ.solution,
+      source: "practice",
       addedAt: Date.now(),
     });
   };
@@ -302,7 +316,7 @@ export default function PracticePage() {
     }
 
     return (
-      <div className="mobile-frame flex flex-col bg-paper bg-navy-radial">
+      <div className="mobile-frame flex flex-col bg-white">
         <div className="flex-1 overflow-y-auto px-6 py-8 flex flex-col items-center justify-center">
           {/* 顶部装饰 */}
           <div className="text-5xl mb-3">{emoji}</div>
@@ -377,9 +391,9 @@ export default function PracticePage() {
   }
 
   return (
-    <div className="mobile-frame flex flex-col bg-paper bg-navy-radial">
+    <div className="mobile-frame flex flex-col bg-white">
       {/* 顶部 */}
-      <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-paper-light/80 backdrop-blur sticky top-0 z-30">
+      <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-white sticky top-0 z-30">
         <button onClick={() => navigate(-1)} className="p-1 -ml-1">
           <ChevronLeft size={22} className="text-navy-900" />
         </button>
@@ -569,29 +583,12 @@ export default function PracticePage() {
               );
             })()}
 
-            {/* 加入错题集按钮（仅答错时显示） */}
+            {/* 答错时自动加入错题本，仅显示提示 */}
             {currentAnswer.status === "wrong" && (
-              <button
-                onClick={handleAddToErrorBook}
-                disabled={isInErrorBook}
-                className={`w-full flex items-center justify-center gap-1.5 py-2 rounded-xl font-kai text-xs font-bold transition-all ${
-                  isInErrorBook
-                    ? "bg-navy-500/8 text-navy-800/40"
-                    : "bg-red-500/10 text-red-600 hover:bg-red-500/15"
-                }`}
-              >
-                {isInErrorBook ? (
-                  <>
-                    <Check size={13} />
-                    已加入错题集
-                  </>
-                ) : (
-                  <>
-                    <Plus size={13} />
-                    加入错题集
-                  </>
-                )}
-              </button>
+              <div className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl font-kai text-xs font-bold bg-navy-500/8 text-navy-800/40">
+                <Check size={13} />
+                已自动加入错题本
+              </div>
             )}
 
             <button
@@ -610,7 +607,7 @@ export default function PracticePage() {
       </main>
 
       {/* 底部：答题卡固定在最左侧 */}
-      <footer className="px-4 py-3 border-t border-navy-500/8 bg-paper-light/90 backdrop-blur pb-[calc(12px+env(safe-area-inset-bottom))]">
+      <footer className="px-4 py-3 border-t border-navy-500/8 bg-white pb-[calc(12px+env(safe-area-inset-bottom))]">
         {!isAnswered ? (
           // 未作答：答题卡在左 + 提示在右
           <div className="flex items-center gap-2">
@@ -672,7 +669,7 @@ export default function PracticePage() {
       {showCard && (
         <div className="!fixed inset-0 z-50 bg-white w-full max-w-[var(--frame-max)] mx-auto h-[100vh] overflow-y-auto">
           {/* 顶部标题栏 */}
-          <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-paper-light/80 backdrop-blur sticky top-0 z-10">
+          <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-white sticky top-0 z-10">
             <button
               onClick={() => setShowCard(false)}
               className="p-1 -ml-1 flex items-center gap-1 text-navy-900 font-kai text-sm"

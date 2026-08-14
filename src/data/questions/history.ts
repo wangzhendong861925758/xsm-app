@@ -1,4 +1,4 @@
-import type { Question } from "../types";
+﻿import type { Question } from "../types";
 
 // 历史学科题库 · 七年级上册（中国古代史）
 // 共 60 题：统编版 × 20 + 统编版（2024）× 20 + 统编版（五四学制）× 20

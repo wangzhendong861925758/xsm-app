@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User, Lock, IdCard, UserPlus, LogIn } from "lucide-react";
 import BrushTitle from "@/components/BrushTitle";
@@ -48,7 +48,7 @@ export default function ClientLoginPage() {
   // 注册成功提示：展示 ID 并引导登录
   if (newCode) {
     return (
-      <div className="min-h-screen bg-paper bg-navy-radial flex items-center justify-center p-6">
+      <div className="min-h-screen bg-white flex items-center justify-center p-6">
         <div className="w-full max-w-md text-center">
           <div className="inline-flex w-16 h-16 rounded-2xl bg-navy-600/12 items-center justify-center mb-3">
             <IdCard size={28} className="text-navy-600" />
@@ -82,7 +82,7 @@ export default function ClientLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-paper bg-navy-radial flex items-center justify-center p-6">
+    <div className="min-h-screen bg-white flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         {/* 标题 */}
         <div className="text-center mb-6">

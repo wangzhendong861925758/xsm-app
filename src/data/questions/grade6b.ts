@@ -1,4 +1,4 @@
-import type { Question } from "../types";
+﻿import type { Question } from "../types";
 
 // 六年级下册题目（小升初衔接）
 export const GRADE6B_QUESTIONS: Question[] = [

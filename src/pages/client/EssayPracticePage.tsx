@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+﻿import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import {
   ChevronLeft, ChevronRight, CheckCircle2, XCircle,
@@ -236,8 +236,8 @@ export default function EssayPracticePage() {
     const dashOffset = circumference * (1 - rate / 100);
 
     return (
-      <div className="mobile-frame flex flex-col bg-paper bg-navy-radial">
-        <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-paper-light/80">
+      <div className="mobile-frame flex flex-col bg-white">
+        <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-white">
           <button onClick={() => navigate("/app/home")} className="p-1 -ml-1">
             <ChevronLeft size={22} className="text-navy-900" />
           </button>
@@ -294,7 +294,7 @@ export default function EssayPracticePage() {
           </div>
         </main>
 
-        <footer className="px-5 py-3 border-t border-navy-500/8 bg-paper-light/90 pb-[calc(12px+env(safe-area-inset-bottom))]">
+        <footer className="px-5 py-3 border-t border-navy-500/8 bg-white pb-[calc(12px+env(safe-area-inset-bottom))]">
           <div className="flex gap-2">
             <button onClick={handleRestart} className="flex-1 py-3 rounded-xl border border-navy-500/20 text-navy-900 font-kai text-sm font-bold">
               <RotateCcw size={14} className="inline mr-1" />再练一轮
@@ -311,8 +311,8 @@ export default function EssayPracticePage() {
   // 空状态
   if (versionQuestions.length === 0) {
     return (
-      <div className="mobile-frame flex flex-col bg-paper bg-navy-radial">
-        <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-paper-light/80">
+      <div className="mobile-frame flex flex-col bg-white">
+        <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-white">
           <button onClick={() => navigate(-1)} className="p-1 -ml-1">
             <ChevronLeft size={22} className="text-navy-900" />
           </button>
@@ -337,9 +337,9 @@ export default function EssayPracticePage() {
   const isLast = currentIdx === sessionQuestions.length - 1;
 
   return (
-    <div className="mobile-frame flex flex-col bg-paper bg-navy-radial">
+    <div className="mobile-frame flex flex-col bg-white">
       {/* 顶部 */}
-      <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-paper-light/80 backdrop-blur sticky top-0 z-30">
+      <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-white sticky top-0 z-30">
         <button onClick={() => navigate(-1)} className="p-1 -ml-1">
           <ChevronLeft size={22} className="text-navy-900" />
         </button>
@@ -394,7 +394,7 @@ export default function EssayPracticePage() {
             onChange={(e) => !isAnswered && setAnswersMap({ ...answersMap, [currentIdx]: e.target.value })}
             disabled={isAnswered}
             placeholder="请在此处输入你的答案，注意要点完整、思路清晰…"
-            className="w-full min-h-[140px] p-3 rounded-xl border border-navy-500/15 bg-paper-light/60 text-sm font-kai text-navy-900 leading-relaxed resize-none focus:outline-none focus:border-navy-500/50 disabled:opacity-70"
+            className="w-full min-h-[140px] p-3 rounded-xl border border-navy-500/15 bg-white/60 text-sm font-kai text-navy-900 leading-relaxed resize-none focus:outline-none focus:border-navy-500/50 disabled:opacity-70"
             style={{ fontSize: "13px" }}
           />
           <div className="flex items-center justify-between mt-1.5">
@@ -499,7 +499,7 @@ export default function EssayPracticePage() {
       </main>
 
       {/* 底部：答题卡固定在最左侧 */}
-      <footer className="px-5 py-3 border-t border-navy-500/8 bg-paper-light/90 backdrop-blur pb-[calc(12px+env(safe-area-inset-bottom))]">
+      <footer className="px-5 py-3 border-t border-navy-500/8 bg-white pb-[calc(12px+env(safe-area-inset-bottom))]">
         {!isAnswered ? (
           <div className="flex items-center gap-2">
             <button
@@ -548,7 +548,7 @@ export default function EssayPracticePage() {
       {showAnswerSheet && (
         <div className="!fixed inset-0 z-50 bg-white w-full max-w-[var(--frame-max)] mx-auto h-[100vh] overflow-y-auto">
           {/* 顶部标题栏 */}
-          <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-paper-light/80 backdrop-blur sticky top-0 z-10">
+          <header className="px-4 pt-5 pb-3 flex items-center gap-3 border-b border-navy-500/8 bg-white sticky top-0 z-10">
             <button
               onClick={() => setShowAnswerSheet(false)}
               className="p-1 -ml-1 flex items-center gap-1 text-navy-900 font-kai text-sm"

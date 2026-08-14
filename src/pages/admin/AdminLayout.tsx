@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigate, Navigate } from "react-router-dom";
+﻿import { NavLink, Outlet, useNavigate, Navigate } from "react-router-dom";
 import { Users, FileQuestion, BarChart3, LogOut, Shield, Palette } from "lucide-react";
 import { useStore } from "@/store/useStore";
 
@@ -23,7 +23,7 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-paper bg-navy-radial flex">
+    <div className="min-h-screen bg-white flex">
       {/* 侧边栏 */}
       <aside className="w-56 bg-paper-light border-r border-navy-500/15 flex flex-col fixed h-screen">
         {/* Logo */}

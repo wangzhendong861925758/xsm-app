@@ -1,16 +1,17 @@
-import { useNavigate } from "react-router-dom";
+﻿import { useNavigate } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { Clock, AlertCircle, BookX, FileText, Bookmark, Trophy } from "lucide-react";
+import { Clock, AlertCircle, BookX, FileText, Bookmark, Trophy, BookOpen } from "lucide-react";
 import BrushTitle from "@/components/BrushTitle";
 import { WEEKLY_RECORDS } from "@/data/mock";
 import { useStore } from "@/store/useStore";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { currentUser, questions, errorBook } = useStore();
+  const { currentUser, questions, errorBook, collectedQuestions, examRecords } = useStore();
 
-  const collectedCount = questions.filter((q) => q.collected).length;
+  const collectedCount = collectedQuestions.length;
   const errorCount = errorBook.length;
+  const examCount = examRecords.length;
 
   const chartData = WEEKLY_RECORDS.map((r) => ({
     name: r.weekday,
@@ -19,7 +20,7 @@ export default function DashboardPage() {
   }));
 
   return (
-    <div className="min-h-full bg-paper bg-navy-radial">
+    <div className="min-h-full bg-white">
       <header className="px-5 pt-6 pb-3">
         <BrushTitle size="lg" />
       </header>
@@ -153,7 +154,7 @@ export default function DashboardPage() {
           </button>
 
           <button
-            onClick={() => navigate("/app/practice/history?mode=score")}
+            onClick={() => navigate("/app/scores")}
             className="w-full ink-card rounded-2xl p-3 flex items-center gap-3 hover:border-navy-400/40 transition-all"
           >
             <div className="w-10 h-10 rounded-xl bg-navy-100 flex items-center justify-center">
@@ -161,12 +162,15 @@ export default function DashboardPage() {
             </div>
             <div className="flex-1 text-left">
               <p className="font-kai text-sm font-bold text-navy-900">成绩单</p>
-              <p className="text-[10px] text-navy-800/50 font-kai">历次考试·成绩记录</p>
+              <p className="text-[10px] text-navy-800/50 font-kai">模拟/真题·历次成绩</p>
             </div>
+            <span className="text-[10px] text-navy-600 font-bold bg-navy-500/10 px-2 py-0.5 rounded-full">
+              {examCount} 次
+            </span>
           </button>
 
           <button
-            onClick={() => navigate("/app/practice/history?mode=collected")}
+            onClick={() => navigate("/app/collected")}
             className="w-full ink-card rounded-2xl p-3 flex items-center gap-3 hover:border-navy-600/40 transition-all"
           >
             <div className="w-10 h-10 rounded-xl bg-navy-600/12 flex items-center justify-center">
@@ -179,6 +183,19 @@ export default function DashboardPage() {
             <span className="text-[10px] text-navy-600 font-bold bg-navy-600/10 px-2 py-0.5 rounded-full">
               {collectedCount} 题
             </span>
+          </button>
+
+          <button
+            onClick={() => navigate("/app/notes?title=library")}
+            className="w-full ink-card rounded-2xl p-3 flex items-center gap-3 hover:border-navy-600/40 transition-all"
+          >
+            <div className="w-10 h-10 rounded-xl bg-gold-500/15 flex items-center justify-center">
+              <BookOpen size={18} className="text-gold-dark" />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="font-kai text-sm font-bold text-navy-900">资料库</p>
+              <p className="text-[10px] text-navy-800/50 font-kai">各学科重点知识点</p>
+            </div>
           </button>
         </div>
       </section>

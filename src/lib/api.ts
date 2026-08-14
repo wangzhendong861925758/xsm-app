@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 前端 API 封装：通过 fetch 调用 Netlify Functions
  * 本地开发时通过 vite proxy 转发到 Netlify Dev，生产环境直接调用同域 API
  */
@@ -82,12 +82,17 @@ export async function loginAccount(
   }
 }
 
-/** 授权（管理端调用） */
-export async function grantAccount(code: string, months: number): Promise<ClientAccount | null> {
+/** 授权（管理端调用）
+ *  period: { months?: number; years?: number }，years 优先（年会员按次年同一天）
+ */
+export async function grantAccount(
+  code: string,
+  period: { months?: number; years?: number },
+): Promise<ClientAccount | null> {
   try {
     return await request<ClientAccount>("/api/accounts/grant", {
       method: "POST",
-      body: JSON.stringify({ code, months }),
+      body: JSON.stringify({ code, ...period }),
     });
   } catch {
     return null;

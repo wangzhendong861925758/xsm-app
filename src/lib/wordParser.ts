@@ -1,4 +1,4 @@
-import type { Question, QuestionType, Subject } from "@/data/types";
+﻿import type { Question, QuestionType, Subject } from "@/data/types";
 
 /** 上传上下文：拆出的每道题都会带上这些字段 */
 export interface UploadContext {

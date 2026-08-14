@@ -1,4 +1,4 @@
-import type { Question } from "../types";
+﻿import type { Question } from "../types";
 
 // 八年级上册题库
 // 生物 9 版 × 15 = 135 题

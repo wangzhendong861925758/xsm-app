@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+﻿import { useNavigate } from "react-router-dom";
 import {
   Bookmark,
   CheckCircle2,
@@ -45,7 +45,7 @@ export default function ExamPage() {
   const topNotes = EXPERT_NOTES.slice(0, 6);
 
   return (
-    <div className="min-h-full bg-paper bg-navy-radial">
+    <div className="min-h-full bg-white">
       <header className="px-5 pt-6 pb-3">
         <BrushTitle size="lg" />
       </header>

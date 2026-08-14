@@ -1,4 +1,4 @@
-import type { Question } from "../types";
+﻿import type { Question } from "../types";
 
 export const POLITICS_QUESTIONS: Question[] = [
   // ===== 统编版 =====

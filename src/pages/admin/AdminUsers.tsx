@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Search, KeyRound, X, ShieldCheck, ShieldOff, UserCheck, Ban } from "lucide-react";
 import { useStore } from "@/store/useStore";
 
@@ -7,13 +7,17 @@ export default function AdminUsers() {
   const [keyword, setKeyword] = useState("");
   const [showGrant, setShowGrant] = useState(false);
   const [grantCode, setGrantCode] = useState("");
-  const [grantMonths, setGrantMonths] = useState(1);
+  // 周期选择：1/3/6 月，或 1 年（次年同一天到期）
+  const [grantPeriod, setGrantPeriod] = useState<{ months?: number; years?: number }>({ months: 1 });
   const [grantMsg, setGrantMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
   const filtered = clientAccounts.filter(
     (a) => a.code.includes(keyword) || a.studentName.includes(keyword) || a.username.includes(keyword),
   );
   const grantedCount = clientAccounts.filter((a) => a.granted).length;
+
+  const periodLabel = (p: { months?: number; years?: number }) =>
+    p.years ? `${p.years} 年` : `${p.months} 个月`;
 
   const handleGrant = async () => {
     const code = grantCode.trim();
@@ -22,9 +26,9 @@ export default function AdminUsers() {
       return;
     }
     setGrantMsg({ type: "ok", text: "正在查询..." });
-    const ok = await grantClientByCode(code, grantMonths);
+    const ok = await grantClientByCode(code, grantPeriod);
     if (ok) {
-      setGrantMsg({ type: "ok", text: `已为 ID ${code} 开放 ${grantMonths} 个月权限` });
+      setGrantMsg({ type: "ok", text: `已为 ID ${code} 开放 ${periodLabel(grantPeriod)} 权限` });
       setGrantCode("");
     } else {
       setGrantMsg({ type: "err", text: `ID ${code} 不存在，请确认客户端已注册` });
@@ -64,7 +68,7 @@ export default function AdminUsers() {
           />
         </div>
         <button
-          onClick={() => { setShowGrant(true); setGrantMsg(null); setGrantCode(""); setGrantMonths(1); }}
+          onClick={() => { setShowGrant(true); setGrantMsg(null); setGrantCode(""); setGrantPeriod({ months: 1 }); }}
           className="flex items-center gap-1 btn-navy px-3 py-2 rounded-lg font-kai text-sm"
         >
           <KeyRound size={15} />
@@ -159,12 +163,12 @@ export default function AdminUsers() {
             <div>
               <label className="block text-xs font-kai text-navy-800/60 mb-1.5">有效期限</label>
               <div className="grid grid-cols-4 gap-2">
-                {[1, 3, 6, 12].map((m) => (
+                {[1, 3, 6].map((m) => (
                   <button
                     key={m}
-                    onClick={() => setGrantMonths(m)}
+                    onClick={() => setGrantPeriod({ months: m })}
                     className={`py-2 rounded-lg font-kai text-sm transition-all ${
-                      grantMonths === m
+                      grantPeriod.months === m && !grantPeriod.years
                         ? "btn-navy font-bold"
                         : "border border-navy-500/15 text-navy-800/70 hover:border-navy-500/40"
                     }`}
@@ -172,9 +176,21 @@ export default function AdminUsers() {
                     {m} 个月
                   </button>
                 ))}
+                <button
+                  onClick={() => setGrantPeriod({ years: 1 })}
+                  className={`py-2 rounded-lg font-kai text-sm transition-all ${
+                    grantPeriod.years === 1
+                      ? "btn-navy font-bold"
+                      : "border border-navy-500/15 text-navy-800/70 hover:border-navy-500/40"
+                  }`}
+                >
+                  1 年
+                </button>
               </div>
               <p className="text-[10px] text-navy-800/50 mt-1.5 font-kai">
-                到期后客户端将自动取消权限，需重新授权
+                {grantPeriod.years
+                  ? "年会员：次年同一天到期（如 2026-08-14 开通 → 2027-08-14 到期）"
+                  : "到期后客户端将自动取消权限，需重新授权"}
               </p>
             </div>
             {grantMsg && (

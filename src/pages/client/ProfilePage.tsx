@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+﻿import { useNavigate } from "react-router-dom";
 import { ChevronRight, Settings, Bell, HelpCircle, Info, LogOut, Flame, Target, Award, Clock, IdCard, ShieldCheck, ShieldOff } from "lucide-react";
 import BrushTitle from "@/components/BrushTitle";
 import { useStore } from "@/store/useStore";
@@ -17,7 +17,7 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div className="min-h-full bg-paper bg-navy-radial">
+    <div className="min-h-full bg-white">
       <header className="px-5 pt-6 pb-3">
         <BrushTitle size="lg" />
       </header>

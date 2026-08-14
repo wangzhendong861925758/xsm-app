@@ -100,16 +100,25 @@ export default async (req) => {
     }
 
     // POST /api/accounts/grant —— 授权（管理端用）
+    // 支持两种周期：months（按月加 30 天）或 years（按次年同一天）
     if (req.method === 'POST' && action === 'grant') {
       const payload = await req.json();
-      const { code, months } = payload;
+      const { code, months, years } = payload;
       const list = await readAll();
       const account = list.find((a) => a.code === code);
       if (!account) {
         return json({ success: false, message: 'ID 不存在' }, 404);
       }
       account.granted = true;
-      account.expiresAt = Date.now() + months * 30 * 24 * 60 * 60 * 1000;
+      const base = new Date();
+      if (years && years > 0) {
+        // 年会员：次年同一天（如 2026-08-14 开通 → 2027-08-14 到期）
+        base.setFullYear(base.getFullYear() + years);
+        account.expiresAt = base.getTime();
+      } else {
+        // 月会员：按月加 30 天
+        account.expiresAt = Date.now() + (months || 1) * 30 * 24 * 60 * 60 * 1000;
+      }
       await writeAll(list);
       return json({ success: true, data: account });
     }

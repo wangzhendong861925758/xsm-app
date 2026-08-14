@@ -1,4 +1,4 @@
-interface BrushTitleProps {
+﻿interface BrushTitleProps {
   size?: "sm" | "md" | "lg" | "xl";
   showSeal?: boolean;
   className?: string;

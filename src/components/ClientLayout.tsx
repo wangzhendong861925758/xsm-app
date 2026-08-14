@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+﻿import { useEffect, useRef } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { Home, BookOpen, BarChart3, User } from "lucide-react";
 import { useStore } from "@/store/useStore";
@@ -43,7 +43,7 @@ export default function ClientLayout() {
       </main>
 
       {/* 底部Tab栏 */}
-      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[var(--frame-max)] bg-paper-light/95 backdrop-blur border-t border-navy-500/10 z-50">
+      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[var(--frame-max)] bg-white border-t border-navy-500/10 z-50">
         <div className="flex items-stretch justify-around px-2 pt-2 pb-[calc(8px+env(safe-area-inset-bottom))]">
           {TABS.map(({ to, label, icon: Icon }) => (
             <NavLink
