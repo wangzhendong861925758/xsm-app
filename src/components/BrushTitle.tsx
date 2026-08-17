@@ -16,7 +16,7 @@ const sizeMap = {
 export default function BrushTitle({ size = "lg", showSeal = false, className = "", text, seal }: BrushTitleProps) {
   return (
     <div className={`flex items-end gap-2 ${className}`}>
-      <h1 className={`font-alibaba font-black ${sizeMap[size]} leading-none tracking-tight`} style={{ color: "#0088FF", fontWeight: 950 }}>
+      <h1 className={`font-alibaba font-bold ${sizeMap[size]} leading-none`} style={{ color: "#0088FF" }}>
         {text ?? "中考必胜"}
       </h1>
       {showSeal && (
