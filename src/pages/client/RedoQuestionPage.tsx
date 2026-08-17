@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿import { useMemo, useState, useEffect } from "react";
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { useMemo, useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, CheckCircle2, XCircle, RotateCcw, Check, Trash2 } from "lucide-react";
 import { useStore, type ErrorBookItem } from "@/store/useStore";
@@ -17,15 +17,25 @@ interface RedoView {
 
 // 将错题条目转为统一视图
 function fromErrorItem(it: ErrorBookItem): RedoView {
+  const opts = it.options || [];
   // ponytail: 同时按 顿号(、)、全角逗号(，)、半角逗号(,) 分割，兼容多选题答案的存储格式
   const correctTexts = (it.correctAnswer || "")
     .split(/[、，,]/)
     .map((s) => s.trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    .map((s) => {
+      // 练习来源：correctAnswer 已转为选项文本（如"贝尔"），直接用
+      // 考试来源：correctAnswer 可能是字母（如"B"）或带前缀文本（如"B. 贝尔"），需归一化
+      const letter = s.toUpperCase();
+      if (letter.length === 1 && letter >= "A" && letter <= "Z" && opts[letter.charCodeAt(0) - 65]) {
+        return opts[letter.charCodeAt(0) - 65];
+      }
+      return s;
+    });
   return {
     questionId: it.questionId,
     stem: it.stem || "(题目内容已丢失)",
-    options: it.options || [],
+    options: opts,
     correctTexts,
     analysis: it.rightThought || it.analysis,
     type: it.type,
@@ -227,9 +237,10 @@ export default function RedoQuestionPage() {
 
         {/* 选项 */}
         <div className="space-y-2">
-          {view.options.map((opt) => {
+          {view.options.map((opt, idx) => {
             const isSelected = selected.includes(opt);
             const isCorrectOpt = correctSet.has(opt);
+            const label = String.fromCharCode(65 + idx);
             let cls = "bg-navy-50/40 border-navy-500/10";
             if (submitted) {
               if (isCorrectOpt) cls = "bg-green-50/60 border-green-500";
@@ -248,7 +259,7 @@ export default function RedoQuestionPage() {
                     isSelected ? "bg-navy-600 text-paper" : "bg-navy-500/10 text-navy-900"
                   }`}
                 >
-                  {opt.charAt(0)}
+                  {label}
                 </span>
                 <span className="flex-1 font-kai text-sm text-navy-900">{opt}</span>
                 {submitted && isCorrectOpt && (
