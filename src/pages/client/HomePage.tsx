@@ -256,12 +256,12 @@ export default function HomePage() {
               >
                 <div className="flex items-start justify-between mb-2">
                   <div>
-                    <p className="font-alibaba text-base font-bold leading-none text-black">
+                    <p className="font-alibaba text-xl font-bold leading-none text-black">
                       {info.name}
                     </p>
-                    <p className="text-[9px] mt-1 font-alibaba text-gray-500">
-                      今日 <span className="font-bold text-base text-black">{todayCount}</span>
-                      <span className="text-[9px]"> 题</span>
+                    <p className="text-[10px] mt-2 font-alibaba text-gray-500">
+                      今日 <span className="font-bold text-lg text-black">{todayCount}</span>
+                      <span className="text-[10px]"> 题</span>
                     </p>
                   </div>
                   <span
