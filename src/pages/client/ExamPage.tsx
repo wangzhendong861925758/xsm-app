@@ -135,21 +135,21 @@ export default function ExamPage() {
         <button
           onClick={() => navigate("/app/papers?type=mock")}
           className="w-full relative overflow-hidden rounded-2xl p-4 text-left group transition-all hover:scale-[1.01] active:scale-[0.99]"
-          style={{ background: "linear-gradient(135deg, #0EA5E9 0%, #0369A1 100%)" }}
+          style={{ background: "linear-gradient(135deg, #0088FF 0%, #006FD9 100%)" }}
         >
           <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/10" />
           <div className="absolute -right-2 -bottom-2 w-16 h-16 rounded-full bg-white/15" />
           <div className="relative">
             <div className="flex items-center gap-2 mb-1">
               <FileText size={18} className="text-white" />
-              <span className="seal-stamp text-[9px] px-1 py-0.5 bg-white text-navy-700">模拟</span>
-              <span className="text-[10px] text-white/80 font-kai">{mockPapers.length}套试卷</span>
+              <span className="text-[9px] px-1 py-0.5 bg-white text-[#0088FF] font-alibaba font-bold rounded">模拟</span>
+              <span className="text-[10px] text-white/80 font-alibaba">{mockPapers.length}套试卷</span>
             </div>
-            <h3 className="brush-title text-2xl text-white mb-1">全真模拟考试</h3>
-            <p className="text-[11px] text-white/80 font-kai">
+            <h3 className="font-alibaba font-bold text-2xl text-white mb-1">全真模拟考试</h3>
+            <p className="text-[11px] text-white/80 font-alibaba">
               仿真实考 · 限时作答 · 智能判分
             </p>
-            <div className="mt-3 inline-flex items-center gap-1 text-xs text-white font-kai">
+            <div className="mt-3 inline-flex items-center gap-1 text-xs text-white font-alibaba">
               选择试卷 <ChevronRight size={14} />
             </div>
           </div>

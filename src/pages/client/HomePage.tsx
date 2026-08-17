@@ -252,37 +252,22 @@ export default function HomePage() {
             return (
               <div
                 key={tb.subject}
-                className="ink-card rounded-2xl overflow-visible relative"
-                style={{
-                  borderTop: `3px solid ${info.color}`,
-                }}
+                className="bg-white rounded-2xl overflow-visible relative shadow-card"
               >
-                <div
-                  className="relative px-3 pt-3 pb-2 overflow-hidden"
-                  style={{
-                    background: `linear-gradient(135deg, ${info.bgColor} 0%, rgba(255,255,255,0) 100%)`,
-                  }}
-                >
-                  <span
-                    className="absolute -right-2 -top-1 text-4xl opacity-15 select-none pointer-events-none"
-                    aria-hidden
-                  >
-                    {info.icon}
-                  </span>
-
+                <div className="relative px-3 pt-3 pb-2 overflow-hidden bg-white">
                   <div className="relative flex items-start justify-between mb-2">
                     <div>
                       <p className="font-alibaba text-base font-bold leading-none" style={{ color: info.color }}>
                         {info.name}
                       </p>
-                      <p className="text-[9px] text-navy-800/50 mt-1 font-alibaba">
+                      <p className="text-[9px] mt-1 font-alibaba" style={{ color: info.color, opacity: 0.7 }}>
                         今日 <span className="font-bold text-base" style={{ color: info.color }}>{todayCount}</span>
                         <span className="text-[9px]"> 题</span>
                       </p>
                     </div>
                     <span
-                      className="w-9 h-9 rounded-xl flex items-center justify-center text-lg shadow-sm"
-                      style={{ background: "rgba(255,255,255,0.7)" }}
+                      className="w-9 h-9 rounded-xl flex items-center justify-center text-lg"
+                      style={{ background: `${info.color}15`, color: info.color }}
                     >
                       {info.icon}
                     </span>
@@ -320,14 +305,14 @@ export default function HomePage() {
 
                 <button
                   onClick={() => setOpenVersionFor(isOpen ? null : tb.subject)}
-                  className="w-full flex items-center justify-between px-3 py-1.5 border-t border-navy-500/8"
-                  style={{ background: `${info.color}08` }}
+                  className="w-full flex items-center justify-between px-3 py-1.5 border-t"
+                  style={{ background: "#fff", borderColor: `${info.color}15` }}
                 >
                   <div className="flex items-center gap-1 min-w-0">
                     <BookOpen size={11} style={{ color: info.color }} className="flex-shrink-0" />
                     <span
                       className="text-[10px] font-alibaba font-bold px-1.5 py-0.5 rounded truncate"
-                      style={{ background: info.bgColor, color: info.color }}
+                      style={{ background: `${info.color}12`, color: info.color }}
                     >
                       {selectedVer}
                     </span>
@@ -340,7 +325,7 @@ export default function HomePage() {
                 </button>
 
                 {isOpen && (
-                  <div className="absolute left-0 right-0 top-full z-20 mt-0.5 px-2.5 py-2 bg-paper-light rounded-xl shadow-card border animate-fade-in" style={{ borderColor: `${info.color}30` }}>
+                  <div className="absolute left-0 right-0 top-full z-20 mt-0.5 px-2.5 py-2 bg-white rounded-xl shadow-card border animate-fade-in" style={{ borderColor: `${info.color}30` }}>
                     <div className="grid grid-cols-1 gap-1">
                       {versionsToShow.map((v) => {
                         const active = v === selectedVer;
@@ -350,10 +335,10 @@ export default function HomePage() {
                             onClick={() => handleSelectVersion(tb.subject, v)}
                             className={`flex items-center gap-1 px-2 py-1.5 rounded text-[10px] font-alibaba border transition-all text-left ${
                               active
-                                ? "text-paper border-transparent"
-                                : "bg-paper text-navy-900 hover:border-navy-500/40"
+                                ? "text-white border-transparent"
+                                : "bg-white hover:border-navy-500/40"
                             }`}
-                            style={active ? { background: info.color, borderColor: info.color } : { borderColor: `${info.color}20` }}
+                            style={active ? { background: info.color, borderColor: info.color } : { color: info.color, borderColor: `${info.color}20` }}
                           >
                             {active && <Check size={10} className="flex-shrink-0" />}
                             <span className="truncate">{v}</span>
