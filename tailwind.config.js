@@ -42,6 +42,7 @@ export default {
         alibaba: ['"Alibaba PuHuiTi"', '"Alibaba PuHuiTi 3.0"', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
         douyin: ['"Douyin Sans"', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
         zcool: ['"ZCool KuaiLe"', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
+        source: ['"Source Han Sans"', '"Noto Sans SC"', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
       },
       boxShadow: {
         seal: "0 2px 8px rgba(14, 165, 233, 0.25)",

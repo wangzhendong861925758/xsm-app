@@ -2,20 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 站酷快乐体（方正少儿简体的免费替代，同为圆润活泼儿童字体） */
+/* 思源柔黑体（Source Han Sans / Noto Sans SC） */
 @font-face {
-  font-family: "ZCool KuaiLe";
+  font-family: "Source Han Sans";
   font-weight: 400;
   font-style: normal;
   font-display: swap;
-  src: url("https://fonts.googleapis.cn/css2?family=ZCOOL+KuaiLe&display=swap");
+  src: url("https://fonts.gstatic.com/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYxNbPzS5HE.woff2") format("woff2");
 }
 @font-face {
-  font-family: "ZCool KuaiLe";
-  font-weight: 400;
+  font-family: "Source Han Sans";
+  font-weight: 500;
   font-style: normal;
   font-display: swap;
-  src: url("https://fonts.cdnfonts.com/s/5885/ZCOOL-KuaiLe.woff") format("woff");
+  src: url("https://fonts.gstatic.com/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYxNbPzS5HE.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Source Han Sans";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/notosanssc/v37/k3kXCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYxNbPzS5HE.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Source Han Sans";
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/notosanssc/v37/k3kXCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYxNbPzS5HE.woff2") format("woff2");
 }
 
 /* 阿里巴巴普惠体 3.0 */
