@@ -43,6 +43,7 @@ export default {
         douyin: ['"Douyin Sans"', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
         zcool: ['"ZCool KuaiLe"', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
         source: ['"Source Han Sans"', '"Noto Sans SC"', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
+        amber: ['"STHupo"', '"华文琥珀"', '"SentyTEA 新蒂下午茶体"', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
       },
       boxShadow: {
         seal: "0 2px 8px rgba(14, 165, 233, 0.25)",
