@@ -320,7 +320,7 @@ export default function HomePage() {
                 </button>
 
                 {isOpen && (
-                  <div className="absolute left-0 right-0 top-full z-20 mt-1 px-2.5 py-2 bg-white rounded-2xl shadow-card border animate-fade-in" style={{ borderColor: `${info.color}30` }}>
+                  <div className="absolute left-0 right-0 bottom-full z-20 mb-1 px-2.5 py-2 bg-white rounded-2xl shadow-card border animate-fade-in" style={{ borderColor: `${info.color}30` }}>
                     <div className="grid grid-cols-1 gap-1">
                       {versionsToShow.map((v) => {
                         const active = v === selectedVer;
