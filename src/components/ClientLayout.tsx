@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { Home, BookOpen, BarChart3, User } from "lucide-react";
 import { useStore } from "@/store/useStore";
@@ -36,7 +36,7 @@ export default function ClientLayout() {
   }, [checkAndRevokeExpired]);
 
   return (
-    <div className="mobile-frame flex flex-col">
+    <div className="mobile-frame flex flex-col font-alibaba">
       {/* 主内容区 */}
       <main className="flex-1 overflow-y-auto pb-20">
         <Outlet />

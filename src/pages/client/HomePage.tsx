@@ -109,19 +109,16 @@ export default function HomePage() {
   const currentGradeShort = GRADES.find((g) => g.key === selectedGrade)?.short || selectedGrade;
 
   return (
-    <div className="min-h-full relative">
-      {/* 整体渐变背景：上白→下蓝(#0084FF)，渐变起点在"当前学段"上方，跨度较大 */}
-      <div
-        className="absolute inset-0 -z-0 pointer-events-none"
-        style={{
-          background: "linear-gradient(to bottom, #FFFFFF 0%, #FFFFFF 42%, rgba(0,132,255,0.06) 52%, rgba(0,132,255,0.35) 65%, #0084FF 82%, #0084FF 100%)",
-        }}
-      />
-
+    <div
+      className="min-h-full relative"
+      style={{
+        background: "linear-gradient(to bottom, #FFFFFF 0%, #FFFFFF 8%, #D6ECFF 25%, #A3D8FF 42%, #66C2FF 60%, #2BB0FF 78%, #0099FF 95%, #0088FF 100%)",
+      }}
+    >
       {/* 板块一：毛笔字标题 */}
       <header className="relative px-5 pt-6 pb-3 flex items-center justify-between">
         <BrushTitle size="lg" text={siteConfig.brandName} seal={siteConfig.heroBadge} />
-        <span className="text-[10px] text-navy-800/50 font-kai">识途EVO</span>
+        <span className="text-[10px] text-navy-800/60 font-alibaba">识途EVO</span>
       </header>
 
       {/* 板块二：横屏轮播图 */}
@@ -143,7 +140,7 @@ export default function HomePage() {
                 />
               )}
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-navy-900/70 to-transparent p-3">
-                <p className="text-paper font-kai text-sm">{img.title}</p>
+                <p className="text-paper font-alibaba text-sm">{img.title}</p>
               </div>
             </div>
           ))}
@@ -159,10 +156,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 板块三：折叠式学段选择器 + 教材版本 */}
+      {/* 板块三：折叠式学段选择器 + 学习概况 */}
       <section className="relative px-5 mb-4">
         <div className="ink-card rounded-2xl overflow-hidden">
-          {/* 折叠头：仅显示当前学段，点击展开 */}
           <button
             onClick={() => setGradePanelOpen((v) => !v)}
             className="w-full flex items-center justify-between px-4 py-3"
@@ -170,14 +166,14 @@ export default function HomePage() {
             <div className="flex items-center gap-2">
               <span className="w-1 h-5 rounded-full bg-navy-600" />
               <div className="text-left">
-                <p className="font-kai text-sm font-bold text-navy-900 leading-none">
+                <p className="font-alibaba text-sm font-bold text-navy-900 leading-none">
                   当前学段 · {currentGradeShort}
                 </p>
-                <p className="text-[10px] text-navy-800/50 mt-0.5 font-kai">{selectedGrade}</p>
+                <p className="text-[10px] text-navy-800/50 mt-0.5 font-alibaba">{selectedGrade}</p>
               </div>
             </div>
             <div className="flex items-center gap-1.5 text-navy-800/50">
-              <span className="text-[10px] font-kai">{gradePanelOpen ? "收起" : "切换年级"}</span>
+              <span className="text-[10px] font-alibaba">{gradePanelOpen ? "收起" : "切换年级"}</span>
               <ChevronDown
                 size={16}
                 className={`transition-transform ${gradePanelOpen ? "rotate-180" : ""}`}
@@ -185,10 +181,9 @@ export default function HomePage() {
             </div>
           </button>
 
-          {/* 展开内容：年级网格 */}
           {gradePanelOpen && (
             <div className="px-4 pb-3 pt-1 border-t border-navy-500/8 animate-fade-in">
-              <p className="text-[10px] text-navy-800/50 font-kai mb-2 mt-2">初中 · 7-9 年级</p>
+              <p className="text-[10px] text-navy-800/50 font-alibaba mb-2 mt-2">初中 · 7-9 年级</p>
               <div className="grid grid-cols-3 gap-2">
                 {GRADES.map((g) => {
                   const active = selectedGrade === g.key;
@@ -196,7 +191,7 @@ export default function HomePage() {
                     <button
                       key={g.key}
                       onClick={() => handleGradeClick(g.key)}
-                      className={`px-2 py-2 rounded-xl text-xs font-kai border transition-all flex flex-col items-center ${
+                      className={`px-2 py-2 rounded-xl text-xs font-alibaba border transition-all flex flex-col items-center ${
                         active
                           ? "bg-navy-600 text-paper border-navy-600 shadow-seal"
                           : "bg-paper text-navy-900 border-navy-500/15 hover:border-navy-500/40"
@@ -212,36 +207,35 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* 学习概况三栏：真实数据 */}
         <div className="grid grid-cols-3 gap-2 mt-3 ink-card rounded-2xl p-3">
           <div className="flex flex-col items-center">
             <Flame size={18} className="text-navy-500 mb-1" />
-            <span className="font-display text-2xl text-navy-900 leading-none">
+            <span className="font-alibaba font-bold text-2xl text-navy-900 leading-none">
               {studyStreak}
             </span>
-            <span className="text-[10px] text-navy-800/50 mt-1">坚持天数</span>
+            <span className="text-[10px] text-navy-800/50 mt-1 font-alibaba">坚持天数</span>
           </div>
           <div className="flex flex-col items-center border-x border-navy-500/10">
             <Target size={18} className="text-navy-500 mb-1" />
-            <span className="font-display text-2xl text-navy-900 leading-none">
+            <span className="font-alibaba font-bold text-2xl text-navy-900 leading-none">
               {todayAnswered}
             </span>
-            <span className="text-[10px] text-navy-800/50 mt-1">今日答题</span>
+            <span className="text-[10px] text-navy-800/50 mt-1 font-alibaba">今日答题</span>
           </div>
           <div className="flex flex-col items-center">
             <TrendingUp size={18} className="text-navy-600 mb-1" />
-            <span className="font-display text-2xl text-navy-900 leading-none">
+            <span className="font-alibaba font-bold text-2xl text-navy-900 leading-none">
               {accuracy}
               <span className="text-sm">%</span>
             </span>
-            <span className="text-[10px] text-navy-800/50 mt-1">正确率</span>
+            <span className="text-[10px] text-navy-800/50 mt-1 font-alibaba">正确率</span>
           </div>
         </div>
       </section>
 
       {/* 板块四：学科入口 */}
       <section className="relative px-5 pb-6">
-        <h2 className="font-kai text-base font-bold text-white mb-3 flex items-center gap-1.5">
+        <h2 className="font-alibaba text-base font-bold text-white mb-3 flex items-center gap-1.5">
           <span className="w-1 h-4 rounded-full bg-white/80" />
           学科学习
         </h2>
@@ -278,10 +272,10 @@ export default function HomePage() {
 
                   <div className="relative flex items-start justify-between mb-2">
                     <div>
-                      <p className="font-kai text-base font-bold leading-none" style={{ color: info.color }}>
+                      <p className="font-alibaba text-base font-bold leading-none" style={{ color: info.color }}>
                         {info.name}
                       </p>
-                      <p className="text-[9px] text-navy-800/50 mt-1 font-kai">
+                      <p className="text-[9px] text-navy-800/50 mt-1 font-alibaba">
                         今日 <span className="font-bold text-base" style={{ color: info.color }}>{todayCount}</span>
                         <span className="text-[9px]"> 题</span>
                       </p>
@@ -304,7 +298,7 @@ export default function HomePage() {
                         }}
                       />
                     </div>
-                    <span className="text-[8px] font-kai flex-shrink-0" style={{ color: info.color }}>
+                    <span className="text-[8px] font-alibaba flex-shrink-0" style={{ color: info.color }}>
                       {stat.total > 0 ? `${rate}%` : "未练"}
                     </span>
                   </div>
@@ -313,7 +307,7 @@ export default function HomePage() {
                 <div className="px-3 py-2">
                   <button
                     onClick={() => handleStartLearn(tb.subject)}
-                    className="w-full py-2 rounded-xl text-xs font-kai font-bold flex items-center justify-center gap-1 transition-all active:scale-95"
+                    className="w-full py-2 rounded-xl text-xs font-alibaba font-bold flex items-center justify-center gap-1 transition-all active:scale-95"
                     style={{
                       background: info.color,
                       color: "#fff",
@@ -332,7 +326,7 @@ export default function HomePage() {
                   <div className="flex items-center gap-1 min-w-0">
                     <BookOpen size={11} style={{ color: info.color }} className="flex-shrink-0" />
                     <span
-                      className="text-[10px] font-kai font-bold px-1.5 py-0.5 rounded truncate"
+                      className="text-[10px] font-alibaba font-bold px-1.5 py-0.5 rounded truncate"
                       style={{ background: info.bgColor, color: info.color }}
                     >
                       {selectedVer}
@@ -354,7 +348,7 @@ export default function HomePage() {
                           <button
                             key={v}
                             onClick={() => handleSelectVersion(tb.subject, v)}
-                            className={`flex items-center gap-1 px-2 py-1.5 rounded text-[10px] font-kai border transition-all text-left ${
+                            className={`flex items-center gap-1 px-2 py-1.5 rounded text-[10px] font-alibaba border transition-all text-left ${
                               active
                                 ? "text-paper border-transparent"
                                 : "bg-paper text-navy-900 hover:border-navy-500/40"
