@@ -35,11 +35,12 @@ export default {
         },
       },
       fontFamily: {
-        brush: ['"Ma Shan Zheng"', '"ZCOOL XiaoWei"', 'cursive', 'serif'],
+        brush: ['"Douyin Sans"', '"Ma Shan Zheng"', '"ZCOOL XiaoWei"', 'cursive', 'serif'],
         kai: ['"LXGW WenKai"', '"Noto Serif SC"', 'serif'],
         serif: ['"LXGW WenKai"', '"Noto Serif SC"', 'serif'],
-        display: ['"LXGW WenKai"', '"Noto Serif SC"', 'serif'],
+        display: ['"Douyin Sans"', '"LXGW WenKai"', '"Noto Serif SC"', 'serif'],
         alibaba: ['"Alibaba PuHuiTi"', '"Alibaba PuHuiTi 3.0"', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
+        douyin: ['"Douyin Sans"', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
       },
       boxShadow: {
         seal: "0 2px 8px rgba(14, 165, 233, 0.25)",

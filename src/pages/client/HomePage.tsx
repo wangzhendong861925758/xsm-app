@@ -298,51 +298,53 @@ export default function HomePage() {
                   去学习 <ChevronRight size={13} />
                 </button>
 
-                <button
-                  onClick={() => setOpenVersionFor(isOpen ? null : tb.subject)}
-                  className="w-full flex items-center justify-between px-2 py-1.5 rounded-xl"
-                  style={{ background: `${info.color}08` }}
-                >
-                  <div className="flex items-center gap-1 min-w-0">
-                    <BookOpen size={11} style={{ color: info.color }} className="flex-shrink-0" />
-                    <span
-                      className="text-[10px] font-alibaba font-bold px-1.5 py-0.5 rounded truncate"
-                      style={{ background: `${info.color}12`, color: info.color }}
-                    >
-                      {selectedVer}
-                    </span>
-                  </div>
-                  <ChevronDown
-                    size={12}
-                    className={`transition-transform flex-shrink-0 ${isOpen ? "rotate-180" : ""}`}
-                    style={{ color: info.color }}
-                  />
-                </button>
-
-                {isOpen && (
-                  <div className="absolute left-0 right-0 bottom-full z-20 mb-1 px-2.5 py-2 bg-white rounded-2xl shadow-card border animate-fade-in" style={{ borderColor: `${info.color}30` }}>
-                    <div className="grid grid-cols-1 gap-1">
-                      {versionsToShow.map((v) => {
-                        const active = v === selectedVer;
-                        return (
-                          <button
-                            key={v}
-                            onClick={() => handleSelectVersion(tb.subject, v)}
-                            className={`flex items-center gap-1 px-2 py-1.5 rounded text-[10px] font-alibaba border transition-all text-left ${
-                              active
-                                ? "text-white border-transparent"
-                                : "bg-white hover:border-navy-500/40"
-                            }`}
-                            style={active ? { background: info.color, borderColor: info.color } : { color: info.color, borderColor: `${info.color}20` }}
-                          >
-                            {active && <Check size={10} className="flex-shrink-0" />}
-                            <span className="truncate">{v}</span>
-                          </button>
-                        );
-                      })}
+                <div className="relative">
+                  <button
+                    onClick={() => setOpenVersionFor(isOpen ? null : tb.subject)}
+                    className="w-full flex items-center justify-between px-2 py-1.5 rounded-xl relative z-10"
+                    style={{ background: `${info.color}08` }}
+                  >
+                    <div className="flex items-center gap-1 min-w-0">
+                      <BookOpen size={11} style={{ color: info.color }} className="flex-shrink-0" />
+                      <span
+                        className="text-[10px] font-alibaba font-bold px-1.5 py-0.5 rounded truncate"
+                        style={{ background: `${info.color}12`, color: info.color }}
+                      >
+                        {selectedVer}
+                      </span>
                     </div>
-                  </div>
-                )}
+                    <ChevronDown
+                      size={12}
+                      className={`transition-transform flex-shrink-0 ${isOpen ? "rotate-180" : ""}`}
+                      style={{ color: info.color }}
+                    />
+                  </button>
+
+                  {isOpen && (
+                    <div className="absolute left-0 right-0 bottom-full z-30 mb-1 px-2.5 py-2 bg-white rounded-2xl shadow-card border animate-fade-in" style={{ borderColor: `${info.color}30` }}>
+                      <div className="grid grid-cols-1 gap-1">
+                        {versionsToShow.map((v) => {
+                          const active = v === selectedVer;
+                          return (
+                            <button
+                              key={v}
+                              onClick={() => handleSelectVersion(tb.subject, v)}
+                              className={`flex items-center gap-1 px-2 py-1.5 rounded text-[10px] font-alibaba border transition-all text-left ${
+                                active
+                                  ? "text-white border-transparent"
+                                  : "bg-white hover:border-navy-500/40"
+                              }`}
+                              style={active ? { background: info.color, borderColor: info.color } : { color: info.color, borderColor: `${info.color}20` }}
+                            >
+                              {active && <Check size={10} className="flex-shrink-0" />}
+                              <span className="truncate">{v}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}
