@@ -1,6 +1,6 @@
-﻿import { useMemo, useState } from "react";
+﻿﻿﻿﻿﻿﻿﻿import { useMemo, useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ChevronLeft, CheckCircle2, XCircle, RotateCcw, Check, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle2, XCircle, RotateCcw, Check, Trash2 } from "lucide-react";
 import { useStore, type ErrorBookItem } from "@/store/useStore";
 import type { Question } from "@/data/types";
 
@@ -17,8 +17,9 @@ interface RedoView {
 
 // 将错题条目转为统一视图
 function fromErrorItem(it: ErrorBookItem): RedoView {
+  // ponytail: 同时按 顿号(、)、全角逗号(，)、半角逗号(,) 分割，兼容多选题答案的存储格式
   const correctTexts = (it.correctAnswer || "")
-    .split(/[，,]/)
+    .split(/[、，,]/)
     .map((s) => s.trim())
     .filter(Boolean);
   return {
@@ -60,12 +61,35 @@ function fromCollected(q: Question): RedoView {
 }
 
 export default function RedoQuestionPage() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const source = searchParams.get("source") || "errorbook";
   const questionId = searchParams.get("questionId") || "";
+  const subjectFilter = searchParams.get("subject") || "";
 
   const { errorBook, collectedQuestions, removeFromErrorBook, removeCollectedQuestion } = useStore();
+
+  // 当前题在列表中的位置（用于"下一题"）
+  const list = useMemo(() => {
+    if (source === "collected") {
+      return collectedQuestions;
+    }
+    return subjectFilter
+      ? errorBook.filter((e) => e.subject === subjectFilter)
+      : errorBook;
+  }, [source, subjectFilter, errorBook, collectedQuestions]);
+
+  const currentIndexInList = useMemo(
+    () => list.findIndex((item) =>
+      source === "collected"
+        ? (item as Question).id === questionId
+        : (item as ErrorBookItem).questionId === questionId,
+    ),
+    [list, questionId, source],
+  );
+
+  const hasPrev = currentIndexInList > 0;
+  const hasNext = currentIndexInList >= 0 && currentIndexInList < list.length - 1;
 
   const view: RedoView | null = useMemo(() => {
     if (source === "collected") {
@@ -78,6 +102,12 @@ export default function RedoQuestionPage() {
 
   const [selected, setSelected] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
+
+  // 切换题目时重置作答状态
+  useEffect(() => {
+    setSelected([]);
+    setSubmitted(false);
+  }, [questionId]);
 
   if (!view) {
     return (
@@ -123,16 +153,48 @@ export default function RedoQuestionPage() {
   const handleRemove = () => {
     if (source === "collected") {
       removeCollectedQuestion(questionId);
-      navigate("/app/collected");
     } else {
       removeFromErrorBook(questionId);
-      navigate("/app/error-book");
+    }
+    // 删除后优先跳到下一题，没有则返回列表
+    const nextIdx = source === "collected" ? currentIndexInList : currentIndexInList;
+    const remaining = list.filter((_, i) => i !== currentIndexInList);
+    if (remaining.length > 0) {
+      const targetIdx = Math.min(nextIdx, remaining.length - 1);
+      const item = remaining[targetIdx];
+      const nextId = source === "collected"
+        ? (item as Question).id
+        : (item as ErrorBookItem).questionId;
+      setSelected([]);
+      setSubmitted(false);
+      setSearchParams({
+        source,
+        questionId: nextId,
+        ...(subjectFilter ? { subject: subjectFilter } : {}),
+      });
+    } else {
+      navigate(source === "collected" ? "/app/collected" : "/app/error-book");
     }
   };
 
   const handleRedo = () => {
     setSelected([]);
     setSubmitted(false);
+  };
+
+  const goToIndex = (idx: number) => {
+    const item = list[idx];
+    if (!item) return;
+    const nextId = source === "collected"
+      ? (item as Question).id
+      : (item as ErrorBookItem).questionId;
+    setSelected([]);
+    setSubmitted(false);
+    setSearchParams({
+      source,
+      questionId: nextId,
+      ...(subjectFilter ? { subject: subjectFilter } : {}),
+    });
   };
 
   return (
@@ -150,6 +212,11 @@ export default function RedoQuestionPage() {
             {isMultiple && " · 可多选"}
           </p>
         </div>
+        {currentIndexInList >= 0 && list.length > 1 && (
+          <span className="text-[10px] text-navy-800/50 font-kai flex-shrink-0">
+            {currentIndexInList + 1}/{list.length}
+          </span>
+        )}
       </header>
 
       <main className="flex-1 overflow-y-auto px-4 py-4">
@@ -234,50 +301,80 @@ export default function RedoQuestionPage() {
       <footer className="px-4 py-3 border-t border-navy-500/10 bg-white pb-[calc(12px+env(safe-area-inset-bottom))]">
         <div className="flex gap-2">
           {!submitted ? (
-            <button
-              onClick={handleSubmit}
-              disabled={selected.length === 0}
-              className={`flex-1 py-3 rounded-xl font-kai text-sm font-bold ${
-                selected.length === 0
-                  ? "bg-navy-500/15 text-navy-800/40"
-                  : "btn-navy"
-              }`}
-            >
-              提交答案
-            </button>
+            <>
+              {hasPrev && (
+                <button
+                  onClick={() => goToIndex(currentIndexInList - 1)}
+                  className="flex items-center justify-center gap-1 px-3 py-3 rounded-xl border border-navy-500/15 text-navy-900 font-kai text-sm"
+                >
+                  <ChevronLeft size={14} />
+                  上一题
+                </button>
+              )}
+              <button
+                onClick={handleSubmit}
+                disabled={selected.length === 0}
+                className={`flex-1 py-3 rounded-xl font-kai text-sm font-bold ${
+                  selected.length === 0
+                    ? "bg-navy-500/15 text-navy-800/40"
+                    : "btn-navy"
+                }`}
+              >
+                提交答案
+              </button>
+              {hasNext && (
+                <button
+                  onClick={() => goToIndex(currentIndexInList + 1)}
+                  className="flex items-center justify-center gap-1 px-3 py-3 rounded-xl border border-navy-500/15 text-navy-900 font-kai text-sm"
+                >
+                  跳过
+                  <ChevronRight size={14} />
+                </button>
+              )}
+            </>
           ) : (
             <>
               <button
                 onClick={handleRedo}
-                className="flex items-center justify-center gap-1 px-4 py-3 rounded-xl border border-navy-500/15 text-navy-900 font-kai text-sm"
+                className="flex items-center justify-center gap-1 px-3 py-3 rounded-xl border border-navy-500/15 text-navy-900 font-kai text-sm"
               >
                 <RotateCcw size={14} />
-                再做一次
+                再做
               </button>
               {isCorrect && source === "errorbook" && (
                 <button
                   onClick={handleRemove}
-                  className="flex items-center justify-center gap-1 px-4 py-3 rounded-xl bg-green-500/15 text-green-700 font-kai text-sm font-bold"
+                  className="flex items-center justify-center gap-1 px-3 py-3 rounded-xl bg-green-500/15 text-green-700 font-kai text-sm font-bold"
                 >
                   <Check size={14} />
-                  已掌握，移出错题本
+                  已掌握
                 </button>
               )}
               {source === "collected" && (
                 <button
                   onClick={handleRemove}
-                  className="flex items-center justify-center gap-1 px-4 py-3 rounded-xl bg-red-500/10 text-red-600 font-kai text-sm font-bold"
+                  className="flex items-center justify-center gap-1 px-3 py-3 rounded-xl bg-red-500/10 text-red-600 font-kai text-sm font-bold"
                 >
                   <Trash2 size={14} />
                   取消收藏
                 </button>
               )}
-              <button
-                onClick={() => navigate(-1)}
-                className="flex-1 btn-navy py-3 rounded-xl font-kai text-sm font-bold"
-              >
-                返回列表
-              </button>
+              {hasNext ? (
+                <button
+                  onClick={() => goToIndex(currentIndexInList + 1)}
+                  className="flex-1 btn-navy py-3 rounded-xl font-kai text-sm font-bold flex items-center justify-center gap-1"
+                >
+                  下一题
+                  <ChevronRight size={14} />
+                </button>
+              ) : (
+                <button
+                  onClick={() => navigate(-1)}
+                  className="flex-1 btn-navy py-3 rounded-xl font-kai text-sm font-bold"
+                >
+                  返回列表
+                </button>
+              )}
             </>
           )}
         </div>

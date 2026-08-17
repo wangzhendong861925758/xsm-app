@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Trash2, BookX, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
 import { useStore } from "@/store/useStore";
@@ -106,7 +106,7 @@ export default function ErrorBookPage() {
                       <button
                         onClick={() =>
                           navigate(
-                            `/app/redo?source=errorbook&questionId=${encodeURIComponent(item.questionId)}`,
+                            `/app/redo?source=errorbook&questionId=${encodeURIComponent(item.questionId)}${filter !== "all" ? `&subject=${filter}` : ""}`,
                           )
                         }
                         className="text-navy-600 hover:text-navy-900 p-1 rounded hover:bg-navy-500/10"

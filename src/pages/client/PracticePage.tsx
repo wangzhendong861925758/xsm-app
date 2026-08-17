@@ -99,6 +99,8 @@ export default function PracticePage() {
   const [showResult, setShowResult] = useState(false); // 结算页
   // 用 ref 记录本次会话的 key，仅当学科/版本/数量变化时才重新生成题目
   const sessionKeyRef = useRef("");
+  // 再练一轮触发器：递增以强制 useEffect 重新生成题目
+  const [restartTrigger, setRestartTrigger] = useState(0);
 
   // 进入页面或切换学科/版本时，生成本轮题目（只计算一次，作答过程中不重算）
   useEffect(() => {
@@ -107,7 +109,7 @@ export default function PracticePage() {
       setSessionQuestions([]);
       return;
     }
-    const key = `${subjectKey}|${version}|${lessonTitle}|${sessionCount}`;
+    const key = `${subjectKey}|${version}|${lessonTitle}|${sessionCount}|${restartTrigger}`;
     // key 未变化则不重算（避免作答时 store 变化触发重入）
     if (key === sessionKeyRef.current) return;
     sessionKeyRef.current = key;
@@ -128,7 +130,7 @@ export default function PracticePage() {
     setCurrentIndex(0);
     setShowCard(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subjectKey, version, lessonTitle, sessionCount, versionQuestions]);
+  }, [subjectKey, version, lessonTitle, sessionCount, versionQuestions, restartTrigger]);
 
   const currentQ = sessionQuestions[currentIndex];
   const currentAnswer = currentQ ? answersMap[currentQ.id] : undefined;
@@ -168,6 +170,9 @@ export default function PracticePage() {
       </div>
     );
   }
+
+  // 从 store 实时读取收藏状态（sessionQuestions 是快照，不会随 store 更新）
+  const collectedNow = questions.find((q) => q.id === currentQ.id)?.collected ?? false;
 
   // 选择即作答，直接反馈
   // 统一用选项索引字母（A/B/C/D）作为答案比较媒介
@@ -287,9 +292,12 @@ export default function PracticePage() {
     : 0;
 
   const handleRestart = () => {
+    // 递增触发器强制 useEffect 重新生成题目（优先取未答过的题）
+    setRestartTrigger((n) => n + 1);
     setAnswersMap({});
     setCurrentIndex(0);
     setShowCard(false);
+    setShowResult(false);
   };
 
   const remainingCount = versionQuestions.filter(
@@ -386,7 +394,6 @@ export default function PracticePage() {
           </button>
           <button
             onClick={() => {
-              setShowResult(false);
               handleRestart();
             }}
             className="w-full py-3 rounded-xl border border-navy-500/15 text-navy-900 font-kai text-sm"
@@ -457,15 +464,15 @@ export default function PracticePage() {
           </span>
           <div className="flex-1" />
           <button
-            onClick={() => { toggleCollect(currentQ.id); showCollectToast(!currentQ.collected); }}
+            onClick={() => { toggleCollect(currentQ.id); showCollectToast(!collectedNow); }}
             className={`flex items-center gap-1 text-[12px] px-2.5 py-1 rounded-full transition-all ${
-              currentQ.collected
+              collectedNow
                 ? "bg-amber-50 text-amber-600 border border-amber-200"
                 : "bg-white text-navy-800/60 border border-navy-500/15"
             }`}
           >
-            <Star size={13} fill={currentQ.collected ? "currentColor" : "none"} strokeWidth={currentQ.collected ? 2.5 : 2} />
-            {currentQ.collected ? "已收藏" : "收藏"}
+            <Star size={13} fill={collectedNow ? "currentColor" : "none"} strokeWidth={collectedNow ? 2.5 : 2} />
+            {collectedNow ? "已收藏" : "收藏"}
           </button>
         </div>
 

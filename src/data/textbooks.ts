@@ -1,4 +1,4 @@
-﻿import type { Subject, SubjectInfo, TextbookConfig } from "./types";
+import type { Subject, SubjectInfo, TextbookConfig } from "./types";
 
 // 学科信息（小四门：生物/道法/历史/地理）
 // 全部统一为蓝白同色系，仅用深浅区分
@@ -274,12 +274,6 @@ export const TEXTBOOKS: TextbookConfig[] = [
   // ===== 九年级上册 =====
   {
     grade: "九年级上册",
-    subject: "biology",
-    subjectName: "生物",
-    versions: ["人教版", "北师大版", "苏教版", "济南版"],
-  },
-  {
-    grade: "九年级上册",
     subject: "politics",
     subjectName: "道法",
     versions: ["统编版"],
@@ -291,12 +285,6 @@ export const TEXTBOOKS: TextbookConfig[] = [
     versions: ["统编版"],
   },
   // ===== 九年级下册 =====
-  {
-    grade: "九年级下册",
-    subject: "biology",
-    subjectName: "生物",
-    versions: ["人教版", "北师大版", "苏教版", "济南版"],
-  },
   {
     grade: "九年级下册",
     subject: "politics",
