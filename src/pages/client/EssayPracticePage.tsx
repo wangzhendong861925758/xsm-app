@@ -1,4 +1,4 @@
-﻿import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import {
   ChevronLeft, ChevronRight, CheckCircle2, XCircle,
@@ -179,6 +179,7 @@ export default function EssayPracticePage() {
         id: `err-${currentQ.id}-${Date.now()}`,
         questionId: currentQ.id,
         subject: subjectKey,
+        type: "essay",
         grade: currentQ.grade,
         version: currentQ.version,
         stem: currentQ.stem,

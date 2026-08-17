@@ -1,4 +1,4 @@
-﻿﻿﻿﻿import { create } from "zustand";
+﻿﻿﻿import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User, Question, Subject, ClientAccount } from "@/data/types";
 import { CURRENT_USER, ADMIN_USERS, CAROUSEL_IMAGES } from "@/data/mock";
@@ -18,7 +18,7 @@ export interface ErrorBookItem {
   questionId: string;
   subject: Subject;
   /** 题目类型（重做时需要） */
-  type?: "single" | "multiple" | "judge";
+  type?: "single" | "multiple" | "judge" | "essay";
   grade?: string;
   version?: string;
   stem?: string;

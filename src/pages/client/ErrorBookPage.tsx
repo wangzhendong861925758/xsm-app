@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿import { useState } from "react";
+﻿﻿﻿﻿﻿﻿﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Trash2, BookX, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
 import { useStore } from "@/store/useStore";
@@ -76,9 +76,9 @@ export default function ErrorBookPage() {
               // 兼容：选择题从 q 读，大题从 item 本身读
               const stem = item.stem || q?.stem || "";
               const version = item.version || q?.version || "";
-              // 优先用 item.type 判断题型，避免考试错题因 questionId 不匹配而误标为大题
+              // 题型判断：优先 item.type，其次 q.type，最后用 options 推断（旧数据兜底）
               const itemType = item.type || q?.type;
-              const isEssay = itemType === "essay" || (!itemType && !q);
+              const isEssay = itemType === "essay" || (!itemType && (!q && !(item.options && item.options.length > 0)));
               // 选择题：优先取错题本里存的"对应错因"和"正确思路"
               const wrongReason = item.wrongReason;
               const rightThought = item.rightThought || item.analysis || q?.analysis || "";
