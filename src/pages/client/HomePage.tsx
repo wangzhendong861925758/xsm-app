@@ -252,61 +252,56 @@ export default function HomePage() {
             return (
               <div
                 key={tb.subject}
-                className="bg-white rounded-2xl overflow-visible relative shadow-card border border-gray-100"
+                className="bg-white rounded-3xl relative shadow-card p-3"
               >
-                <div className="relative px-3 pt-3 pb-2 overflow-hidden bg-white">
-                  <div className="relative flex items-start justify-between mb-2">
-                    <div>
-                      <p className="font-alibaba text-base font-bold leading-none text-black">
-                        {info.name}
-                      </p>
-                      <p className="text-[9px] mt-1 font-alibaba text-gray-500">
-                        今日 <span className="font-bold text-base text-black">{todayCount}</span>
-                        <span className="text-[9px]"> 题</span>
-                      </p>
-                    </div>
-                    <span
-                      className="w-9 h-9 rounded-xl flex items-center justify-center text-lg"
-                      style={{ background: `${info.color}15`, color: info.color }}
-                    >
-                      {info.icon}
-                    </span>
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <p className="font-alibaba text-base font-bold leading-none text-black">
+                      {info.name}
+                    </p>
+                    <p className="text-[9px] mt-1 font-alibaba text-gray-500">
+                      今日 <span className="font-bold text-base text-black">{todayCount}</span>
+                      <span className="text-[9px]"> 题</span>
+                    </p>
                   </div>
-
-                  <div className="flex items-center gap-1.5">
-                    <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: `${info.color}20` }}>
-                      <div
-                        className="h-full rounded-full transition-all duration-700"
-                        style={{
-                          width: `${stat.total > 0 ? rate : 0}%`,
-                          background: info.color,
-                        }}
-                      />
-                    </div>
-                    <span className="text-[8px] font-alibaba flex-shrink-0" style={{ color: info.color }}>
-                      {stat.total > 0 ? `${rate}%` : "未练"}
-                    </span>
-                  </div>
+                  <span
+                    className="w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
+                    style={{ background: `${info.color}15`, color: info.color }}
+                  >
+                    {info.icon}
+                  </span>
                 </div>
 
-                <div className="px-3 py-2">
-                  <button
-                    onClick={() => handleStartLearn(tb.subject)}
-                    className="w-full py-2 rounded-xl text-xs font-alibaba font-bold flex items-center justify-center gap-1 transition-all active:scale-95"
-                    style={{
-                      background: info.color,
-                      color: "#fff",
-                      boxShadow: `0 3px 8px ${info.color}40`,
-                    }}
-                  >
-                    去学习 <ChevronRight size={13} />
-                  </button>
+                <div className="flex items-center gap-1.5 mb-2">
+                  <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: `${info.color}20` }}>
+                    <div
+                      className="h-full rounded-full transition-all duration-700"
+                      style={{
+                        width: `${stat.total > 0 ? rate : 0}%`,
+                        background: info.color,
+                      }}
+                    />
+                  </div>
+                  <span className="text-[8px] font-alibaba flex-shrink-0" style={{ color: info.color }}>
+                    {stat.total > 0 ? `${rate}%` : "未练"}
+                  </span>
                 </div>
 
                 <button
+                  onClick={() => handleStartLearn(tb.subject)}
+                  className="w-full py-2 rounded-xl text-xs font-alibaba font-bold flex items-center justify-center gap-1 transition-all active:scale-95 mb-1"
+                  style={{
+                    background: info.color,
+                    color: "#fff",
+                  }}
+                >
+                  去学习 <ChevronRight size={13} />
+                </button>
+
+                <button
                   onClick={() => setOpenVersionFor(isOpen ? null : tb.subject)}
-                  className="w-full flex items-center justify-between px-3 py-1.5 border-t"
-                  style={{ background: "#fff", borderColor: `${info.color}15` }}
+                  className="w-full flex items-center justify-between px-2 py-1.5 rounded-xl"
+                  style={{ background: `${info.color}08` }}
                 >
                   <div className="flex items-center gap-1 min-w-0">
                     <BookOpen size={11} style={{ color: info.color }} className="flex-shrink-0" />
@@ -325,7 +320,7 @@ export default function HomePage() {
                 </button>
 
                 {isOpen && (
-                  <div className="absolute left-0 right-0 top-full z-20 mt-0.5 px-2.5 py-2 bg-white rounded-xl shadow-card border animate-fade-in" style={{ borderColor: `${info.color}30` }}>
+                  <div className="absolute left-0 right-0 top-full z-20 mt-1 px-2.5 py-2 bg-white rounded-2xl shadow-card border animate-fade-in" style={{ borderColor: `${info.color}30` }}>
                     <div className="grid grid-cols-1 gap-1">
                       {versionsToShow.map((v) => {
                         const active = v === selectedVer;
