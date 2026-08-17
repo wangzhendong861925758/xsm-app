@@ -255,7 +255,7 @@ export default function HomePage() {
                 className="bg-white rounded-3xl relative shadow-card p-3"
               >
                 <div className="flex items-start justify-between mb-2">
-                  <div>
+                  <div className="pt-1 pl-1">
                     <p className="font-alibaba text-xl font-bold leading-none text-black">
                       {info.name}
                     </p>
