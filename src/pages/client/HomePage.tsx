@@ -252,16 +252,16 @@ export default function HomePage() {
             return (
               <div
                 key={tb.subject}
-                className="bg-white rounded-2xl overflow-visible relative shadow-card"
+                className="bg-white rounded-2xl overflow-visible relative shadow-card border border-gray-100"
               >
                 <div className="relative px-3 pt-3 pb-2 overflow-hidden bg-white">
                   <div className="relative flex items-start justify-between mb-2">
                     <div>
-                      <p className="font-alibaba text-base font-bold leading-none" style={{ color: info.color }}>
+                      <p className="font-alibaba text-base font-bold leading-none text-black">
                         {info.name}
                       </p>
-                      <p className="text-[9px] mt-1 font-alibaba" style={{ color: info.color, opacity: 0.7 }}>
-                        今日 <span className="font-bold text-base" style={{ color: info.color }}>{todayCount}</span>
+                      <p className="text-[9px] mt-1 font-alibaba text-gray-500">
+                        今日 <span className="font-bold text-base text-black">{todayCount}</span>
                         <span className="text-[9px]"> 题</span>
                       </p>
                     </div>
