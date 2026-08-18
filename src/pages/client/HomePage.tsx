@@ -121,8 +121,6 @@ export default function HomePage() {
     setVersionPickerFor(null);
   };
 
-  const currentGradeShort = GRADES.find((g) => g.key === selectedGrade)?.short || selectedGrade;
-
   const bannerFeatures = [
     { emoji: "📚", title: "精准题库覆盖初中全科" },
     { emoji: "📝", title: "智能错题本" },
