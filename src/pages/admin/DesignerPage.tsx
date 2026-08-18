@@ -10,6 +10,9 @@ import {
   Download,
   Upload,
   RotateCcw,
+  ImagePlus,
+  Eye,
+  Layers,
 } from "lucide-react";
 import { GRADES, getTextbooksByGrade, SUBJECTS } from "@/data/textbooks";
 import type { Subject } from "@/data/types";
@@ -157,7 +160,11 @@ export default function DesignerPage() {
   const [selectedGrade, setGrade] = useState("八年级下册");
   const [bannerIndex, setBannerIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<"preview" | "json">("preview");
+  const [refImage, setRefImage] = useState<string | null>(null);
+  const [overlayOpacity, setOverlayOpacity] = useState(0.5);
+  const [showRef, setShowRef] = useState(true);
   const fileRef = useRef<HTMLInputElement>(null);
+  const refFileRef = useRef<HTMLInputElement>(null);
 
   const SLIDES = ["/images/slide1.jpg", "/images/slide2.jpg", "/images/slide3.jpg"];
   const textbooks = getTextbooksByGrade(selectedGrade);
@@ -199,11 +206,19 @@ export default function DesignerPage() {
     reader.readAsText(file);
   };
 
+  const uploadRefImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => setRefImage(ev.target?.result as string);
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="flex h-screen bg-gray-900 text-white overflow-hidden">
       {/* 左侧：实时预览 */}
       <div className="flex-1 overflow-auto flex flex-col items-center py-6 bg-gray-950">
-        <div className="mb-3 flex gap-2">
+        <div className="mb-3 flex gap-2 flex-wrap justify-center">
           <button onClick={() => exportConfig()} className="px-4 py-2 bg-green-600 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-green-700">
             <Download size={16} /> 导出配置
           </button>
@@ -214,6 +229,10 @@ export default function DesignerPage() {
             <RotateCcw size={16} /> 重置
           </button>
           <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={importConfig} />
+          <button onClick={() => refFileRef.current?.click()} className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 ${refImage ? "bg-purple-600 hover:bg-purple-700" : "bg-gray-700 hover:bg-gray-600"}`}>
+            <ImagePlus size={16} /> {refImage ? "参考图已加载" : "上传参考图"}
+          </button>
+          <input ref={refFileRef} type="file" accept="image/*" className="hidden" onChange={uploadRefImage} />
           <button
             onClick={() => setActiveTab(activeTab === "preview" ? "json" : "preview")}
             className="px-4 py-2 bg-orange-600 rounded-lg text-sm font-bold"
@@ -222,6 +241,37 @@ export default function DesignerPage() {
           </button>
         </div>
 
+        {/* 对比控制栏 */}
+        {refImage && activeTab === "preview" && (
+          <div className="mb-3 flex items-center gap-3 bg-gray-800 px-4 py-2 rounded-lg">
+            <button
+              onClick={() => setShowRef(!showRef)}
+              className={`px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1 ${showRef ? "bg-purple-600 text-white" : "bg-gray-700 text-gray-400"}`}
+            >
+              <Layers size={14} /> 参考图
+            </button>
+            <div className="flex items-center gap-2 flex-1">
+              <span className="text-[10px] text-gray-400">参考图</span>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={overlayOpacity}
+                onChange={(e) => setOverlayOpacity(parseFloat(e.target.value))}
+                className="flex-1"
+              />
+              <span className="text-[10px] text-gray-400">预览</span>
+            </div>
+            <span className="text-[10px] text-gray-500 font-mono w-10 text-right">{Math.round(overlayOpacity * 100)}%</span>
+            {refImage && (
+              <button onClick={() => { setRefImage(null); setShowRef(true); }} className="text-[10px] text-red-400 hover:text-red-300">
+                移除
+              </button>
+            )}
+          </div>
+        )}
+
         {activeTab === "json" ? (
           <pre className="text-[11px] text-green-300 font-mono p-4 max-w-2xl overflow-auto">
             {JSON.stringify(config, null, 2)}
@@ -229,6 +279,12 @@ export default function DesignerPage() {
         ) : (
           /* 预览区 — 复刻 HomePage 渲染 */
           <div className="w-[375px] min-h-[812px] relative" style={{ background: config.pageBg, borderRadius: 24, overflow: "hidden", boxShadow: "0 8px 40px rgba(0,0,0,0.5)" }}>
+            {/* 参考图叠加层 */}
+            {showRef && refImage && (
+              <img src={refImage} alt="参考图" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", opacity: 1 - overlayOpacity, zIndex: 0, pointerEvents: "none" }} />
+            )}
+            {/* 实时预览层 */}
+            <div style={{ position: "relative", zIndex: 1, opacity: overlayOpacity }}>
             {/* 顶部蓝色渐变区域 */}
             <div className="relative" style={{ background: `linear-gradient(180deg, ${config.topGradientFrom} 0%, ${config.topGradientMid} 50%, ${config.topGradientTo} 100%)`, paddingBottom: config.topPaddingBottom }}>
               <div style={{ paddingLeft: config.brandPaddingX, paddingRight: config.brandPaddingX, paddingTop: config.brandPaddingTop }}>
@@ -355,6 +411,7 @@ export default function DesignerPage() {
                 })}
               </div>
             </div>
+            </div>{/* 关闭实时预览层 */}
           </div>
         )}
       </div>
