@@ -120,11 +120,11 @@ export default function HomePage() {
       <div className="relative" style={{ background: "linear-gradient(180deg, #4477FF 0%, #3366EE 60%, #2255DD 100%)", paddingBottom: "12px" }}>
         {/* 左上角品牌图 ac.png（替换时间、图标、文字） */}
         <div className="px-4 pt-3">
-          <img src="/images/ac.png" alt="识途EVO" className="h-12 w-auto object-contain" style={{ imageRendering: "auto" }} />
+          <img src="/images/ac.png" alt="识途EVO" className="h-[72px] w-auto object-contain" style={{ imageRendering: "auto" }} />
         </div>
 
         {/* 轮播图（slide1/2/3.jpg） */}
-        <div className="mx-4 mt-3 rounded-2xl overflow-hidden relative aspect-[16/9] bg-navy-100">
+        <div className="mx-4 mt-3 rounded-2xl overflow-hidden relative aspect-[8/3] bg-navy-100">
           {SLIDES.map((src, i) => (
             <div
               key={src}
