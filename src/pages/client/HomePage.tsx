@@ -120,7 +120,7 @@ export default function HomePage() {
       <div className="relative" style={{ background: "linear-gradient(180deg, #4477FF 0%, #3366EE 60%, #2255DD 100%)", paddingBottom: "12px" }}>
         {/* 左上角品牌图 ac.png（替换时间、图标、文字） */}
         <div className="px-4 pt-3">
-          <img src="/images/ac.png" alt="识途EVO" className="h-9 w-auto object-contain" />
+          <img src="/images/ac.png" alt="识途EVO" className="h-12 w-auto object-contain" style={{ imageRendering: "auto" }} />
         </div>
 
         {/* 轮播图（slide1/2/3.jpg） */}
@@ -152,7 +152,7 @@ export default function HomePage() {
           {/* 所学年级标题栏 */}
           <div className="flex items-center justify-between relative">
             <div className="flex items-center gap-2 px-4 py-3">
-              <img src="/images/ss.png" alt="所学年级" className="h-6 w-6 object-contain" />
+              <img src="/images/ss.png" alt="所学年级" className="h-8 w-8 object-contain" />
               <span className="font-alibaba font-bold text-[18px] text-gray-800">所学年级</span>
             </div>
             <button
@@ -243,7 +243,7 @@ export default function HomePage() {
                     <img
                       src={SUBJECT_ICONS[tb.subject]}
                       alt={info.name}
-                      className="w-7 h-7 object-contain"
+                      className="w-9 h-9 object-contain"
                     />
                   </div>
                   <span className="font-alibaba font-black text-[22px] text-gray-800 leading-none">
