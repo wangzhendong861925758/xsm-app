@@ -6,15 +6,6 @@ import {
   Flame,
   Target,
   TrendingUp,
-  Shield,
-  Lightbulb,
-  FlaskConical,
-  Leaf,
-  Scale,
-  Landmark,
-  Globe2,
-  Sparkles,
-  Crown,
   Check,
   X,
 } from "lucide-react";
@@ -23,14 +14,16 @@ import { useStore } from "@/store/useStore";
 import { fetchVersions } from "@/lib/api";
 import type { Subject } from "@/data/types";
 
-const SUBJECT_ICONS: Record<string, React.ReactNode> = {
-  physics: <Lightbulb size={22} color="#fff" strokeWidth={2.2} />,
-  chemistry: <FlaskConical size={22} color="#fff" strokeWidth={2.2} />,
-  biology: <Leaf size={22} color="#fff" strokeWidth={2.2} />,
-  politics: <Scale size={22} color="#fff" strokeWidth={2.2} />,
-  history: <Landmark size={22} color="#fff" strokeWidth={2.2} />,
-  geography: <Globe2 size={22} color="#fff" strokeWidth={2.2} />,
+const SUBJECT_ICONS: Record<string, string> = {
+  physics: "/images/icon-physics.png",
+  chemistry: "/images/icon-chemistry.png",
+  biology: "/images/icon-biology.png",
+  politics: "/images/icon-politics.png",
+  history: "/images/icon-history.png",
+  geography: "/images/icon-geography.png",
 };
+
+const SLIDES = ["/images/slide1.jpg", "/images/slide2.jpg", "/images/slide3.jpg"];
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -91,7 +84,7 @@ export default function HomePage() {
   }, [selectedGrade]);
 
   useEffect(() => {
-    const t = setInterval(() => setBannerIndex((i) => (i + 1) % 4), 3500);
+    const t = setInterval(() => setBannerIndex((i) => (i + 1) % SLIDES.length), 3500);
     return () => clearInterval(t);
   }, []);
 
@@ -121,67 +114,32 @@ export default function HomePage() {
     setVersionPickerFor(null);
   };
 
-  const bannerFeatures = [
-    { emoji: "📚", title: "精准题库覆盖初中全科" },
-    { emoji: "📝", title: "智能错题本" },
-    { emoji: "⚡", title: "超级考点速记" },
-    { emoji: "🎯", title: "模拟考试系统" },
-  ];
-
   return (
     <div className="min-h-full relative" style={{ background: "#F0F4FF" }}>
       {/* 顶部蓝色渐变区域 */}
       <div className="relative" style={{ background: "linear-gradient(180deg, #4477FF 0%, #3366EE 60%, #2255DD 100%)", paddingBottom: "12px" }}>
-        {/* 状态栏占位 */}
-        <div className="px-5 pt-3 flex items-center justify-between text-white text-[13px] font-alibaba">
-          <span className="font-bold">{new Date().getHours().toString().padStart(2,"0")}:{new Date().getMinutes().toString().padStart(2,"0")}</span>
+        {/* 左上角品牌图 ac.png（替换时间、图标、文字） */}
+        <div className="px-4 pt-3">
+          <img src="/images/ac.png" alt="识途EVO" className="h-9 w-auto object-contain" />
         </div>
 
-        {/* AI 智能题库 标题 */}
-        <div className="px-5 pt-4 pb-2 flex items-center gap-2">
-          <Sparkles size={28} color="#FFD700" className="mr-1" />
-          <h1 className="text-white font-alibaba font-black text-[28px] tracking-wide" style={{ lineHeight: 1.2 }}>
-            AI 智能题库
-          </h1>
-        </div>
-
-        {/* 知刷PRO横幅卡片 */}
-        <div className="mx-4 mt-3 rounded-2xl overflow-hidden relative" style={{ background: "linear-gradient(135deg, #B8E0FF 0%, #FFE8D0 50%, #FFD0C0 100%)", minHeight: "150px" }}>
-          <div className="relative z-10 p-4">
-            <div className="flex items-center gap-1 mb-3">
-              <Crown size={20} color="#FF8C00" />
-              <span className="font-alibaba font-black text-[20px]" style={{ color: "#1B3A80" }}>
-                知刷PRO
-              </span>
-              <span className="font-alibaba font-bold text-[16px]" style={{ color: "#4466AA" }}>
-                × 初中小四门
-              </span>
+        {/* 轮播图（slide1/2/3.jpg） */}
+        <div className="mx-4 mt-3 rounded-2xl overflow-hidden relative aspect-[16/9] bg-navy-100">
+          {SLIDES.map((src, i) => (
+            <div
+              key={src}
+              className={`absolute inset-0 transition-opacity duration-700 ${i === bannerIndex ? "opacity-100" : "opacity-0"}`}
+            >
+              <img src={src} alt={`轮播 ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
             </div>
-
-            {/* 功能图标横滑 */}
-            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
-              {bannerFeatures.map((f, i) => (
-                <div
-                  key={i}
-                  className="flex-shrink-0 bg-white/70 rounded-2xl p-2 flex flex-col items-center justify-center"
-                  style={{ width: "80px", minHeight: "80px", backdropFilter: "blur(4px)" }}
-                >
-                  <div className="text-[32px] mb-1 leading-none">{f.emoji}</div>
-                  <p className="text-[10px] font-alibaba font-bold text-center leading-tight" style={{ color: "#223366" }}>
-                    {f.title}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-          {/* 立即开通会员按钮 */}
-          <button className="absolute bottom-3 right-3 z-10 px-4 py-1.5 rounded-full font-alibaba font-bold text-white text-[13px]" style={{ background: "linear-gradient(90deg, #3388FF, #7744FF)", boxShadow: "0 2px 8px rgba(100,80,255,0.4)" }}>
-            立即开通会员
-          </button>
-          {/* 轮播指示器 */}
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1 z-10">
-            {bannerFeatures.map((_, i) => (
-              <span key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i === bannerIndex % 2 ? "bg-white" : "bg-white/40"}`} />
+          ))}
+          <div className="absolute bottom-2 right-3 flex gap-1.5 z-10">
+            {SLIDES.map((_, i) => (
+              <span
+                key={i}
+                className={`carousel-dot ${i === bannerIndex ? "active" : ""}`}
+                onClick={() => setBannerIndex(i)}
+              />
             ))}
           </div>
         </div>
@@ -194,7 +152,7 @@ export default function HomePage() {
           {/* 所学年级标题栏 */}
           <div className="flex items-center justify-between relative">
             <div className="flex items-center gap-2 px-4 py-3">
-              <Shield size={22} fill="#3388FF" stroke="#3388FF" />
+              <img src="/images/ss.png" alt="所学年级" className="h-6 w-6 object-contain" />
               <span className="font-alibaba font-bold text-[18px] text-gray-800">所学年级</span>
             </div>
             <button
@@ -279,10 +237,14 @@ export default function HomePage() {
                 {/* 顶部：图标 + 学科名 */}
                 <div className="flex items-center gap-2 mb-3">
                   <div
-                    className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0"
+                    className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden"
                     style={{ background: info.color, boxShadow: `0 3px 8px ${info.color}40` }}
                   >
-                    {SUBJECT_ICONS[tb.subject]}
+                    <img
+                      src={SUBJECT_ICONS[tb.subject]}
+                      alt={info.name}
+                      className="w-7 h-7 object-contain"
+                    />
                   </div>
                   <span className="font-alibaba font-black text-[22px] text-gray-800 leading-none">
                     {info.name}
