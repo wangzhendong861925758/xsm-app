@@ -1,4 +1,4 @@
-﻿﻿﻿﻿import { useNavigate, useSearchParams } from "react-router-dom";
+﻿﻿﻿﻿﻿﻿import { useNavigate, useSearchParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Award, BookOpen } from "lucide-react";
 import { EXPERT_NOTES } from "@/data/expertNotes";
 

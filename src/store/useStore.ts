@@ -1,4 +1,4 @@
-﻿﻿﻿import { create } from "zustand";
+﻿﻿﻿﻿﻿﻿﻿import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User, Question, Subject, ClientAccount } from "@/data/types";
 import { CURRENT_USER, ADMIN_USERS, CAROUSEL_IMAGES } from "@/data/mock";
@@ -81,6 +81,10 @@ interface AppState {
   todayLearned: Record<string, number>; // subject -> count
   // 今日各学科答题统计（正确数/总数），用于首页正确率进度条
   todayStats: Record<string, { correct: number; total: number }>;
+  // 各学科累计答题总数（跨会话累计，用于首页"已学习xx道题"）
+  subjectTotalAnswered: Record<string, number>;
+  // 各学科累计正确数（用于首页正确率进度条）
+  subjectTotalCorrect: Record<string, number>;
   // 已答题目 ID 记录（用于去重，每次刷题不重复）
   answeredHistory: string[];
   // 学习日期记录（YYYY-MM-DD），用于计算坚持天数
@@ -167,6 +171,8 @@ export const useStore = create<AppState>()(
       adminLoggedIn: false,
       todayLearned: {},
       todayStats: {},
+      subjectTotalAnswered: {},
+      subjectTotalCorrect: {},
       answeredHistory: [],
       studyDates: [],
       siteConfig: DEFAULT_SITE_CONFIG,
@@ -261,6 +267,14 @@ export const useStore = create<AppState>()(
             todayStats: {
               ...s.todayStats,
               [subject]: { correct: cur.correct + (correct ? 1 : 0), total: cur.total + 1 },
+            },
+            subjectTotalAnswered: {
+              ...s.subjectTotalAnswered,
+              [subject]: (s.subjectTotalAnswered[subject] || 0) + 1,
+            },
+            subjectTotalCorrect: {
+              ...s.subjectTotalCorrect,
+              [subject]: (s.subjectTotalCorrect[subject] || 0) + (correct ? 1 : 0),
             },
             studyDates: s.studyDates.includes(today) ? s.studyDates : [...s.studyDates, today],
           };
@@ -397,27 +411,33 @@ export const useStore = create<AppState>()(
     }),
     {
       name: "xsm-app-store",
-      version: 3,
+      version: 4,
       migrate: (persisted: any, version: number) => {
         if (version < 2) {
           const { questions: _q, loadedQuestionKey: _k, ...rest } = persisted || {};
           persisted = rest;
         }
         if (version < 3) {
-          // v2 → v3：强制刷新轮播图（旧缓存含失效的外部URL）
           if (persisted?.siteConfig) {
             persisted.siteConfig.carousel = CAROUSEL_IMAGES.map((c) => ({ ...c }));
+          }
+        }
+        if (version < 4) {
+          if (persisted) {
+            persisted.subjectTotalAnswered = {};
+            persisted.subjectTotalCorrect = {};
           }
         }
         return persisted;
       },
       partialize: (s) => ({
         selectedGrade: s.selectedGrade,
-        // ponytail: 不持久化 44 万题全量数据（太大），按需加载即可
         adminUsers: s.adminUsers,
         adminLoggedIn: s.adminLoggedIn,
         todayLearned: s.todayLearned,
         todayStats: s.todayStats,
+        subjectTotalAnswered: s.subjectTotalAnswered,
+        subjectTotalCorrect: s.subjectTotalCorrect,
         answeredHistory: s.answeredHistory,
         studyDates: s.studyDates,
         siteConfig: s.siteConfig,
@@ -426,7 +446,6 @@ export const useStore = create<AppState>()(
         clientAccounts: s.clientAccounts,
         currentClientCode: s.currentClientCode,
       }),
-      // 合并策略：题目改为静态分片按需加载，不再持久化；只继承用户作答状态
       merge: (persisted, current) => {
         const p = (persisted as Partial<AppState>) || {};
         return {
@@ -445,6 +464,8 @@ export const useStore = create<AppState>()(
           adminUsers: p.adminUsers ?? current.adminUsers,
           todayLearned: p.todayLearned ?? current.todayLearned,
           todayStats: p.todayStats ?? current.todayStats,
+          subjectTotalAnswered: p.subjectTotalAnswered ?? current.subjectTotalAnswered,
+          subjectTotalCorrect: p.subjectTotalCorrect ?? current.subjectTotalCorrect,
         };
       },
     },
