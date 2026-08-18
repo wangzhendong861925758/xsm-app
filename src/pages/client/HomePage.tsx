@@ -117,7 +117,7 @@ export default function HomePage() {
   return (
     <div className="min-h-full relative" style={{ background: "#F0F4FF" }}>
       {/* 顶部蓝色渐变区域 */}
-      <div className="relative" style={{ background: "linear-gradient(180deg, #4477FF 0%, #3366EE 60%, #2255DD 100%)", paddingBottom: "12px" }}>
+      <div className="relative" style={{ background: "linear-gradient(180deg, #3B76F7 0%, #3559E8 50%, #2D4CE3 100%)", paddingBottom: "12px" }}>
         {/* 左上角品牌图 ac.png（替换时间、图标、文字） */}
         <div className="px-4 pt-3">
           <img src="/images/ac.png" alt="识途EVO" className="h-[72px] w-auto object-contain" style={{ imageRendering: "auto" }} />
