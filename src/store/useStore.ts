@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { create } from "zustand";
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User, Question, Subject, ClientAccount } from "@/data/types";
 import { CURRENT_USER, ADMIN_USERS, CAROUSEL_IMAGES } from "@/data/mock";
@@ -127,8 +127,6 @@ interface AppState {
   resetAnsweredBySubjectVersion: (subject: string, version: string) => void;
   updateSiteConfig: (patch: Partial<SiteConfig>) => void;
   resetSiteConfig: () => void;
-  updateHomeDesign: (config: HomeDesignConfig) => void;
-  resetHomeDesign: () => void;
   setSelectedVersion: (subject: string, version: string) => void;
   addToErrorBook: (item: ErrorBookItem) => void;
   removeFromErrorBook: (questionId: string) => void;
@@ -304,8 +302,6 @@ export const useStore = create<AppState>()(
       updateSiteConfig: (patch) =>
         set((s) => ({ siteConfig: { ...s.siteConfig, ...patch } })),
       resetSiteConfig: () => set({ siteConfig: DEFAULT_SITE_CONFIG }),
-      updateHomeDesign: (config) => set({ homeDesign: config }),
-      resetHomeDesign: () => set({ homeDesign: DEFAULT_HOME_DESIGN }),
 
       setSelectedVersion: (subject, version) =>
         set((s) => ({ selectedVersions: { ...s.selectedVersions, [subject]: version } })),

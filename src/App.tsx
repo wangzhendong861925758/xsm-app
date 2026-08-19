@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import ClientLayout from "@/components/ClientLayout";
 import HomePage from "@/pages/client/HomePage";
 import ExamPage from "@/pages/client/ExamPage";
@@ -22,7 +22,6 @@ import AdminUsers from "@/pages/admin/AdminUsers";
 import AdminQuestions from "@/pages/admin/AdminQuestions";
 import AdminStats from "@/pages/admin/AdminStats";
 import AdminVisual from "@/pages/admin/AdminVisual";
-import DesignerPage from "@/pages/admin/DesignerPage";
 import { useStore } from "@/store/useStore";
 import type { ReactNode } from "react";
 
@@ -84,9 +83,6 @@ export default function App() {
         </Route>
         <Route path="/admin/visual" element={<AdminLayout />}>
           <Route index element={<AdminVisual />} />
-        </Route>
-        <Route path="/admin/designer" element={<AdminLayout />}>
-          <Route index element={<DesignerPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
