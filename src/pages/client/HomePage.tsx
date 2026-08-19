@@ -3,10 +3,8 @@ import { useNavigate } from "react-router-dom";
 import {
   ChevronRight,
   ChevronDown,
-  Check,
-  X,
 } from "lucide-react";
-import { GRADES, getTextbooksByGrade, SUBJECTS } from "@/data/textbooks";
+import { getTextbooksByGrade, SUBJECTS } from "@/data/textbooks";
 import { useStore } from "@/store/useStore";
 import { fetchVersions } from "@/lib/api";
 import type { Subject } from "@/data/types";
@@ -133,8 +131,6 @@ export default function HomePage() {
     homeDesign,
   } = useStore();
   const c = { ...FALLBACK, ...homeDesign };
-  const [gradeSelectorOpen, setGradeSelectorOpen] = useState(false);
-  const [versionPickerFor, setVersionPickerFor] = useState<Subject | null>(null);
   const [bannerIndex, setBannerIndex] = useState(0);
 
   const todayAnswered = Object.values(todayLearned).reduce((a, b) => a + b, 0);
@@ -181,11 +177,6 @@ export default function HomePage() {
     return () => clearInterval(t);
   }, []);
 
-  const handleGradeSelect = (grade: string) => {
-    setSelectedGrade(grade);
-    setGradeSelectorOpen(false);
-  };
-
   const handleStartLearn = (subject: Subject) => {
     checkAndRevokeExpired();
     const current = useStore.getState().clientAccounts.find((a) => a.code === currentClientCode);
@@ -200,11 +191,6 @@ export default function HomePage() {
       if (version) setSelectedVersion(subject, version);
     }
     navigate(`/app/chapter/${subject}?version=${encodeURIComponent(version)}`);
-  };
-
-  const handleSelectVersion = (subject: Subject, version: string) => {
-    setSelectedVersion(subject, version);
-    setVersionPickerFor(null);
   };
 
   // 生成锯齿状 clip-path（统计卡片上边）
@@ -229,36 +215,38 @@ export default function HomePage() {
     }}>
       {/* 顶部蓝色区域 + 轮播 */}
       <div className="relative" style={{ paddingBottom: 60 }}>
-        {/* 左上角品牌文字 — 替换 ac.png，矢量永远清晰 */}
-        <div style={{ paddingLeft: c.brandPaddingX, paddingRight: c.brandPaddingX, paddingTop: c.brandPaddingTop, paddingBottom: 8, display: "flex", alignItems: "center", gap: 10 }}>
+        {/* 左上角品牌 — AI 设计感（双色字 + 渐变描边 + 阴影） */}
+        <div style={{ paddingLeft: c.brandPaddingX, paddingRight: c.brandPaddingX, paddingTop: c.brandPaddingTop, paddingBottom: 8, display: "flex", alignItems: "baseline", gap: 4 }}>
+          {/* "AI" 双色：A 渐变填充，I 用亮青色 */}
           <span
             className="font-alibaba"
             style={{
               fontSize: c.brandFontSize,
               fontWeight: 900,
-              color: c.brandColor,
-              letterSpacing: c.brandLetterSpacing,
-              textShadow: "0 2px 12px rgba(0,0,0,0.18)",
               lineHeight: 1,
-              display: "inline-block",
-              whiteSpace: "nowrap",
+              background: "linear-gradient(135deg, #FFFFFF 0%, #B0D0FF 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              filter: "drop-shadow(0 2px 10px rgba(0,0,0,0.25))",
+              letterSpacing: 2,
             }}
           >
-            {c.brandText}
+            AI
           </span>
+          {/* "智能题库" 白色实心 */}
           <span
             className="font-alibaba"
             style={{
-              fontSize: 12,
-              fontWeight: 700,
-              color: "rgba(255,255,255,0.75)",
-              letterSpacing: 4,
+              fontSize: c.brandFontSize - 6,
+              fontWeight: 800,
+              color: c.brandColor,
+              textShadow: "0 2px 10px rgba(0,0,0,0.2)",
               lineHeight: 1,
-              marginLeft: 2,
-              marginTop: 2,
+              letterSpacing: c.brandLetterSpacing,
             }}
           >
-            EVO
+            智能题库
           </span>
         </div>
 
@@ -287,9 +275,9 @@ export default function HomePage() {
               <img src={c.gradeIconSrc} alt="所学年级" style={{ height: c.gradeIconSize, width: c.gradeIconSize, objectFit: "contain" }} />
               <span className="font-alibaba font-bold" style={{ fontSize: c.gradeTitleSize, color: c.gradeTitleColor }}>{c.gradeTitleText}</span>
             </div>
-            {/* 学段按钮 — 字体小、左右延伸、上下缩短、更设计感（加内描边+阴影） */}
+            {/* 学段按钮 — 点击跳转到年级选择页 */}
             <button
-              onClick={() => setGradeSelectorOpen(!gradeSelectorOpen)}
+              onClick={() => navigate("/app/grade-select")}
               className="relative flex items-center gap-1"
               style={{
                 background: `linear-gradient(90deg, ${c.gradeBtnFrom}, ${c.gradeBtnTo})`,
@@ -301,110 +289,11 @@ export default function HomePage() {
                 paddingBottom: c.gradeBtnPaddingY,
                 boxShadow: c.gradeBtnShadow,
                 border: "1px solid rgba(255,255,255,0.4)",
-                position: "relative",
               }}
             >
               <span className="font-alibaba font-bold text-white" style={{ fontSize: c.gradeBtnTextSize }}>{selectedGrade}</span>
-              <ChevronDown size={14} color="#fff" className={`transition-transform ${gradeSelectorOpen ? "rotate-180" : ""}`} />
+              <ChevronDown size={14} color="#fff" />
             </button>
-          </div>
-
-          {/* 年级选择弹层 */}
-          {gradeSelectorOpen && (
-            <div className="border-t border-gray-100 px-4 py-3 animate-fade-in">
-              <p className="text-[11px] text-gray-400 font-alibaba mb-2">选择年级</p>
-              <div className="grid grid-cols-4 gap-2">
-                {GRADES.map((g) => {
-                  const active = selectedGrade === g.key;
-                  return (
-                    <button
-                      key={g.key}
-                      onClick={() => handleGradeSelect(g.key)}
-                      className={`px-2 py-2 rounded-xl text-xs font-alibaba border transition-all flex flex-col items-center ${
-                        active ? "bg-navy-600 text-white border-navy-600 shadow-sm" : "bg-gray-50 text-gray-700 border-gray-200 hover:border-navy-500/40"
-                      }`}
-                    >
-                      <span className="font-bold">{g.short}</span>
-                      <span className={`text-[9px] mt-0.5 ${active ? "opacity-80" : "text-gray-400"}`}>{g.phase}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* 教材版本网格 — 从学科卡片移到这里 */}
-          <div className="border-t border-gray-100" style={{ padding: "8px 12px 10px" }}>
-            <p className="text-[10px] text-gray-400 font-alibaba mb-2">教材版本（点击切换）</p>
-            <div style={{ display: "grid", gridTemplateColumns: `repeat(${c.versionGridCols}, 1fr)`, gap: c.versionGridGap, position: "relative" }}>
-              {textbooks.map((tb) => {
-                const info = SUBJECTS[tb.subject];
-                const subDesign = c.subjects?.[tb.subject];
-                const subName = subDesign?.name || info.name;
-                const subColor = subDesign?.color || info.color;
-                const selectedVer = selectedVersions[tb.subject] || realVersions[tb.subject]?.[0] || tb.versions[0] || "—";
-                const isOpen = versionPickerFor === tb.subject;
-                const versionsToShow = realVersions[tb.subject] || tb.versions;
-                return (
-                  <div key={tb.subject} style={{ position: "relative" }}>
-                    <button
-                      onClick={() => setVersionPickerFor(isOpen ? null : tb.subject)}
-                      style={{
-                        width: "100%",
-                        background: isOpen ? subColor : c.versionBg,
-                        border: `1px solid ${isOpen ? subColor : c.versionBorderColor}`,
-                        borderRadius: 8,
-                        padding: "4px 4px 3px",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: 1,
-                      }}
-                    >
-                      <span style={{ fontSize: c.versionLabelSize, color: isOpen ? "#fff" : subColor, fontWeight: 700 }}>{subName}</span>
-                      <span style={{ fontSize: c.versionFontSize, color: isOpen ? "rgba(255,255,255,0.9)" : "#6B7280", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "100%", textAlign: "center" }}>
-                        {selectedVer}
-                      </span>
-                    </button>
-                    {isOpen && (
-                      <div style={{
-                        position: "absolute",
-                        top: "100%",
-                        left: 0,
-                        right: 0,
-                        zIndex: 50,
-                        marginTop: 4,
-                        background: "#fff",
-                        borderRadius: 8,
-                        boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
-                        border: "1px solid #f0f0f0",
-                        padding: 4,
-                        maxHeight: 160,
-                        overflowY: "auto",
-                      }}>
-                        {versionsToShow.map((v) => {
-                          const active = v === selectedVer;
-                          return (
-                            <button
-                              key={v}
-                              onClick={() => handleSelectVersion(tb.subject, v)}
-                              className="w-full text-left px-2 py-1.5 rounded text-[11px] font-alibaba flex items-center gap-1"
-                              style={{ color: active ? subColor : "#666", fontWeight: active ? 700 : 400, background: active ? `${subColor}10` : "transparent" }}
-                            >
-                              {active && <Check size={12} />}
-                              <span className="truncate">{v}</span>
-                            </button>
-                          );
-                        })}
-                        <button onClick={() => setVersionPickerFor(null)} className="w-full text-center py-1 text-[10px] text-gray-400 mt-1">
-                          <X size={12} className="inline" /> 关闭
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
           </div>
 
           {/* 三个统计卡片 — 缩小、去图标、锯齿上边、右下白翻折、底部蓝不变 */}
@@ -428,11 +317,22 @@ export default function HomePage() {
               const totalAnswered = subjectTotalAnswered[tb.subject] || 0;
               const totalCorrect = subjectTotalCorrect[tb.subject] || 0;
               const rate = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
+              // 所有学科底板统一使用物理色
+              const cardBgColor = SUBJECTS.physics.color;
+              // 进度条统一天青色
+              const progressColor = "#06B6D4";
+              // 去学习按钮统一蓝紫色
+              const btnColor = "#6366F1";
               return (
                 <div
                   key={tb.subject}
                   className="relative overflow-hidden"
-                  style={{ borderRadius: c.subjectCardRadius, padding: c.subjectCardPadding, background: `linear-gradient(135deg, ${subColor}10, ${subColor}05)` }}
+                  style={{
+                    borderRadius: c.subjectCardRadius,
+                    // 上下 padding 缩短 1/5
+                    padding: `${Math.round(c.subjectCardPadding * 0.8)}px ${c.subjectCardPadding}px`,
+                    background: `linear-gradient(135deg, ${cardBgColor}10, ${cardBgColor}05)`,
+                  }}
                 >
                   {/* 顶部：图标 + 学科名 */}
                   <div className="flex items-center gap-2 mb-2">
@@ -447,19 +347,18 @@ export default function HomePage() {
                     </span>
                   </div>
 
-                  {/* 已学习 xx 道题 */}
+                  {/* 已学习 xx 道题 — 数字用蓝色 */}
                   <p className="font-alibaba mb-1.5" style={{ fontSize: c.subjectLearnedSize, color: c.subjectLearnedColor }}>
-                    已学习 <span className="font-bold" style={{ fontSize: c.subjectLearnedNumSize, color: c.subjectLearnedNumColor }}>{totalAnswered}</span> 道题
+                    已学习 <span className="font-bold" style={{ fontSize: c.subjectLearnedNumSize, color: "#3B76F7" }}>{totalAnswered}</span> 道题
                   </p>
 
-                  {/* 进度条 — 内嵌百分比，右侧"正确率"标签 */}
+                  {/* 进度条 — 天青色 + 内嵌百分比 */}
                   <div className="flex items-center gap-2 mb-1.5">
                     <div className="flex-1 relative overflow-hidden" style={{ height: c.subjectProgressHeight, borderRadius: c.subjectProgressRadius, background: c.subjectProgressBg }}>
                       <div
                         className="h-full rounded-full transition-all duration-700"
-                        style={{ width: `${Math.min(rate, 100)}%`, borderRadius: c.subjectProgressRadius, background: `linear-gradient(90deg, ${subColor}CC, ${subColor})` }}
+                        style={{ width: `${Math.min(rate, 100)}%`, borderRadius: c.subjectProgressRadius, background: `linear-gradient(90deg, ${progressColor}CC, ${progressColor})` }}
                       />
-                      {/* 百分比内嵌进度条内部 */}
                       <span
                         className="font-alibaba absolute flex items-center justify-center"
                         style={{
@@ -476,18 +375,17 @@ export default function HomePage() {
                         {rate}%
                       </span>
                     </div>
-                    {/* 右侧仅显示"正确率"三个字 */}
                     <span className="font-alibaba flex-shrink-0" style={{ fontSize: c.subjectRateLabelSize, color: c.subjectRateLabelColor, lineHeight: 1.5 }}>正确率</span>
                   </div>
 
-                  {/* 去学习按钮 — 移到左侧 + 下方圆角底框 */}
+                  {/* 去学习按钮 — 蓝紫色 + 圆角底框 */}
                   <div className="flex items-center justify-start mt-2">
                     <button
                       onClick={() => handleStartLearn(tb.subject)}
                       className="flex items-center gap-1 transition-all active:scale-95"
                       style={{
-                        background: c.subjectBtnBg,
-                        color: c.subjectBtnColor,
+                        background: "#EEF0FF",
+                        color: btnColor,
                         borderRadius: c.subjectBtnRadius,
                         paddingLeft: c.subjectBtnPaddingX,
                         paddingRight: c.subjectBtnPaddingX,
@@ -497,7 +395,7 @@ export default function HomePage() {
                         fontWeight: 700,
                       }}
                     >
-                      去学习 <ChevronRight size={14} style={{ color: c.subjectBtnColor }} />
+                      去学习 <ChevronRight size={14} style={{ color: btnColor }} />
                     </button>
                   </div>
                 </div>

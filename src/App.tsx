@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import ClientLayout from "@/components/ClientLayout";
 import HomePage from "@/pages/client/HomePage";
 import ExamPage from "@/pages/client/ExamPage";
@@ -15,6 +15,7 @@ import EssayPracticePage from "@/pages/client/EssayPracticePage";
 import RedoQuestionPage from "@/pages/client/RedoQuestionPage";
 import CollectedListPage from "@/pages/client/CollectedListPage";
 import ScoreListPage from "@/pages/client/ScoreListPage";
+import GradeSelectPage from "@/pages/client/GradeSelectPage";
 import ClientLoginPage from "@/pages/client/ClientLoginPage";
 import AdminLogin from "@/pages/admin/AdminLogin";
 import AdminLayout from "@/pages/admin/AdminLayout";
@@ -69,6 +70,7 @@ export default function App() {
         <Route path="/app/redo" element={<RequireClient><RedoQuestionPage /></RequireClient>} />
         <Route path="/app/collected" element={<RequireClient><CollectedListPage /></RequireClient>} />
         <Route path="/app/scores" element={<RequireClient><ScoreListPage /></RequireClient>} />
+        <Route path="/app/grade-select" element={<RequireClient><GradeSelectPage /></RequireClient>} />
 
         {/* 管理端（独立入口 /admin） */}
         <Route path="/admin" element={<AdminLogin />} />
