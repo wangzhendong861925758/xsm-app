@@ -37,7 +37,7 @@ const FALLBACK = {
   brandPaddingTop: 12,
   // 轮播
   carouselMarginX: 16,
-  carouselMarginTop: 12,
+  carouselMarginTop: 44, // 下移 1/4 轮播高度（约32px）
   carouselRadius: 16,
   carouselAspect: "8/3",
   // 内容
@@ -60,9 +60,9 @@ const FALLBACK = {
   gradeBtnFrom: "#2266FF",
   gradeBtnTo: "#3388FF",
   gradeBtnRadius: 24,
-  gradeBtnTextSize: 13,
-  gradeBtnPaddingX: 24,
-  gradeBtnPaddingY: 6,
+  gradeBtnTextSize: 10, // 字号小三个字号
+  gradeBtnPaddingX: 36, // 左右拉长
+  gradeBtnPaddingY: 4, // 上下缩短
   gradeBtnShadow: "0 4px 12px rgba(34,102,255,0.35)",
   // 统计卡片（缩小版）
   statBorderColor: "#3B76F7",
@@ -75,7 +75,7 @@ const FALLBACK = {
   statLabelSize: 11,
   statLabelColor: "#6B7280",
   statGridGap: 8,
-  statGridPaddingX: 12,
+  statGridPaddingX: 32, // 左右缩短1/3（从12增到32）
   statGridPaddingBottom: 12,
   statGridPaddingTop: 6,
   // 学科卡片
@@ -211,7 +211,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-full relative" style={{
-      background: `linear-gradient(180deg, ${c.topGradientFrom} 0%, ${c.topGradientMid} 22%, ${c.topGradientTo} 44%, #EEF3FF 52%, ${c.pageBg} 60%)`,
+      background: `linear-gradient(180deg, ${c.topGradientFrom} 0%, ${c.topGradientMid} 8%, ${c.topGradientTo} 16%, #EEF3FF 20%, ${c.pageBg} 25%)`,
     }}>
       {/* 顶部蓝色区域 + 轮播 */}
       <div className="relative" style={{ paddingBottom: 60 }}>
@@ -306,8 +306,8 @@ export default function HomePage() {
 
         {/* 学科外层白色大圆角底板 */}
         <div style={{ marginTop: 16, background: "#FFFFFF", borderRadius: c.cardRadius, boxShadow: c.cardShadow, padding: 12 }}>
-          {/* 学科卡片网格 */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: c.subjectCardGap }}>
+          {/* 学科卡片网格 — 左右内缩1/6（约26px）确保间隔 */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: c.subjectCardGap, paddingLeft: 13, paddingRight: 13 }}>
             {textbooks.map((tb) => {
               const info = SUBJECTS[tb.subject];
               const subDesign = c.subjects?.[tb.subject];
