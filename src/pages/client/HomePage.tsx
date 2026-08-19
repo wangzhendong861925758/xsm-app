@@ -9,16 +9,22 @@ import { useStore } from "@/store/useStore";
 import { fetchVersions } from "@/lib/api";
 import type { Subject } from "@/data/types";
 
+const IMG_VER = "20260819";
+
 const SUBJECT_ICONS: Record<string, string> = {
-  physics: "/images/icon-physics.png",
-  chemistry: "/images/icon-chemistry.png",
-  biology: "/images/icon-biology.png",
-  politics: "/images/icon-politics.png",
-  history: "/images/icon-history.png",
-  geography: "/images/icon-geography.png",
+  physics: `/images/icon-physics.png?v=${IMG_VER}`,
+  chemistry: `/images/icon-chemistry.jpg?v=${IMG_VER}`,
+  biology: `/images/icon-biology.png?v=${IMG_VER}`,
+  history: `/images/icon-history.png?v=${IMG_VER}`,
+  politics: `/images/icon-politics.png?v=${IMG_VER}`,
+  geography: `/images/icon-geography.png?v=${IMG_VER}`,
 };
 
-const SLIDES = ["/images/slide1.jpg", "/images/slide2.jpg", "/images/slide3.jpg"];
+const SLIDES = [
+  `/images/slide1.jpg?v=${IMG_VER}`,
+  `/images/slide2.jpg?v=${IMG_VER}`,
+  `/images/slide3.jpg?v=${IMG_VER}`,
+];
 
 // 兜底默认配置（store 持久化数据未加载时使用）
 const FALLBACK = {
@@ -316,7 +322,8 @@ export default function HomePage() {
               const subDesign = c.subjects?.[tb.subject];
               const subColor = subDesign?.color || info.color;
               const subName = subDesign?.name || info.name;
-              const subIcon = subDesign?.icon || SUBJECT_ICONS[tb.subject];
+              // icon 路径始终用常量（文件名固定），忽略 store 旧持久化数据，避免缓存
+              const subIcon = SUBJECT_ICONS[tb.subject];
               const totalAnswered = subjectTotalAnswered[tb.subject] || 0;
               const totalCorrect = subjectTotalCorrect[tb.subject] || 0;
               const rate = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
