@@ -6,13 +6,15 @@ import { useStore } from "@/store/useStore";
 import { fetchVersions } from "@/lib/api";
 import type { Subject } from "@/data/types";
 
+const IMG_VER = "20260819";
+
 const SUBJECT_ICONS: Record<string, string> = {
-  physics: "/images/icon-physics.png",
-  chemistry: "/images/icon-chemistry.png",
-  biology: "/images/icon-biology.png",
-  politics: "/images/icon-politics.png",
-  history: "/images/icon-history.png",
-  geography: "/images/icon-geography.png",
+  physics: `/images/icon-physics.png?v=${IMG_VER}`,
+  chemistry: `/images/icon-chemistry.jpg?v=${IMG_VER}`,
+  biology: `/images/icon-biology.png?v=${IMG_VER}`,
+  politics: `/images/icon-politics.png?v=${IMG_VER}`,
+  history: `/images/icon-history.png?v=${IMG_VER}`,
+  geography: `/images/icon-geography.png?v=${IMG_VER}`,
 };
 
 export default function GradeSelectPage() {
@@ -164,20 +166,21 @@ export default function GradeSelectPage() {
                     key={tb.subject}
                     className="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-b-0 last:pb-0"
                   >
-                    {/* 学科图标 */}
+                    {/* 学科图标 — 与首页完全一致：38x38 圆角12 阴影 + scale 1.86 */}
                     <div
                       className="flex items-center justify-center flex-shrink-0 overflow-hidden"
                       style={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: 10,
+                        width: 38,
+                        height: 38,
+                        borderRadius: 12,
                         background: info.color,
+                        boxShadow: `0 3px 8px ${info.color}40`,
                       }}
                     >
                       <img
                         src={subIcon}
                         alt={info.name}
-                        style={{ width: 26, height: 26, objectFit: "contain" }}
+                        style={{ width: 30, height: 30, objectFit: "cover", transform: "scale(1.86)" }}
                       />
                     </div>
 
