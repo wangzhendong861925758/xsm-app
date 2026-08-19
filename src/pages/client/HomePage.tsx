@@ -60,9 +60,9 @@ const FALLBACK = {
   gradeBtnFrom: "#2266FF",
   gradeBtnTo: "#3388FF",
   gradeBtnRadius: 24,
-  gradeBtnTextSize: 8, // 字号再缩小2个字号
-  gradeBtnPaddingX: 54, // 左右拉长1/2
-  gradeBtnPaddingY: 2, // 上下缩短1/2
+  gradeBtnTextSize: 6, // 字号再缩小2个字号
+  gradeBtnPaddingX: 81, // 往左延伸1/2
+  gradeBtnPaddingY: 1, // 往上缩短1/2
   gradeBtnShadow: "0 4px 12px rgba(34,102,255,0.35)",
   // 统计卡片（缩小版）
   statBorderColor: "#3B76F7",
