@@ -350,7 +350,7 @@ export default function HomePage() {
                       className="flex items-center justify-center flex-shrink-0 overflow-hidden"
                       style={{ width: c.subjectIconSize, height: c.subjectIconSize, borderRadius: c.subjectIconRadius, background: subColor, boxShadow: `0 3px 8px ${subColor}40` }}
                     >
-                      <img src={subIcon} alt={subName} style={{ width: c.subjectIconImgSize, height: c.subjectIconImgSize, objectFit: "contain" }} />
+                      <img src={subIcon} alt={subName} style={{ width: c.subjectIconImgSize, height: c.subjectIconImgSize, objectFit: "cover", transform: "scale(1.3)" }} />
                     </div>
                     <span className="font-alibaba font-black leading-none" style={{ fontSize: c.subjectNameSize, color: c.subjectNameColor }}>
                       {subName}
