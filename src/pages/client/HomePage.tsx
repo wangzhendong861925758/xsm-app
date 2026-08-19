@@ -60,9 +60,9 @@ const FALLBACK = {
   gradeBtnFrom: "#2266FF",
   gradeBtnTo: "#3388FF",
   gradeBtnRadius: 24,
-  gradeBtnTextSize: 10, // 字号小三个字号
-  gradeBtnPaddingX: 36, // 左右拉长
-  gradeBtnPaddingY: 4, // 上下缩短
+  gradeBtnTextSize: 8, // 字号再缩小2个字号
+  gradeBtnPaddingX: 54, // 左右拉长1/2
+  gradeBtnPaddingY: 2, // 上下缩短1/2
   gradeBtnShadow: "0 4px 12px rgba(34,102,255,0.35)",
   // 统计卡片（缩小版）
   statBorderColor: "#3B76F7",
@@ -75,7 +75,7 @@ const FALLBACK = {
   statLabelSize: 11,
   statLabelColor: "#6B7280",
   statGridGap: 8,
-  statGridPaddingX: 32, // 左右缩短1/3（从12增到32）
+  statGridPaddingX: 48, // 左右缩短1/4
   statGridPaddingBottom: 12,
   statGridPaddingTop: 6,
   // 学科卡片
@@ -270,19 +270,22 @@ export default function HomePage() {
         {/* 所学年级 + 统计卡片（外层白底圆角） */}
         <div className="overflow-hidden" style={{ background: c.cardBg, borderRadius: c.cardRadius, boxShadow: c.cardShadow }}>
           {/* 所学年级标题栏 — 上下缩短 */}
-          <div className="flex items-center justify-between relative" style={{ padding: `${c.gradePaddingY}px ${c.gradePaddingX}px` }}>
+          <div className="relative" style={{ padding: `${c.gradePaddingY}px ${c.gradePaddingX}px` }}>
             <div className="flex items-center gap-2">
               <img src={c.gradeIconSrc} alt="所学年级" style={{ height: c.gradeIconSize, width: c.gradeIconSize, objectFit: "contain" }} />
               <span className="font-alibaba font-bold" style={{ fontSize: c.gradeTitleSize, color: c.gradeTitleColor }}>{c.gradeTitleText}</span>
             </div>
-            {/* 学段按钮 — 点击跳转到年级选择页 */}
+            {/* 学段按钮 — 绝对定位贴紧右上角 */}
             <button
               onClick={() => navigate("/app/grade-select")}
-              className="relative flex items-center gap-1"
+              className="flex items-center gap-1"
               style={{
+                position: "absolute",
+                top: 0,
+                right: 0,
                 background: `linear-gradient(90deg, ${c.gradeBtnFrom}, ${c.gradeBtnTo})`,
+                borderTopRightRadius: c.cardRadius,
                 borderBottomLeftRadius: c.gradeBtnRadius,
-                borderTopLeftRadius: 4,
                 paddingLeft: c.gradeBtnPaddingX,
                 paddingRight: c.gradeBtnPaddingX,
                 paddingTop: c.gradeBtnPaddingY,
@@ -292,7 +295,7 @@ export default function HomePage() {
               }}
             >
               <span className="font-alibaba font-bold text-white" style={{ fontSize: c.gradeBtnTextSize }}>{selectedGrade}</span>
-              <ChevronDown size={14} color="#fff" />
+              <ChevronDown size={12} color="#fff" />
             </button>
           </div>
 
@@ -329,8 +332,8 @@ export default function HomePage() {
                   className="relative overflow-hidden"
                   style={{
                     borderRadius: c.subjectCardRadius,
-                    // 上下 padding 缩短 1/5
-                    padding: `${Math.round(c.subjectCardPadding * 0.8)}px ${c.subjectCardPadding}px`,
+                    // 上下 padding 缩短 1/6（0.8 → 约0.67）
+                    padding: `${Math.round(c.subjectCardPadding * 0.67)}px ${c.subjectCardPadding}px`,
                     background: `linear-gradient(135deg, ${cardBgColor}10, ${cardBgColor}05)`,
                   }}
                 >
