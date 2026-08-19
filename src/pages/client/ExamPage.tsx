@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿import { useNavigate } from "react-router-dom";
+﻿﻿﻿﻿﻿﻿﻿import { useNavigate } from "react-router-dom";
 import {
   Bookmark,
   CheckCircle2,
@@ -45,25 +45,34 @@ export default function ExamPage() {
   const topNotes = EXPERT_NOTES.slice(0, 6);
 
   return (
-    <div className="min-h-full bg-white">
+    <div className="min-h-full" style={{ background: "linear-gradient(180deg, #3B76F7 0%, #3559E8 8%, #2D4CE3 16%, #EEF3FF 20%, #FFFFFF 25%)" }}>
       <header className="px-5 pt-6 pb-3">
         <BrushTitle size="lg" />
       </header>
 
-      {/* 学霸笔记滚动新闻板 */}
+      {/* 学霸笔记滚动新闻板 — 顶栏淡肉粉色，右侧淡鹅蛋黄，下方白色 */}
       <section className="px-5 mb-4">
-        <div className="ink-card rounded-2xl overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-2 bg-gold/10 border-b border-gold/20">
+        <div className="rounded-2xl overflow-hidden" style={{ background: "#FFFFFF", boxShadow: "0 4px 20px rgba(0,0,0,0.08)" }}>
+          <div
+            className="flex items-center justify-between px-4 py-2 border-b"
+            style={{
+              background: "linear-gradient(90deg, #FFE4E6 0%, #FFE4E6 60%, #FEF9C3 100%)",
+              borderColor: "#FCE7F3",
+            }}
+          >
             <div className="flex items-center gap-1.5">
-              <Award size={14} className="text-gold-dark" />
-              <span className="font-kai text-sm font-bold text-gold-dark">学霸笔记</span>
-              <span className="text-[10px] text-gold-dark/60 font-kai">
+              <Award size={14} color="#E11D48" />
+              {/* "学霸" 黑色，"笔记" 红色 */}
+              <span className="font-kai text-sm font-bold" style={{ color: "#000000" }}>学霸</span>
+              <span className="font-kai text-sm font-bold" style={{ color: "#DC2626" }}>笔记</span>
+              <span className="text-[10px] font-kai" style={{ color: "#9F1239" }}>
                 ·2026专家考点·{EXPERT_NOTES.length}篇
               </span>
             </div>
             <button
               onClick={() => navigate("/app/notes")}
-              className="flex items-center gap-0.5 text-[10px] text-gold-dark"
+              className="flex items-center gap-0.5 text-[10px]"
+              style={{ color: "#9F1239" }}
             >
               查看全部 <ChevronRight size={12} />
             </button>
@@ -74,13 +83,17 @@ export default function ExamPage() {
               <button
                 key={n.id}
                 onClick={() => navigate(`/app/note/${n.id}`)}
-                className="w-full flex items-center gap-2 text-xs py-1.5 px-2 rounded-lg hover:bg-navy-500/5 transition-colors text-left"
+                className="w-full flex items-center gap-2 text-xs py-1.5 px-2 rounded-lg transition-colors text-left"
+                style={{ color: "#1F2937" }}
               >
-                <span className="flex-shrink-0 px-1.5 py-0.5 rounded bg-navy-500/15 text-navy-600 text-[10px] font-bold">
+                <span
+                  className="flex-shrink-0 px-1.5 py-0.5 rounded text-[10px] font-bold"
+                  style={{ background: "#FFE4E6", color: "#BE123C" }}
+                >
                   {n.category}
                 </span>
-                <span className="font-kai text-navy-900 truncate flex-1">{n.title}</span>
-                <ChevronRight size={12} className="text-navy-800/30 flex-shrink-0" />
+                <span className="font-kai truncate flex-1">{n.title}</span>
+                <ChevronRight size={12} className="flex-shrink-0 opacity-30" />
               </button>
             ))}
           </div>
@@ -130,54 +143,67 @@ export default function ExamPage() {
         </div>
       </section>
 
-      {/* 全真模拟考试 */}
+      {/* 全真模拟考试 — 浅薄荷绿底板 + 按钮浅黄到浅绿渐变 + 字黑色 */}
       <section className="px-5 mb-4">
         <button
           onClick={() => navigate("/app/papers?type=mock")}
           className="w-full relative overflow-hidden rounded-2xl p-4 text-left group transition-all hover:scale-[1.01] active:scale-[0.99]"
-          style={{ background: "linear-gradient(135deg, #0088FF 0%, #006FD9 100%)" }}
+          style={{ background: "linear-gradient(135deg, #D1FADF 0%, #A7F3D0 100%)" }}
         >
-          <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/10" />
-          <div className="absolute -right-2 -bottom-2 w-16 h-16 rounded-full bg-white/15" />
+          <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full" style={{ background: "rgba(255,255,255,0.4)" }} />
+          <div className="absolute -right-2 -bottom-2 w-16 h-16 rounded-full" style={{ background: "rgba(255,255,255,0.5)" }} />
           <div className="relative">
             <div className="flex items-center gap-2 mb-1">
-              <FileText size={18} className="text-white" />
-              <span className="text-[9px] px-1 py-0.5 bg-white text-[#0088FF] font-alibaba font-bold rounded">模拟</span>
-              <span className="text-[10px] text-white/80 font-alibaba">{mockPapers.length}套试卷</span>
+              <FileText size={18} color="#000000" />
+              <span
+                className="text-[9px] px-1 py-0.5 font-alibaba font-bold rounded"
+                style={{ background: "#FFFFFF", color: "#000000" }}
+              >
+                模拟
+              </span>
+              <span className="text-[10px] font-alibaba" style={{ color: "#000000" }}>{mockPapers.length}套试卷</span>
             </div>
-            <h3 className="font-alibaba font-bold text-2xl text-white mb-1">全真模拟考试</h3>
-            <p className="text-[11px] text-white/80 font-alibaba">
+            <h3 className="font-alibaba font-bold text-2xl mb-1" style={{ color: "#000000" }}>全真模拟考试</h3>
+            <p className="text-[11px] font-alibaba" style={{ color: "#000000", opacity: 0.7 }}>
               仿真实考 · 限时作答 · 智能判分
             </p>
-            <div className="mt-3 inline-flex items-center gap-1 text-xs text-white font-alibaba">
+            <div
+              className="mt-3 inline-flex items-center gap-1 text-xs font-alibaba rounded-full px-3 py-1"
+              style={{
+                background: "linear-gradient(90deg, #FEF3C7 0%, #A7F3D0 100%)",
+                color: "#000000",
+              }}
+            >
               选择试卷 <ChevronRight size={14} />
             </div>
           </div>
         </button>
       </section>
 
-      {/* 真题考试 + 资料库 */}
+      {/* 真题考试（淡浅紫色 + 蓝紫色字）+ 资料库（淡浅橘色 + 黄橙色字） */}
       <section className="px-5 pb-6">
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={() => navigate("/app/papers?type=real")}
-            className="ink-card rounded-2xl p-4 text-left hover:border-navy-400/40 transition-all"
+            className="rounded-2xl p-4 text-left transition-all hover:scale-[1.01] active:scale-[0.99]"
+            style={{ background: "linear-gradient(135deg, #F3E8FF 0%, #EDE9FE 100%)" }}
           >
-            <div className="w-9 h-9 rounded-xl bg-navy-100 flex items-center justify-center mb-2">
-              <Award size={18} className="text-navy-700" />
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2" style={{ background: "rgba(139,92,246,0.15)" }}>
+              <Award size={18} color="#7C3AED" />
             </div>
-            <h3 className="font-kai text-base font-bold text-navy-900 mb-0.5">真题考试</h3>
-            <p className="text-[10px] text-navy-800/50 font-kai">{realPapers.length}套·精准演练</p>
+            <h3 className="font-kai text-base font-bold mb-0.5" style={{ color: "#7C3AED" }}>真题考试</h3>
+            <p className="text-[10px] font-kai" style={{ color: "#7C3AED", opacity: 0.6 }}>{realPapers.length}套·精准演练</p>
           </button>
           <button
             onClick={() => navigate("/app/notes?title=library")}
-            className="ink-card rounded-2xl p-4 text-left hover:border-navy-500/40 transition-all"
+            className="rounded-2xl p-4 text-left transition-all hover:scale-[1.01] active:scale-[0.99]"
+            style={{ background: "linear-gradient(135deg, #FFEDD5 0%, #FED7AA 100%)" }}
           >
-            <div className="w-9 h-9 rounded-xl bg-navy-500/15 flex items-center justify-center mb-2">
-              <Library size={18} className="text-navy-600" />
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2" style={{ background: "rgba(249,115,22,0.15)" }}>
+              <Library size={18} color="#F59E0B" />
             </div>
-            <h3 className="font-kai text-base font-bold text-navy-900 mb-0.5">资料库</h3>
-            <p className="text-[10px] text-navy-800/50 font-kai">重点知识点·各学科汇总</p>
+            <h3 className="font-kai text-base font-bold mb-0.5" style={{ color: "#F59E0B" }}>资料库</h3>
+            <p className="text-[10px] font-kai" style={{ color: "#F59E0B", opacity: 0.6 }}>重点知识点·各学科汇总</p>
           </button>
         </div>
       </section>

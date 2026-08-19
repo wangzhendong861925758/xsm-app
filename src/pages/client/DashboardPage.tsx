@@ -1,4 +1,4 @@
-﻿﻿﻿﻿import { useNavigate } from "react-router-dom";
+﻿﻿﻿import { useNavigate } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { Clock, AlertCircle, BookX, FileText, Bookmark, Trophy } from "lucide-react";
 import BrushTitle from "@/components/BrushTitle";
@@ -20,7 +20,7 @@ export default function DashboardPage() {
   }));
 
   return (
-    <div className="min-h-full bg-white">
+    <div className="min-h-full" style={{ background: "linear-gradient(180deg, #3B76F7 0%, #3559E8 8%, #2D4CE3 16%, #EEF3FF 20%, #FFFFFF 25%)" }}>
       <header className="px-5 pt-6 pb-3">
         <BrushTitle size="lg" />
       </header>
