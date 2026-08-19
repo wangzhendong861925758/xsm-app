@@ -1,8 +1,9 @@
-﻿﻿﻿﻿﻿﻿﻿import { create } from "zustand";
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User, Question, Subject, ClientAccount } from "@/data/types";
 import { CURRENT_USER, ADMIN_USERS, CAROUSEL_IMAGES } from "@/data/mock";
 import { SUBJECTS } from "@/data/textbooks";
+import { DEFAULT_HOME_DESIGN, type HomeDesignConfig } from "@/data/homeDesign";
 import {
   fetchAccounts,
   registerAccount,
@@ -91,6 +92,8 @@ interface AppState {
   studyDates: string[];
   // 站点可视化配置
   siteConfig: SiteConfig;
+  // 首页可视化设计配置（管理端编辑，首页实时读取）
+  homeDesign: HomeDesignConfig;
   // 每个学科独立选择的教材版本 { [subject]: version }
   selectedVersions: Record<string, string>;
   // 错题集
@@ -124,6 +127,8 @@ interface AppState {
   resetAnsweredBySubjectVersion: (subject: string, version: string) => void;
   updateSiteConfig: (patch: Partial<SiteConfig>) => void;
   resetSiteConfig: () => void;
+  updateHomeDesign: (config: HomeDesignConfig) => void;
+  resetHomeDesign: () => void;
   setSelectedVersion: (subject: string, version: string) => void;
   addToErrorBook: (item: ErrorBookItem) => void;
   removeFromErrorBook: (questionId: string) => void;
@@ -176,6 +181,7 @@ export const useStore = create<AppState>()(
       answeredHistory: [],
       studyDates: [],
       siteConfig: DEFAULT_SITE_CONFIG,
+      homeDesign: DEFAULT_HOME_DESIGN,
       selectedVersions: {},
       errorBook: [],
       collectedQuestions: [],
@@ -298,6 +304,8 @@ export const useStore = create<AppState>()(
       updateSiteConfig: (patch) =>
         set((s) => ({ siteConfig: { ...s.siteConfig, ...patch } })),
       resetSiteConfig: () => set({ siteConfig: DEFAULT_SITE_CONFIG }),
+      updateHomeDesign: (config) => set({ homeDesign: config }),
+      resetHomeDesign: () => set({ homeDesign: DEFAULT_HOME_DESIGN }),
 
       setSelectedVersion: (subject, version) =>
         set((s) => ({ selectedVersions: { ...s.selectedVersions, [subject]: version } })),
@@ -441,6 +449,7 @@ export const useStore = create<AppState>()(
         answeredHistory: s.answeredHistory,
         studyDates: s.studyDates,
         siteConfig: s.siteConfig,
+        homeDesign: s.homeDesign,
         selectedVersions: s.selectedVersions,
         errorBook: s.errorBook,
         clientAccounts: s.clientAccounts,
@@ -461,6 +470,7 @@ export const useStore = create<AppState>()(
           selectedGrade: p.selectedGrade ?? current.selectedGrade,
           selectedVersions: p.selectedVersions ?? current.selectedVersions,
           siteConfig: p.siteConfig ?? current.siteConfig,
+          homeDesign: p.homeDesign ?? current.homeDesign,
           adminUsers: p.adminUsers ?? current.adminUsers,
           todayLearned: p.todayLearned ?? current.todayLearned,
           todayStats: p.todayStats ?? current.todayStats,

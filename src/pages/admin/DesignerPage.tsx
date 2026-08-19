@@ -13,84 +13,17 @@ import {
   ImagePlus,
   Eye,
   Layers,
+  Save,
 } from "lucide-react";
 import { GRADES, getTextbooksByGrade, SUBJECTS } from "@/data/textbooks";
+import { useStore } from "@/store/useStore";
+import { DEFAULT_HOME_DESIGN, type HomeDesignConfig } from "@/data/homeDesign";
 import type { Subject } from "@/data/types";
 
-// 默认配置 — 与当前 HomePage 完全一致
-const DEFAULT_CONFIG = {
-  pageBg: "#F0F4FF",
-  topGradientFrom: "#3B76F7",
-  topGradientMid: "#3559E8",
-  topGradientTo: "#2D4CE3",
-  topPaddingBottom: 12,
-  brandHeight: 72,
-  brandPaddingX: 16,
-  brandPaddingTop: 12,
-  carouselMarginX: 16,
-  carouselMarginTop: 12,
-  carouselRadius: 16,
-  carouselAspect: "8/3",
-  contentMarginTop: -16,
-  contentPaddingX: 16,
-  contentPaddingBottom: 96,
-  cardBg: "#FFFFFF",
-  cardRadius: 16,
-  cardShadow: "0 2px 12px rgba(0,0,0,0.06)",
-  gradeIconSrc: "/images/ss.png",
-  gradeIconSize: 32,
-  gradeTitleText: "所学年级",
-  gradeTitleSize: 18,
-  gradeTitleColor: "#1F2937",
-  gradeBtnFrom: "#2266FF",
-  gradeBtnTo: "#3388FF",
-  gradeBtnRadius: 28,
-  gradeBtnTextSize: 16,
-  gradeBtnPaddingX: 20,
-  gradeBtnPaddingY: 12,
-  statBorderColor: "#88CCFF",
-  statBgFrom: "#F0F7FF",
-  statBgTo: "#E0EEFF",
-  statNumberSize: 36,
-  statNumberColor: "#1A1A1A",
-  statUnitSize: 16,
-  statUnitColor: "#4B5563",
-  statLabelSize: 13,
-  statLabelColor: "#6B7280",
-  statGridGap: 8,
-  statGridPaddingX: 12,
-  statGridPaddingBottom: 16,
-  subjectCardGap: 12,
-  subjectCardPadding: 12,
-  subjectCardRadius: 16,
-  subjectIconSize: 44,
-  subjectIconRadius: 16,
-  subjectIconImgSize: 36,
-  subjectNameSize: 22,
-  subjectNameColor: "#1F2937",
-  subjectLearnedSize: 14,
-  subjectLearnedColor: "#6B7280",
-  subjectLearnedNumSize: 20,
-  subjectLearnedNumColor: "#374151",
-  subjectProgressHeight: 10,
-  subjectProgressRadius: 999,
-  subjectRateSize: 11,
-  subjectRateColor: "#6B7280",
-  subjectBtnColor: "#2244AA",
-  subjectBtnSize: 14,
-  subjectVersionSize: 10,
-  subjectVersionColor: "#9CA3AF",
-  subjects: {
-    physics: { color: "#E83E3E", name: "物理", icon: "/images/icon-physics.png" },
-    chemistry: { color: "#22C593", name: "化学", icon: "/images/icon-chemistry.png" },
-    biology: { color: "#EC4899", name: "生物", icon: "/images/icon-biology.png" },
-    politics: { color: "#7C3AED", name: "道法", icon: "/images/icon-politics.png" },
-    history: { color: "#F59E0B", name: "历史", icon: "/images/icon-history.png" },
-    geography: { color: "#22C55E", name: "地理", icon: "/images/icon-geography.png" },
-  },
-};
+// 默认配置从共享文件导入
+const DEFAULT_CONFIG = DEFAULT_HOME_DESIGN;
 
-type Config = typeof DEFAULT_CONFIG;
+type Config = HomeDesignConfig;
 
 function ColorInput({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
@@ -156,13 +89,15 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 export default function DesignerPage() {
-  const [config, setConfig] = useState<Config>(DEFAULT_CONFIG);
+  const { homeDesign: storedConfig, updateHomeDesign, resetHomeDesign } = useStore();
+  const [config, setConfig] = useState<Config>(storedConfig);
   const [selectedGrade, setGrade] = useState("八年级下册");
   const [bannerIndex, setBannerIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<"preview" | "json">("preview");
   const [refImage, setRefImage] = useState<string | null>(null);
   const [overlayOpacity, setOverlayOpacity] = useState(0.5);
   const [showRef, setShowRef] = useState(true);
+  const [saved, setSaved] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const refFileRef = useRef<HTMLInputElement>(null);
 
@@ -206,6 +141,17 @@ export default function DesignerPage() {
     reader.readAsText(file);
   };
 
+  const saveToStore = () => {
+    updateHomeDesign(config);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleReset = () => {
+    setConfig(DEFAULT_CONFIG);
+    resetHomeDesign();
+  };
+
   const uploadRefImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -219,13 +165,16 @@ export default function DesignerPage() {
       {/* 左侧：实时预览 */}
       <div className="flex-1 overflow-auto flex flex-col items-center py-6 bg-gray-950">
         <div className="mb-3 flex gap-2 flex-wrap justify-center">
+          <button onClick={saveToStore} className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 ${saved ? "bg-green-500" : "bg-red-600 hover:bg-red-700"}`}>
+            <Save size={16} /> {saved ? "已保存!" : "保存并应用"}
+          </button>
           <button onClick={() => exportConfig()} className="px-4 py-2 bg-green-600 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-green-700">
-            <Download size={16} /> 导出配置
+            <Download size={16} /> 导出
           </button>
           <button onClick={() => fileRef.current?.click()} className="px-4 py-2 bg-blue-600 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-blue-700">
-            <Upload size={16} /> 导入配置
+            <Upload size={16} /> 导入
           </button>
-          <button onClick={() => setConfig(DEFAULT_CONFIG)} className="px-4 py-2 bg-gray-700 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-gray-600">
+          <button onClick={handleReset} className="px-4 py-2 bg-gray-700 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-gray-600">
             <RotateCcw size={16} /> 重置
           </button>
           <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={importConfig} />

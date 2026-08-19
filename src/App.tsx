@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import ClientLayout from "@/components/ClientLayout";
 import HomePage from "@/pages/client/HomePage";
 import ExamPage from "@/pages/client/ExamPage";
@@ -85,7 +85,9 @@ export default function App() {
         <Route path="/admin/visual" element={<AdminLayout />}>
           <Route index element={<AdminVisual />} />
         </Route>
-        <Route path="/admin/designer" element={<DesignerPage />} />
+        <Route path="/admin/designer" element={<AdminLayout />}>
+          <Route index element={<DesignerPage />} />
+        </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

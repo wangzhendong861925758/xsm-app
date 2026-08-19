@@ -25,6 +25,71 @@ const SUBJECT_ICONS: Record<string, string> = {
 
 const SLIDES = ["/images/slide1.jpg", "/images/slide2.jpg", "/images/slide3.jpg"];
 
+// 兜底默认配置（store 持久化数据未加载时使用）
+const FALLBACK = {
+  pageBg: "#F0F4FF",
+  topGradientFrom: "#3B76F7",
+  topGradientMid: "#3559E8",
+  topGradientTo: "#2D4CE3",
+  topPaddingBottom: 12,
+  brandHeight: 72,
+  brandPaddingX: 16,
+  brandPaddingTop: 12,
+  carouselMarginX: 16,
+  carouselMarginTop: 12,
+  carouselRadius: 16,
+  carouselAspect: "8/3",
+  contentMarginTop: -16,
+  contentPaddingX: 16,
+  contentPaddingBottom: 96,
+  cardBg: "#FFFFFF",
+  cardRadius: 16,
+  cardShadow: "0 2px 12px rgba(0,0,0,0.06)",
+  gradeIconSrc: "/images/ss.png",
+  gradeIconSize: 32,
+  gradeTitleText: "所学年级",
+  gradeTitleSize: 18,
+  gradeTitleColor: "#1F2937",
+  gradeBtnFrom: "#2266FF",
+  gradeBtnTo: "#3388FF",
+  gradeBtnRadius: 28,
+  gradeBtnTextSize: 16,
+  gradeBtnPaddingX: 20,
+  gradeBtnPaddingY: 12,
+  statBorderColor: "#88CCFF",
+  statBgFrom: "#F0F7FF",
+  statBgTo: "#E0EEFF",
+  statNumberSize: 36,
+  statNumberColor: "#1A1A1A",
+  statUnitSize: 16,
+  statUnitColor: "#4B5563",
+  statLabelSize: 13,
+  statLabelColor: "#6B7280",
+  statGridGap: 8,
+  statGridPaddingX: 12,
+  statGridPaddingBottom: 16,
+  subjectCardGap: 12,
+  subjectCardPadding: 12,
+  subjectCardRadius: 16,
+  subjectIconSize: 44,
+  subjectIconRadius: 16,
+  subjectIconImgSize: 36,
+  subjectNameSize: 22,
+  subjectNameColor: "#1F2937",
+  subjectLearnedSize: 14,
+  subjectLearnedColor: "#6B7280",
+  subjectLearnedNumSize: 20,
+  subjectLearnedNumColor: "#374151",
+  subjectProgressHeight: 10,
+  subjectProgressRadius: 999,
+  subjectRateSize: 11,
+  subjectRateColor: "#6B7280",
+  subjectBtnColor: "#2244AA",
+  subjectBtnSize: 14,
+  subjectVersionSize: 10,
+  subjectVersionColor: "#9CA3AF",
+};
+
 export default function HomePage() {
   const navigate = useNavigate();
   const {
@@ -39,7 +104,9 @@ export default function HomePage() {
     setSelectedVersion,
     currentClientCode,
     checkAndRevokeExpired,
+    homeDesign,
   } = useStore();
+  const c = { ...FALLBACK, ...homeDesign };
   const [gradeSelectorOpen, setGradeSelectorOpen] = useState(false);
   const [versionPickerFor, setVersionPickerFor] = useState<Subject | null>(null);
   const [bannerIndex, setBannerIndex] = useState(0);
@@ -115,16 +182,16 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-full relative" style={{ background: "#F0F4FF" }}>
+    <div className="min-h-full relative" style={{ background: c.pageBg }}>
       {/* 顶部蓝色渐变区域 */}
-      <div className="relative" style={{ background: "linear-gradient(180deg, #3B76F7 0%, #3559E8 50%, #2D4CE3 100%)", paddingBottom: "12px" }}>
-        {/* 左上角品牌图 ac.png（替换时间、图标、文字） */}
-        <div className="px-4 pt-3">
-          <img src="/images/ac.png" alt="识途EVO" className="h-[72px] w-auto object-contain" style={{ imageRendering: "auto" }} />
+      <div className="relative" style={{ background: `linear-gradient(180deg, ${c.topGradientFrom} 0%, ${c.topGradientMid} 50%, ${c.topGradientTo} 100%)`, paddingBottom: c.topPaddingBottom }}>
+        {/* 左上角品牌图 ac.png */}
+        <div style={{ paddingLeft: c.brandPaddingX, paddingRight: c.brandPaddingX, paddingTop: c.brandPaddingTop }}>
+          <img src="/images/ac.png" alt="识途EVO" style={{ height: c.brandHeight, width: "auto", objectFit: "contain" }} />
         </div>
 
         {/* 轮播图（slide1/2/3.jpg） */}
-        <div className="mx-4 mt-3 rounded-2xl overflow-hidden relative aspect-[8/3] bg-navy-100">
+        <div style={{ marginLeft: c.carouselMarginX, marginRight: c.carouselMarginX, marginTop: c.carouselMarginTop, borderRadius: c.carouselRadius, overflow: "hidden", position: "relative", aspectRatio: c.carouselAspect, background: "#1a1a3e" }}>
           {SLIDES.map((src, i) => (
             <div
               key={src}
@@ -145,22 +212,22 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 内容区域 - 上移覆盖蓝色底部 */}
-      <div className="relative z-10 px-4 -mt-4 pb-24">
+      {/* 内容区域 */}
+      <div className="relative z-10" style={{ paddingLeft: c.contentPaddingX, paddingRight: c.contentPaddingX, marginTop: c.contentMarginTop, paddingBottom: c.contentPaddingBottom }}>
         {/* 所学年级 + 统计卡片 */}
-        <div className="bg-white rounded-2xl overflow-hidden shadow-sm" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+        <div className="overflow-hidden" style={{ background: c.cardBg, borderRadius: c.cardRadius, boxShadow: c.cardShadow }}>
           {/* 所学年级标题栏 */}
           <div className="flex items-center justify-between relative">
             <div className="flex items-center gap-2 px-4 py-3">
-              <img src="/images/ss.png" alt="所学年级" className="h-8 w-8 object-contain" />
-              <span className="font-alibaba font-bold text-[18px] text-gray-800">所学年级</span>
+              <img src={c.gradeIconSrc} alt="所学年级" style={{ height: c.gradeIconSize, width: c.gradeIconSize, objectFit: "contain" }} />
+              <span className="font-alibaba font-bold" style={{ fontSize: c.gradeTitleSize, color: c.gradeTitleColor }}>{c.gradeTitleText}</span>
             </div>
             <button
               onClick={() => setGradeSelectorOpen(!gradeSelectorOpen)}
-              className="relative px-5 py-3 flex items-center gap-1"
-              style={{ background: "linear-gradient(90deg, #2266FF, #3388FF)", borderBottomLeftRadius: "28px" }}
+              className="relative flex items-center gap-1"
+              style={{ background: `linear-gradient(90deg, ${c.gradeBtnFrom}, ${c.gradeBtnTo})`, borderBottomLeftRadius: c.gradeBtnRadius, paddingLeft: c.gradeBtnPaddingX, paddingRight: c.gradeBtnPaddingX, paddingTop: c.gradeBtnPaddingY, paddingBottom: c.gradeBtnPaddingY }}
             >
-              <span className="font-alibaba font-bold text-white text-[16px]">{selectedGrade}</span>
+              <span className="font-alibaba font-bold text-white" style={{ fontSize: c.gradeBtnTextSize }}>{selectedGrade}</span>
               <ChevronDown size={18} color="#fff" className={`transition-transform ${gradeSelectorOpen ? "rotate-180" : ""}`} />
             </button>
           </div>
@@ -192,35 +259,39 @@ export default function HomePage() {
           )}
 
           {/* 三个统计数据卡片 */}
-          <div className="px-3 pb-4 pt-1 grid grid-cols-3 gap-2">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: c.statGridGap, paddingLeft: c.statGridPaddingX, paddingRight: c.statGridPaddingX, paddingBottom: c.statGridPaddingBottom, paddingTop: 4 }}>
             <StatCard
               value={studyStreak}
               unit="天"
               label="坚持学习"
-              borderColor="#88CCFF"
               icon={<Flame size={16} className="text-orange-400" />}
+              c={c}
             />
             <StatCard
               value={todayAnswered}
               unit="题"
               label="今日答题数"
-              borderColor="#88CCFF"
               icon={<Target size={16} className="text-blue-400" />}
+              c={c}
             />
             <StatCard
               value={accuracy}
               unit="%"
               label="正确率"
-              borderColor="#88CCFF"
               icon={<TrendingUp size={16} className="text-green-400" />}
+              c={c}
             />
           </div>
         </div>
 
         {/* 学科卡片网格 */}
-        <div className="mt-4 grid grid-cols-2 gap-3">
+        <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: c.subjectCardGap }}>
           {textbooks.map((tb) => {
             const info = SUBJECTS[tb.subject];
+            const subDesign = c.subjects?.[tb.subject];
+            const subColor = subDesign?.color || info.color;
+            const subName = subDesign?.name || info.name;
+            const subIcon = subDesign?.icon || SUBJECT_ICONS[tb.subject];
             const totalAnswered = subjectTotalAnswered[tb.subject] || 0;
             const totalCorrect = subjectTotalCorrect[tb.subject] || 0;
             const rate = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
@@ -231,53 +302,46 @@ export default function HomePage() {
             return (
               <div
                 key={tb.subject}
-                className="rounded-2xl p-3 relative overflow-hidden"
-                style={{ background: `linear-gradient(135deg, ${info.color}10, ${info.color}05)` }}
+                className="relative overflow-hidden"
+                style={{ borderRadius: c.subjectCardRadius, padding: c.subjectCardPadding, background: `linear-gradient(135deg, ${subColor}10, ${subColor}05)` }}
               >
                 {/* 顶部：图标 + 学科名 */}
                 <div className="flex items-center gap-2 mb-3">
                   <div
-                    className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden"
-                    style={{ background: info.color, boxShadow: `0 3px 8px ${info.color}40` }}
+                    className="flex items-center justify-center flex-shrink-0 overflow-hidden"
+                    style={{ width: c.subjectIconSize, height: c.subjectIconSize, borderRadius: c.subjectIconRadius, background: subColor, boxShadow: `0 3px 8px ${subColor}40` }}
                   >
-                    <img
-                      src={SUBJECT_ICONS[tb.subject]}
-                      alt={info.name}
-                      className="w-9 h-9 object-contain"
-                    />
+                    <img src={subIcon} alt={subName} style={{ width: c.subjectIconImgSize, height: c.subjectIconImgSize, objectFit: "contain" }} />
                   </div>
-                  <span className="font-alibaba font-black text-[22px] text-gray-800 leading-none">
-                    {info.name}
+                  <span className="font-alibaba font-black leading-none" style={{ fontSize: c.subjectNameSize, color: c.subjectNameColor }}>
+                    {subName}
                   </span>
                 </div>
 
                 {/* 已学习 xx 道题 */}
-                <p className="font-alibaba text-[14px] text-gray-500 mb-1">
-                  已学习 <span className="font-bold text-[20px] text-gray-700">{totalAnswered}</span> 道题
+                <p className="font-alibaba mb-1" style={{ fontSize: c.subjectLearnedSize, color: c.subjectLearnedColor }}>
+                  已学习 <span className="font-bold" style={{ fontSize: c.subjectLearnedNumSize, color: c.subjectLearnedNumColor }}>{totalAnswered}</span> 道题
                 </p>
 
                 {/* 进度条 */}
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="flex-1 h-2.5 rounded-full overflow-hidden" style={{ background: `${info.color}20` }}>
+                  <div className="flex-1 rounded-full overflow-hidden" style={{ height: c.subjectProgressHeight, borderRadius: c.subjectProgressRadius, background: `${subColor}20` }}>
                     <div
                       className="h-full rounded-full transition-all duration-700"
-                      style={{
-                        width: `${Math.min(rate, 100)}%`,
-                        background: `linear-gradient(90deg, ${info.color}CC, ${info.color})`,
-                      }}
+                      style={{ width: `${Math.min(rate, 100)}%`, borderRadius: c.subjectProgressRadius, background: `linear-gradient(90deg, ${subColor}CC, ${subColor})` }}
                     />
                   </div>
-                  <span className="text-[11px] font-alibaba text-gray-500 flex-shrink-0">{rate}%</span>
+                  <span className="font-alibaba flex-shrink-0" style={{ fontSize: c.subjectRateSize, color: c.subjectRateColor }}>{rate}%</span>
                 </div>
-                <p className="text-[10px] font-alibaba text-gray-400 mb-2 text-right -mt-1">正确率</p>
+                <p className="font-alibaba text-right -mt-1 mb-2" style={{ fontSize: 10, color: c.subjectVersionColor }}>正确率</p>
 
                 {/* 去学习按钮 */}
                 <button
                   onClick={() => handleStartLearn(tb.subject)}
-                  className="w-full py-1.5 rounded-full text-[14px] font-alibaba font-bold flex items-center justify-center gap-1 transition-all active:scale-95"
-                  style={{ color: "#2244AA" }}
+                  className="w-full rounded-full font-alibaba font-bold flex items-center justify-center gap-1 transition-all active:scale-95"
+                  style={{ padding: "6px 0", borderRadius: 999, fontSize: c.subjectBtnSize, color: c.subjectBtnColor }}
                 >
-                  去学习 <ChevronRight size={16} style={{ color: "#2244AA" }} />
+                  去学习 <ChevronRight size={16} style={{ color: c.subjectBtnColor }} />
                 </button>
 
                 {/* 版本选择（点击版本标签弹出） */}
@@ -307,7 +371,8 @@ export default function HomePage() {
                   )}
                   <button
                     onClick={() => setVersionPickerFor(isOpen ? null : tb.subject)}
-                    className="w-full text-center text-[10px] font-alibaba text-gray-400 py-0.5 truncate"
+                    className="w-full text-center font-alibaba py-0.5 truncate"
+                    style={{ fontSize: c.subjectVersionSize, color: c.subjectVersionColor }}
                   >
                     {selectedVer || "选择版本"}
                   </button>
@@ -325,33 +390,35 @@ function StatCard({
   value,
   unit,
   label,
-  borderColor,
   icon,
+  c,
 }: {
   value: number;
   unit: string;
   label: string;
-  borderColor: string;
   icon?: React.ReactNode;
+  c: typeof FALLBACK;
 }) {
   return (
     <div
-      className="rounded-2xl flex flex-col items-center justify-center py-3 px-1 relative"
+      className="flex flex-col items-center justify-center relative"
       style={{
-        background: "linear-gradient(180deg, #F0F7FF, #E0EEFF)",
-        borderBottom: `3px solid ${borderColor}`,
-        borderRight: `2px solid ${borderColor}30`,
-        borderBottomRightRadius: "16px",
+        borderRadius: 16,
+        padding: "12px 4px",
+        background: `linear-gradient(180deg, ${c.statBgFrom}, ${c.statBgTo})`,
+        borderBottom: `3px solid ${c.statBorderColor}`,
+        borderRight: `2px solid ${c.statBorderColor}30`,
+        borderBottomRightRadius: 16,
       }}
     >
       {icon && <div className="mb-0.5">{icon}</div>}
       <div className="flex items-baseline gap-0.5">
-        <span className="font-alibaba font-black text-[36px] leading-none" style={{ color: "#1A1A1A", fontStyle: "italic" }}>
+        <span className="font-alibaba font-black leading-none" style={{ fontSize: c.statNumberSize, color: c.statNumberColor, fontStyle: "italic" }}>
           {value}
         </span>
-        <span className="font-alibaba font-bold text-[16px] text-gray-600">{unit}</span>
+        <span className="font-alibaba font-bold" style={{ fontSize: c.statUnitSize, color: c.statUnitColor }}>{unit}</span>
       </div>
-      <span className="text-[13px] font-alibaba text-gray-500 mt-1">{label}</span>
+      <span className="font-alibaba mt-1" style={{ fontSize: c.statLabelSize, color: c.statLabelColor }}>{label}</span>
     </div>
   );
 }

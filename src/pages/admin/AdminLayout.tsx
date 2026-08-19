@@ -1,5 +1,5 @@
-﻿import { NavLink, Outlet, useNavigate, Navigate } from "react-router-dom";
-import { Users, FileQuestion, BarChart3, LogOut, Shield, Palette } from "lucide-react";
+import { NavLink, Outlet, useNavigate, Navigate } from "react-router-dom";
+import { Users, FileQuestion, BarChart3, LogOut, Shield, Palette, LayoutDashboard } from "lucide-react";
 import { useStore } from "@/store/useStore";
 
 const NAV = [
@@ -7,6 +7,7 @@ const NAV = [
   { to: "/admin/questions", label: "题库管理", icon: FileQuestion },
   { to: "/admin/stats", label: "数据统计", icon: BarChart3 },
   { to: "/admin/visual", label: "可视化配置", icon: Palette },
+  { to: "/admin/designer", label: "首页设计器", icon: LayoutDashboard },
 ];
 
 export default function AdminLayout() {
