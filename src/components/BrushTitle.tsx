@@ -33,32 +33,38 @@ export default function BrushTitle({ size = "lg", showSeal = false, className = 
     );
   }
 
-  // 默认渲染 "AI 智能题库" 双色设计感
+  // 默认渲染 "AI 智能题库" 双色设计感（与首页完全一致）
   return (
-    <div className={`flex items-baseline gap-1 ${className}`}>
+    <div className={`flex items-baseline ${className}`} style={{ gap: 4 }}>
       <span
-        className="font-amber leading-none"
+        className="font-alibaba"
         style={{
-          fontSize: "var(--ai-font-size, 30px)",
+          fontSize: 30,
           fontWeight: 900,
+          lineHeight: 1,
           background: "linear-gradient(135deg, #FFFFFF 0%, #B0D0FF 100%)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
           backgroundClip: "text",
           filter: "drop-shadow(0 2px 10px rgba(0,0,0,0.25))",
           letterSpacing: 2,
+          display: "inline-block",
+          whiteSpace: "nowrap",
         }}
       >
         AI
       </span>
       <span
-        className="font-amber leading-none"
+        className="font-alibaba"
         style={{
-          fontSize: "var(--zhineng-font-size, 24px)",
+          fontSize: 24,
           fontWeight: 800,
           color: "#FFFFFF",
           textShadow: "0 2px 10px rgba(0,0,0,0.2)",
+          lineHeight: 1,
           letterSpacing: 3,
+          display: "inline-block",
+          whiteSpace: "nowrap",
         }}
       >
         智能题库
