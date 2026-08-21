@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿/**
+﻿﻿﻿﻿﻿/**
  * 前端 API 封装：通过 fetch 调用 Netlify Functions
  * 本地开发时通过 vite proxy 转发到 Netlify Dev，生产环境直接调用同域 API
  */
@@ -298,12 +298,8 @@ export async function fetchQuestionsByShard(subject: string, grade: string, vers
 
   const p = (async () => {
     const versions = await fetchVersions(subject, grade);
-    let entry = versions.find((v) => v.version === version);
-    if (!entry && versions.length > 0) {
-      const normalize = (s: string) => s.replace(/[（(].*?[）)]/g, '').replace(/\s+/g, '');
-      const targetNorm = normalize(version);
-      entry = versions.find((v) => normalize(v.version) === targetNorm) || versions[0];
-    }
+    // 精确匹配版本名，不做模糊归并——"统编版" 和 "统编版（2016）" 是不同版本
+    const entry = versions.find((v) => v.version === version);
     if (!entry) return [];
     const res = await fetch(`/data/questions/${entry.file}`);
     const questions: Question[] = await res.json();
