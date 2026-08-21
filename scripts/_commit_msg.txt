@@ -1,13 +1,16 @@
-fix: 修复浏览器缓存旧manifest.json导致版本点开"暂无题目"
+fix: 全量修复题型字段+跨版本共享缺失题目
 
-问题：fetchQuestionsByShard通过manifest.json精确匹配版本名查找文件，
-浏览器缓存了旧manifest.json（没有"统编版（五四学制）（2018）"等新版本），
-导致find返回undefined，直接return []，页面显示"暂无题目数据"。
+问题1：题目type字段用了"choice"，前端期望"single"
+- 180289道choice题全部转为single（4选项单选）
+- 多答案字母的自动判为multiple
+- 2选项判断题自动判为judge
+- 修复105个题目文件
 
-修复：
-1. manifest.json fetch加?v=20260821破坏浏览器缓存
-2. fetchQuestionsByShard在manifest找不到时，直接按命名规则
-   ${subject}_${grade}_${version}.json构造文件名尝试加载
-3. fetchChapterIndex同样加缓存破坏+直接构造文件名兜底
+问题2：17个版本只有选择题无大题，2个版本只有大题无选择题
+- 按用户要求从同学段同学科其他版本共享题目
+- 共享21846题，修改ID和version避免冲突
+- 19个问题版本全部修复，304版本0问题
 
-这样即使manifest.json被缓存，也能通过直接构造文件名加载题目
+修复3：rebuild-all.mjs保留SUBJECTS/GRADES导出
+- 之前重建会覆盖textbooks.ts导致编译报错
+- 现在生成时保留SUBJECTS和GRADES定义
