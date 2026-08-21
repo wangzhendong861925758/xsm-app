@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿/**
+﻿﻿﻿﻿﻿﻿﻿/**
  * 前端 API 封装：通过 fetch 调用 Netlify Functions
  * 本地开发时通过 vite proxy 转发到 Netlify Dev，生产环境直接调用同域 API
  */
@@ -269,12 +269,16 @@ export async function generateAnalysis(questions: Question[]): Promise<Question[
 export interface ManifestEntry { version: string; file: string; count: number; }
 export type QuestionManifest = Record<string, ManifestEntry[]>; // key: "subject|grade"
 
+// ponytail: 用构建时戳破坏浏览器对 manifest.json 的长期缓存
+// ceiling: 每次发版需更新此值，否则旧缓存仍会命中——够用，因为部署即刷新
+const MANIFEST_VER = '20260821';
+
 let manifestCache: QuestionManifest | null = null;
 
 /** 加载 manifest 索引（学科+年级 -> 版本列表） */
 export async function fetchQuestionManifest(): Promise<QuestionManifest> {
   if (manifestCache) return manifestCache;
-  const res = await fetch('/data/questions/manifest.json');
+  const res = await fetch(`/data/questions/manifest.json?v=${MANIFEST_VER}`);
   manifestCache = await res.json();
   return manifestCache!;
 }
@@ -290,18 +294,26 @@ export async function fetchVersions(subject: string, grade: string): Promise<Man
 const shardCache = new Map<string, Question[]>();
 const shardLoading = new Map<string, Promise<Question[]>>();
 
-/** 按学科+年级+版本加载题目分片（带内存缓存） */
+/** 按学科+年级+版本加载题目分片（带内存缓存）
+ *  优先从 manifest 查找文件名；若 manifest 缓存过旧找不到版本，
+ *  直接用命名规则 ${subject}_${grade}_${version}.json 尝试加载
+ */
 export async function fetchQuestionsByShard(subject: string, grade: string, version: string): Promise<Question[]> {
   const key = `${subject}|${grade}|${version}`;
   if (shardCache.has(key)) return shardCache.get(key)!;
   if (shardLoading.has(key)) return shardLoading.get(key)!;
 
   const p = (async () => {
-    const versions = await fetchVersions(subject, grade);
-    // 精确匹配版本名，不做模糊归并——"统编版" 和 "统编版（2016）" 是不同版本
-    const entry = versions.find((v) => v.version === version);
-    if (!entry) return [];
-    const res = await fetch(`/data/questions/${entry.file}`);
+    let file = '';
+    try {
+      const versions = await fetchVersions(subject, grade);
+      const entry = versions.find((v) => v.version === version);
+      if (entry) file = entry.file;
+    } catch { /* manifest 加载失败，走直接构造路径 */ }
+    // manifest 找不到时直接按命名规则构造文件名
+    if (!file) file = `${subject}_${grade}_${version}.json`;
+    const res = await fetch(`/data/questions/${encodeURIComponent(file)}`);
+    if (!res.ok) return [];
     const questions: Question[] = await res.json();
     shardCache.set(key, questions);
     if (shardCache.size > 3) {
@@ -344,17 +356,23 @@ let indexManifestCache: QuestionManifest | null = null;
 /** 加载索引manifest */
 export async function fetchIndexManifest(): Promise<QuestionManifest> {
   if (indexManifestCache) return indexManifestCache;
-  const res = await fetch('/data/question-index/manifest.json');
+  const res = await fetch(`/data/question-index/manifest.json?v=${MANIFEST_VER}`);
   indexManifestCache = await res.json();
   return indexManifestCache!;
 }
 
 /** 加载某分片的章节索引（轻量，约1-3KB） */
 export async function fetchChapterIndex(subject: string, grade: string, version: string): Promise<QuestionIndex> {
-  const m = await fetchIndexManifest();
-  const entries = m[`${subject}|${grade}`] || [];
-  const entry = entries.find((v) => v.version === version);
-  if (!entry) return [];
-  const res = await fetch(`/data/question-index/${entry.file}`);
+  let file = '';
+  try {
+    const m = await fetchIndexManifest();
+    const entries = m[`${subject}|${grade}`] || [];
+    const entry = entries.find((v) => v.version === version);
+    if (entry) file = entry.file;
+  } catch { /* 走直接构造路径 */ }
+  // manifest 找不到时直接按命名规则构造文件名
+  if (!file) file = `${subject}_${grade}_${version}.idx.json`;
+  const res = await fetch(`/data/question-index/${encodeURIComponent(file)}`);
+  if (!res.ok) return [];
   return res.json();
 }

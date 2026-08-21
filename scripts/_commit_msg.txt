@@ -1,13 +1,13 @@
-fix: 前端直接使用textbooks.ts显示版本，修复学科缺失问题
+fix: 修复浏览器缓存旧manifest.json导致版本点开"暂无题目"
 
-问题：前端GradeSelectPage从manifest.json加载版本列表，
-而非直接用textbooks.ts。浏览器缓存旧manifest.json导致：
-- 七上/七下历史版本显示不完整
-- 八上历史学科消失
+问题：fetchQuestionsByShard通过manifest.json精确匹配版本名查找文件，
+浏览器缓存了旧manifest.json（没有"统编版（五四学制）（2018）"等新版本），
+导致find返回undefined，直接return []，页面显示"暂无题目数据"。
 
 修复：
-1. GradeSelectPage改为直接用tb.versions（来自textbooks.ts）
-2. 恢复rebuild-all.mjs误删的SUBJECTS和GRADES导出
-3. 删除fetchVersions的依赖（版本列表不再依赖远程manifest）
+1. manifest.json fetch加?v=20260821破坏浏览器缓存
+2. fetchQuestionsByShard在manifest找不到时，直接按命名规则
+   ${subject}_${grade}_${version}.json构造文件名尝试加载
+3. fetchChapterIndex同样加缓存破坏+直接构造文件名兜底
 
-304个版本数据已在textbooks.ts中硬编码，不存在缓存问题
+这样即使manifest.json被缓存，也能通过直接构造文件名加载题目
