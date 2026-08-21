@@ -1,8 +1,8 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { create } from "zustand";
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User, Question, Subject, ClientAccount } from "@/data/types";
 import { CURRENT_USER, ADMIN_USERS, CAROUSEL_IMAGES } from "@/data/mock";
-import { SUBJECTS } from "@/data/textbooks";
+import { SUBJECTS, getTextbooksByGrade } from "@/data/textbooks";
 import { DEFAULT_HOME_DESIGN, type HomeDesignConfig } from "@/data/homeDesign";
 import {
   fetchAccounts,
@@ -400,9 +400,24 @@ export const useStore = create<AppState>()(
         set({ questionsLoading: true });
         try {
           const questions = await fetchQuestionsByShard(subject, grade, version);
+          // ponytail: 当前版本0选择题时，自动加载同年级同学科其他版本作为回退
+          // ceiling: 最多尝试3个其他版本；命中第一个有选择题的版本即停止，避免无限请求
+          const hasChoice = questions.some((q) => q.type !== "essay");
+          let merged = questions;
+          if (!hasChoice && questions.length > 0) {
+            const tb = getTextbooksByGrade(grade).find((t) => t.subject === subject);
+            const others = (tb?.versions || []).filter((v) => v !== version).slice(0, 3);
+            for (const v of others) {
+              const fq = await fetchQuestionsByShard(subject, grade, v);
+              if (fq.some((q) => q.type !== "essay")) {
+                merged = [...questions, ...fq];
+                break;
+              }
+            }
+          }
           // 合并本地用户状态（mastered/collected）
           const local = useStore.getState().questions;
-          const merged = questions.map((q) => {
+          merged = merged.map((q) => {
             const lq = local.find((x) => x.id === q.id);
             return lq ? { ...q, mastered: lq.mastered, collected: lq.collected } : q;
           });

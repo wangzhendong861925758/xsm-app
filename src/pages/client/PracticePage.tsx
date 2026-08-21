@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿import { useState, useMemo, useEffect, useRef } from "react";
+﻿﻿﻿﻿﻿﻿﻿﻿import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import {
   ChevronLeft, ChevronRight, Star, CheckCircle2, XCircle,
@@ -78,13 +78,18 @@ export default function PracticePage() {
 
   const versionQuestions = useMemo(() => {
     // 基础过滤：学科+年级+版本+选择题（排除大题）
-    const base = questions.filter((q) => {
+    const byVersion = questions.filter((q) => {
       if (q.subject !== subjectKey) return false;
       if (q.grade !== selectedGrade) return false;
       if (q.version && version && q.version !== version) return false;
       if (q.type === "essay") return false;
       return true;
     });
+    // ponytail: 当前版本0选择题时回退到同年级同学科其他版本（store.loadQuestions已预加载）
+    // ceiling: 用户可能看到非所选教材的题——按需求"必须有题做"可接受
+    const base = byVersion.length > 0
+      ? byVersion
+      : questions.filter((q) => q.subject === subjectKey && q.grade === selectedGrade && q.type !== "essay");
     // 若指定了课时标题，先按课时过滤；若该课时无选择题，回退到整个章节
     if (lessonTitle) {
       const byLesson = base.filter((q) => !q.section || q.section === lessonTitle);
