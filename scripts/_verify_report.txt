@@ -1,0 +1,56 @@
+
+【六年级上册】
+  ✓ 生物: textbooks=3 manifest=3 idx=3 总题数=4449
+  ✓ 历史: textbooks=2 manifest=2 idx=2 总题数=8507
+  ✓ 道法: textbooks=2 manifest=2 idx=2 总题数=5498
+  ✓ 地理: textbooks=5 manifest=5 idx=5 总题数=11881
+
+【六年级下册】
+  ✓ 生物: textbooks=3 manifest=3 idx=3 总题数=3750
+  ✓ 历史: textbooks=2 manifest=2 idx=2 总题数=3335
+  ✓ 道法: textbooks=2 manifest=2 idx=2 总题数=5233
+  ✓ 地理: textbooks=5 manifest=5 idx=5 总题数=11500
+
+【七年级上册】
+  ✓ 生物: textbooks=10 manifest=10 idx=10 总题数=16859
+  ✓ 历史: textbooks=1 manifest=1 idx=1 总题数=4910
+  ✓ 道法: textbooks=4 manifest=4 idx=4 总题数=10566
+  ✓ 地理: textbooks=10 manifest=10 idx=10 总题数=27793
+
+【七年级下册】
+  ✓ 生物: textbooks=10 manifest=10 idx=10 总题数=17602
+  ✓ 历史: textbooks=2 manifest=2 idx=2 总题数=2135
+  ✓ 道法: textbooks=4 manifest=4 idx=4 总题数=10387
+  ✓ 地理: textbooks=9 manifest=9 idx=9 总题数=23398
+
+【八年级上册】
+  ✓ 物理: textbooks=16 manifest=16 idx=16 总题数=94949
+  ✓ 化学: textbooks=3 manifest=3 idx=3 总题数=9987
+  ✓ 生物: textbooks=10 manifest=10 idx=10 总题数=15494
+  ✓ 道法: textbooks=2 manifest=2 idx=2 总题数=5058
+  ✓ 地理: textbooks=10 manifest=10 idx=10 总题数=31978
+
+【八年级下册】
+  ✓ 物理: textbooks=11 manifest=11 idx=11 总题数=59961
+  ✓ 化学: textbooks=3 manifest=3 idx=3 总题数=9987
+  ✓ 生物: textbooks=10 manifest=10 idx=10 总题数=17800
+  ✓ 历史: textbooks=1 manifest=1 idx=1 总题数=2000
+  ✓ 道法: textbooks=2 manifest=2 idx=2 总题数=3996
+  ✓ 地理: textbooks=9 manifest=9 idx=9 总题数=27749
+
+【九年级上册】
+  ✓ 物理: textbooks=15 manifest=15 idx=15 总题数=87471
+  ✓ 化学: textbooks=9 manifest=9 idx=9 总题数=31299
+  ✓ 历史: textbooks=1 manifest=1 idx=1 总题数=4700
+  ✓ 道法: textbooks=2 manifest=2 idx=2 总题数=4000
+
+【九年级下册】
+  ✓ 物理: textbooks=19 manifest=19 idx=19 总题数=92017
+  ✓ 化学: textbooks=9 manifest=9 idx=9 总题数=31299
+  ✓ 历史: textbooks=1 manifest=1 idx=1 总题数=4900
+  ✓ 道法: textbooks=2 manifest=2 idx=2 总题数=3500
+
+=== 汇总 ===
+textbooks.ts 版本总数: 209
+manifest.json 版本总数: 209
+一致性: ✓ 完全一致

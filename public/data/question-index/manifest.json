@@ -1,20 +1,141 @@
 {
+  "biology|六年级上册": [
+    {
+      "version": "鲁科版（五四学制）",
+      "file": "biology_六年级上册_鲁科版（五四学制）.idx.json",
+      "count": 750
+    },
+    {
+      "version": "鲁科版（五四学制）2012",
+      "file": "biology_六年级上册_鲁科版（五四学制）2012.idx.json",
+      "count": 1200
+    },
+    {
+      "version": "人教版（五四制）",
+      "file": "biology_六年级上册_人教版（五四制）.idx.json",
+      "count": 2499
+    }
+  ],
+  "history|六年级上册": [
+    {
+      "version": "统编版（五四学制）",
+      "file": "history_六年级上册_统编版（五四学制）.idx.json",
+      "count": 3597
+    },
+    {
+      "version": "统编版（五四学制）（2018）",
+      "file": "history_六年级上册_统编版（五四学制）（2018）.idx.json",
+      "count": 4910
+    }
+  ],
+  "politics|六年级上册": [
+    {
+      "version": "统编版(五四学制)",
+      "file": "politics_六年级上册_统编版(五四学制).idx.json",
+      "count": 3000
+    },
+    {
+      "version": "统编版(五四学制)（2018）全一册",
+      "file": "politics_六年级上册_统编版(五四学制)（2018）全一册.idx.json",
+      "count": 2498
+    }
+  ],
+  "geography|六年级上册": [
+    {
+      "version": "沪教版（上海）（2007）",
+      "file": "geography_六年级上册_沪教版（上海）（2007）.idx.json",
+      "count": 250
+    },
+    {
+      "version": "鲁教版（五四学制）",
+      "file": "geography_六年级上册_鲁教版（五四学制）.idx.json",
+      "count": 3600
+    },
+    {
+      "version": "鲁教版（五四学制）（2012）",
+      "file": "geography_六年级上册_鲁教版（五四学制）（2012）.idx.json",
+      "count": 2196
+    },
+    {
+      "version": "人教版（五四学制）（2012）",
+      "file": "geography_六年级上册_人教版（五四学制）（2012）.idx.json",
+      "count": 2885
+    },
+    {
+      "version": "中华中图版（五四学制）",
+      "file": "geography_六年级上册_中华中图版（五四学制）.idx.json",
+      "count": 2950
+    }
+  ],
+  "biology|六年级下册": [
+    {
+      "version": "鲁科版（五四学制）",
+      "file": "biology_六年级下册_鲁科版（五四学制）.idx.json",
+      "count": 750
+    },
+    {
+      "version": "鲁科版（五四学制）2012",
+      "file": "biology_六年级下册_鲁科版（五四学制）2012.idx.json",
+      "count": 1500
+    },
+    {
+      "version": "人教版（五四制）",
+      "file": "biology_六年级下册_人教版（五四制）.idx.json",
+      "count": 1500
+    }
+  ],
+  "history|六年级下册": [
+    {
+      "version": "统编版（五四学制）",
+      "file": "history_六年级下册_统编版（五四学制）.idx.json",
+      "count": 3200
+    },
+    {
+      "version": "统编版（五四学制）（2018）",
+      "file": "history_六年级下册_统编版（五四学制）（2018）.idx.json",
+      "count": 135
+    }
+  ],
+  "politics|六年级下册": [
+    {
+      "version": "统编版（五四学制）",
+      "file": "politics_六年级下册_统编版（五四学制）.idx.json",
+      "count": 2735
+    },
+    {
+      "version": "统编版(五四学制)（2018）全一册",
+      "file": "politics_六年级下册_统编版(五四学制)（2018）全一册.idx.json",
+      "count": 2498
+    }
+  ],
+  "geography|六年级下册": [
+    {
+      "version": "沪教版（上海）（2007）",
+      "file": "geography_六年级下册_沪教版（上海）（2007）.idx.json",
+      "count": 900
+    },
+    {
+      "version": "鲁教版（五四学制）",
+      "file": "geography_六年级下册_鲁教版（五四学制）.idx.json",
+      "count": 2700
+    },
+    {
+      "version": "鲁教版（五四学制）（2012）",
+      "file": "geography_六年级下册_鲁教版（五四学制）（2012）.idx.json",
+      "count": 2700
+    },
+    {
+      "version": "人教版（五四学制）（2012）",
+      "file": "geography_六年级下册_人教版（五四学制）（2012）.idx.json",
+      "count": 2700
+    },
+    {
+      "version": "中华中图版（五四学制）",
+      "file": "geography_六年级下册_中华中图版（五四学制）.idx.json",
+      "count": 2500
+    }
+  ],
   "biology|七年级上册": [
-    {
-      "version": "人教版（2012）",
-      "file": "biology_七年级上册_人教版（2012）.idx.json",
-      "count": 2489
-    },
-    {
-      "version": "人教版（五四学制）",
-      "file": "biology_七年级上册_人教版（五四学制）.idx.json",
-      "count": 2000
-    },
-    {
-      "version": "冀少版（2012）",
-      "file": "biology_七年级上册_冀少版（2012）.idx.json",
-      "count": 1249
-    },
     {
       "version": "北京版（2012）",
       "file": "biology_七年级上册_北京版（2012）.idx.json",
@@ -36,6 +157,26 @@
       "count": 1499
     },
     {
+      "version": "冀少版（2012）",
+      "file": "biology_七年级上册_冀少版（2012）.idx.json",
+      "count": 1249
+    },
+    {
+      "version": "鲁科版（五四学制）（2012）",
+      "file": "biology_七年级上册_鲁科版（五四学制）（2012）.idx.json",
+      "count": 750
+    },
+    {
+      "version": "人教版（2012）",
+      "file": "biology_七年级上册_人教版（2012）.idx.json",
+      "count": 2489
+    },
+    {
+      "version": "人教版（五四学制）",
+      "file": "biology_七年级上册_人教版（五四学制）.idx.json",
+      "count": 2000
+    },
+    {
       "version": "苏教版（2012）",
       "file": "biology_七年级上册_苏教版（2012）.idx.json",
       "count": 1743
@@ -44,29 +185,90 @@
       "version": "苏科版（2012）",
       "file": "biology_七年级上册_苏科版（2012）.idx.json",
       "count": 1748
+    }
+  ],
+  "history|七年级上册": [
+    {
+      "version": "统编版（2016）",
+      "file": "history_七年级上册_统编版（2016）.idx.json",
+      "count": 4910
+    }
+  ],
+  "politics|七年级上册": [
+    {
+      "version": "统编版（2016）",
+      "file": "politics_七年级上册_统编版（2016）.idx.json",
+      "count": 2498
     },
     {
-      "version": "鲁科版（五四学制）（2012）",
-      "file": "biology_七年级上册_鲁科版（五四学制）（2012）.idx.json",
-      "count": 750
+      "version": "统编版（五四学制）（2018）全一册",
+      "file": "politics_七年级上册_统编版（五四学制）（2018）全一册.idx.json",
+      "count": 2319
+    },
+    {
+      "version": "统编版（五四学制）全一册",
+      "file": "politics_七年级上册_统编版（五四学制）全一册.idx.json",
+      "count": 2750
+    },
+    {
+      "version": "中华民族大团结 全一册",
+      "file": "politics_七年级上册_中华民族大团结 全一册.idx.json",
+      "count": 2999
+    }
+  ],
+  "geography|七年级上册": [
+    {
+      "version": "沪教版（上海）（2007）",
+      "file": "geography_七年级上册_沪教版（上海）（2007）.idx.json",
+      "count": 1350
+    },
+    {
+      "version": "晋教版（2012）",
+      "file": "geography_七年级上册_晋教版（2012）.idx.json",
+      "count": 2800
+    },
+    {
+      "version": "鲁教版（五四学制）（2012）",
+      "file": "geography_七年级上册_鲁教版（五四学制）（2012）.idx.json",
+      "count": 2902
+    },
+    {
+      "version": "人教版（2012）",
+      "file": "geography_七年级上册_人教版（2012）.idx.json",
+      "count": 2885
+    },
+    {
+      "version": "人教版（五四学制）（2012）",
+      "file": "geography_七年级上册_人教版（五四学制）（2012）.idx.json",
+      "count": 2902
+    },
+    {
+      "version": "湘教版（2012）",
+      "file": "geography_七年级上册_湘教版（2012）.idx.json",
+      "count": 3650
+    },
+    {
+      "version": "粤人版（2012）",
+      "file": "geography_七年级上册_粤人版（2012）.idx.json",
+      "count": 3199
+    },
+    {
+      "version": "中华中图版（五四学制)",
+      "file": "geography_七年级上册_中华中图版（五四学制).idx.json",
+      "count": 3599
+    },
+    {
+      "version": "中图版（2012）",
+      "file": "geography_七年级上册_中图版（2012）.idx.json",
+      "count": 2000
+    },
+    {
+      "version": "中图版（北京）（2014）",
+      "file": "geography_七年级上册_中图版（北京）（2014）.idx.json",
+      "count": 2506
     }
   ],
   "biology|七年级下册": [
-    {
-      "version": "人教版（2012）",
-      "file": "biology_七年级下册_人教版（2012）.idx.json",
-      "count": 1750
-    },
-    {
-      "version": "人教版（五四学制）",
-      "file": "biology_七年级下册_人教版（五四学制）.idx.json",
-      "count": 1494
-    },
-    {
-      "version": "冀少版（2012）",
-      "file": "biology_七年级下册_冀少版（2012）.idx.json",
-      "count": 1744
-    },
     {
       "version": "北京版（2012）",
       "file": "biology_七年级下册_北京版（2012）.idx.json",
@@ -88,6 +290,26 @@
       "count": 1750
     },
     {
+      "version": "冀少版（2012）",
+      "file": "biology_七年级下册_冀少版（2012）.idx.json",
+      "count": 1744
+    },
+    {
+      "version": "鲁科版（五四学制）2012",
+      "file": "biology_七年级下册_鲁科版（五四学制）2012.idx.json",
+      "count": 1744
+    },
+    {
+      "version": "人教版（2012）",
+      "file": "biology_七年级下册_人教版（2012）.idx.json",
+      "count": 1750
+    },
+    {
+      "version": "人教版（五四学制）",
+      "file": "biology_七年级下册_人教版（五四学制）.idx.json",
+      "count": 1494
+    },
+    {
       "version": "苏教版（2012）",
       "file": "biology_七年级下册_苏教版（2012）.idx.json",
       "count": 1250
@@ -96,24 +318,189 @@
       "version": "苏科版（2012）",
       "file": "biology_七年级下册_苏科版（2012）.idx.json",
       "count": 1747
+    }
+  ],
+  "history|七年级下册": [
+    {
+      "version": "统编版（2016）",
+      "file": "history_七年级下册_统编版（2016）.idx.json",
+      "count": 135
     },
     {
-      "version": "鲁科版（五四学制）2012",
-      "file": "biology_七年级下册_鲁科版（五四学制）2012.idx.json",
-      "count": 1744
+      "version": "统编版（五四学制）（2018）",
+      "file": "history_七年级下册_统编版（五四学制）（2018）.idx.json",
+      "count": 2000
+    }
+  ],
+  "politics|七年级下册": [
+    {
+      "version": "统编版（2016）",
+      "file": "politics_七年级下册_统编版（2016）.idx.json",
+      "count": 2319
+    },
+    {
+      "version": "统编版（五四学制）（2018）全一册",
+      "file": "politics_七年级下册_统编版（五四学制）（2018）全一册.idx.json",
+      "count": 2319
+    },
+    {
+      "version": "统编版（五四学制）全一册",
+      "file": "politics_七年级下册_统编版（五四学制）全一册.idx.json",
+      "count": 2750
+    },
+    {
+      "version": "中华民族大团结 全一册",
+      "file": "politics_七年级下册_中华民族大团结 全一册.idx.json",
+      "count": 2999
+    }
+  ],
+  "geography|七年级下册": [
+    {
+      "version": "晋教版（2012）",
+      "file": "geography_七年级下册_晋教版（2012）.idx.json",
+      "count": 2851
+    },
+    {
+      "version": "鲁教版（五四学制）（2012）",
+      "file": "geography_七年级下册_鲁教版（五四学制）（2012）.idx.json",
+      "count": 2050
+    },
+    {
+      "version": "人教版（2012）",
+      "file": "geography_七年级下册_人教版（2012）.idx.json",
+      "count": 2700
+    },
+    {
+      "version": "人教版（五四学制）（2012）",
+      "file": "geography_七年级下册_人教版（五四学制）（2012）.idx.json",
+      "count": 2050
+    },
+    {
+      "version": "商务星球版（2012）",
+      "file": "geography_七年级下册_商务星球版（2012）.idx.json",
+      "count": 2300
+    },
+    {
+      "version": "湘教版（2012）",
+      "file": "geography_七年级下册_湘教版（2012）.idx.json",
+      "count": 3102
+    },
+    {
+      "version": "粤人版（2012）",
+      "file": "geography_七年级下册_粤人版（2012）.idx.json",
+      "count": 2550
+    },
+    {
+      "version": "中华中图版（五四学制）",
+      "file": "geography_七年级下册_中华中图版（五四学制）.idx.json",
+      "count": 2450
+    },
+    {
+      "version": "中图版（2012）",
+      "file": "geography_七年级下册_中图版（2012）.idx.json",
+      "count": 3345
+    }
+  ],
+  "physics|八年级上册": [
+    {
+      "version": "北师大版",
+      "file": "physics_八年级上册_北师大版.idx.json",
+      "count": 5745
+    },
+    {
+      "version": "北师大版（2012）",
+      "file": "physics_八年级上册_北师大版（2012）.idx.json",
+      "count": 5494
+    },
+    {
+      "version": "北师大版（北京）（2013）全一册",
+      "file": "physics_八年级上册_北师大版（北京）（2013）全一册.idx.json",
+      "count": 5759
+    },
+    {
+      "version": "北师大版（北京）全一册",
+      "file": "physics_八年级上册_北师大版（北京）全一册.idx.json",
+      "count": 11505
+    },
+    {
+      "version": "沪教版（上海）（2007）",
+      "file": "physics_八年级上册_沪教版（上海）（2007）.idx.json",
+      "count": 3000
+    },
+    {
+      "version": "沪科版 全一册",
+      "file": "physics_八年级上册_沪科版 全一册.idx.json",
+      "count": 9719
+    },
+    {
+      "version": "沪科版(2012) 全一册",
+      "file": "physics_八年级上册_沪科版(2012) 全一册.idx.json",
+      "count": 9993
+    },
+    {
+      "version": "沪科版（五四学制）",
+      "file": "physics_八年级上册_沪科版（五四学制）.idx.json",
+      "count": 4745
+    },
+    {
+      "version": "教科版",
+      "file": "physics_八年级上册_教科版.idx.json",
+      "count": 5746
+    },
+    {
+      "version": "教科版（2012）",
+      "file": "physics_八年级上册_教科版（2012）.idx.json",
+      "count": 5749
+    },
+    {
+      "version": "鲁科版（五四学制）",
+      "file": "physics_八年级上册_鲁科版（五四学制）.idx.json",
+      "count": 1500
+    },
+    {
+      "version": "鲁科版（五四学制）（2012）",
+      "file": "physics_八年级上册_鲁科版（五四学制）（2012）.idx.json",
+      "count": 3998
+    },
+    {
+      "version": "人教版",
+      "file": "physics_八年级上册_人教版.idx.json",
+      "count": 5999
+    },
+    {
+      "version": "人教版（2012）",
+      "file": "physics_八年级上册_人教版（2012）.idx.json",
+      "count": 5249
+    },
+    {
+      "version": "苏科版",
+      "file": "physics_八年级上册_苏科版.idx.json",
+      "count": 5499
+    },
+    {
+      "version": "苏科版（2012）",
+      "file": "physics_八年级上册_苏科版（2012）.idx.json",
+      "count": 5249
+    }
+  ],
+  "chemistry|八年级上册": [
+    {
+      "version": "沪科版（五四学制）全一册",
+      "file": "chemistry_八年级上册_沪科版（五四学制）全一册.idx.json",
+      "count": 1499
+    },
+    {
+      "version": "鲁教版（五四学制）全一册",
+      "file": "chemistry_八年级上册_鲁教版（五四学制）全一册.idx.json",
+      "count": 5246
+    },
+    {
+      "version": "人教版（五四学制）全一册",
+      "file": "chemistry_八年级上册_人教版（五四学制）全一册.idx.json",
+      "count": 3242
     }
   ],
   "biology|八年级上册": [
-    {
-      "version": "人教版（2012）",
-      "file": "biology_八年级上册_人教版（2012）.idx.json",
-      "count": 1649
-    },
-    {
-      "version": "冀少版（2012）",
-      "file": "biology_八年级上册_冀少版（2012）.idx.json",
-      "count": 1850
-    },
     {
       "version": "北京版（2012）",
       "file": "biology_八年级上册_北京版（2012）.idx.json",
@@ -140,6 +527,21 @@
       "count": 850
     },
     {
+      "version": "冀少版（2012）",
+      "file": "biology_八年级上册_冀少版（2012）.idx.json",
+      "count": 1850
+    },
+    {
+      "version": "鲁科版（五四学制）（2012）",
+      "file": "biology_八年级上册_鲁科版（五四学制）（2012）.idx.json",
+      "count": 650
+    },
+    {
+      "version": "人教版（2012）",
+      "file": "biology_八年级上册_人教版（2012）.idx.json",
+      "count": 1649
+    },
+    {
       "version": "苏教版（2012）",
       "file": "biology_八年级上册_苏教版（2012）.idx.json",
       "count": 1448
@@ -148,24 +550,147 @@
       "version": "苏科版（2012）",
       "file": "biology_八年级上册_苏科版（2012）.idx.json",
       "count": 1450
+    }
+  ],
+  "politics|八年级上册": [
+    {
+      "version": "统编版（2016）",
+      "file": "politics_八年级上册_统编版（2016）.idx.json",
+      "count": 2529
+    },
+    {
+      "version": "统编版（五四学制）（2018）",
+      "file": "politics_八年级上册_统编版（五四学制）（2018）.idx.json",
+      "count": 2529
+    }
+  ],
+  "geography|八年级上册": [
+    {
+      "version": "晋教版（2012）",
+      "file": "geography_八年级上册_晋教版（2012）.idx.json",
+      "count": 2750
+    },
+    {
+      "version": "人教版（2012）",
+      "file": "geography_八年级上册_人教版（2012）.idx.json",
+      "count": 3250
+    },
+    {
+      "version": "仁爱科普版 全一册",
+      "file": "geography_八年级上册_仁爱科普版 全一册.idx.json",
+      "count": 3250
+    },
+    {
+      "version": "仁爱科普版（2012）",
+      "file": "geography_八年级上册_仁爱科普版（2012）.idx.json",
+      "count": 3500
+    },
+    {
+      "version": "商务星球版（2012）",
+      "file": "geography_八年级上册_商务星球版（2012）.idx.json",
+      "count": 3000
+    },
+    {
+      "version": "湘教版（2012）",
+      "file": "geography_八年级上册_湘教版（2012）.idx.json",
+      "count": 3500
+    },
+    {
+      "version": "粤人版（2012）",
+      "file": "geography_八年级上册_粤人版（2012）.idx.json",
+      "count": 3250
+    },
+    {
+      "version": "中图版（2012）",
+      "file": "geography_八年级上册_中图版（2012）.idx.json",
+      "count": 2998
+    },
+    {
+      "version": "中图版（北京版）",
+      "file": "geography_八年级上册_中图版（北京版）.idx.json",
+      "count": 3750
+    },
+    {
+      "version": "中图版（北京版）（2014）",
+      "file": "geography_八年级上册_中图版（北京版）（2014）.idx.json",
+      "count": 2730
+    }
+  ],
+  "physics|八年级下册": [
+    {
+      "version": "北师大版（2012）",
+      "file": "physics_八年级下册_北师大版（2012）.idx.json",
+      "count": 500
+    },
+    {
+      "version": "北师大版（北京）（2013）全一册",
+      "file": "physics_八年级下册_北师大版（北京）（2013）全一册.idx.json",
+      "count": 5759
+    },
+    {
+      "version": "北师大版（北京）全一册",
+      "file": "physics_八年级下册_北师大版（北京）全一册.idx.json",
+      "count": 11505
+    },
+    {
+      "version": "沪科版 全一册",
+      "file": "physics_八年级下册_沪科版 全一册.idx.json",
+      "count": 9719
+    },
+    {
+      "version": "沪科版(2012) 全一册",
+      "file": "physics_八年级下册_沪科版(2012) 全一册.idx.json",
+      "count": 9993
+    },
+    {
+      "version": "沪科版（五四学制）",
+      "file": "physics_八年级下册_沪科版（五四学制）.idx.json",
+      "count": 500
+    },
+    {
+      "version": "沪粤版（2012）",
+      "file": "physics_八年级下册_沪粤版（2012）.idx.json",
+      "count": 5249
+    },
+    {
+      "version": "教科版（2012）",
+      "file": "physics_八年级下册_教科版（2012）.idx.json",
+      "count": 250
+    },
+    {
+      "version": "鲁科版（五四学制）",
+      "file": "physics_八年级下册_鲁科版（五四学制）.idx.json",
+      "count": 5498
     },
     {
       "version": "鲁科版（五四学制）（2012）",
-      "file": "biology_八年级上册_鲁科版（五四学制）（2012）.idx.json",
-      "count": 650
+      "file": "physics_八年级下册_鲁科版（五四学制）（2012）.idx.json",
+      "count": 5988
+    },
+    {
+      "version": "苏科版（2012）",
+      "file": "physics_八年级下册_苏科版（2012）.idx.json",
+      "count": 5000
+    }
+  ],
+  "chemistry|八年级下册": [
+    {
+      "version": "沪科版（五四学制）全一册",
+      "file": "chemistry_八年级下册_沪科版（五四学制）全一册.idx.json",
+      "count": 1499
+    },
+    {
+      "version": "鲁教版（五四学制）全一册",
+      "file": "chemistry_八年级下册_鲁教版（五四学制）全一册.idx.json",
+      "count": 5246
+    },
+    {
+      "version": "人教版（五四学制）全一册",
+      "file": "chemistry_八年级下册_人教版（五四学制）全一册.idx.json",
+      "count": 3242
     }
   ],
   "biology|八年级下册": [
-    {
-      "version": "人教版（2012）",
-      "file": "biology_八年级下册_人教版（2012）.idx.json",
-      "count": 1250
-    },
-    {
-      "version": "冀少版（2012）",
-      "file": "biology_八年级下册_冀少版（2012）.idx.json",
-      "count": 1750
-    },
     {
       "version": "北京版（2012）",
       "file": "biology_八年级下册_北京版（2012）.idx.json",
@@ -192,6 +717,21 @@
       "count": 1750
     },
     {
+      "version": "冀少版（2012）",
+      "file": "biology_八年级下册_冀少版（2012）.idx.json",
+      "count": 1750
+    },
+    {
+      "version": "鲁科版（五四学制）（2012）",
+      "file": "biology_八年级下册_鲁科版（五四学制）（2012）.idx.json",
+      "count": 1050
+    },
+    {
+      "version": "人教版（2012）",
+      "file": "biology_八年级下册_人教版（2012）.idx.json",
+      "count": 1250
+    },
+    {
       "version": "苏教版（2012）",
       "file": "biology_八年级下册_苏教版（2012）.idx.json",
       "count": 1500
@@ -200,63 +740,152 @@
       "version": "苏科版（2012）",
       "file": "biology_八年级下册_苏科版（2012）.idx.json",
       "count": 1250
+    }
+  ],
+  "history|八年级下册": [
+    {
+      "version": "统编版（2016）",
+      "file": "history_八年级下册_统编版（2016）.idx.json",
+      "count": 2000
+    }
+  ],
+  "politics|八年级下册": [
+    {
+      "version": "统编版（2016）",
+      "file": "politics_八年级下册_统编版（2016）.idx.json",
+      "count": 1998
+    },
+    {
+      "version": "统编版（五四学制）2018",
+      "file": "politics_八年级下册_统编版（五四学制）2018.idx.json",
+      "count": 1998
+    }
+  ],
+  "geography|八年级下册": [
+    {
+      "version": "晋教版（2012）",
+      "file": "geography_八年级下册_晋教版（2012）.idx.json",
+      "count": 2500
+    },
+    {
+      "version": "人教版（2012）",
+      "file": "geography_八年级下册_人教版（2012）.idx.json",
+      "count": 2250
+    },
+    {
+      "version": "仁爱科普版 全一册",
+      "file": "geography_八年级下册_仁爱科普版 全一册.idx.json",
+      "count": 3250
+    },
+    {
+      "version": "仁爱科普版（2012）",
+      "file": "geography_八年级下册_仁爱科普版（2012）.idx.json",
+      "count": 3250
+    },
+    {
+      "version": "商务星球版（2012）",
+      "file": "geography_八年级下册_商务星球版（2012）.idx.json",
+      "count": 3500
+    },
+    {
+      "version": "湘教版（2012）",
+      "file": "geography_八年级下册_湘教版（2012）.idx.json",
+      "count": 4000
+    },
+    {
+      "version": "粤人版（2012）",
+      "file": "geography_八年级下册_粤人版（2012）.idx.json",
+      "count": 3750
+    },
+    {
+      "version": "中图版（2012）",
+      "file": "geography_八年级下册_中图版（2012）.idx.json",
+      "count": 3249
+    },
+    {
+      "version": "中图版（北京版）",
+      "file": "geography_八年级下册_中图版（北京版）.idx.json",
+      "count": 2000
+    }
+  ],
+  "physics|九年级上册": [
+    {
+      "version": "北师大版 全一册",
+      "file": "physics_九年级上册_北师大版 全一册.idx.json",
+      "count": 8748
+    },
+    {
+      "version": "北师大版（2012）全一册",
+      "file": "physics_九年级上册_北师大版（2012）全一册.idx.json",
+      "count": 6248
+    },
+    {
+      "version": "北师大版（北京）（2013）全一册",
+      "file": "physics_九年级上册_北师大版（北京）（2013）全一册.idx.json",
+      "count": 3250
+    },
+    {
+      "version": "北师大版（北京）全一册",
+      "file": "physics_九年级上册_北师大版（北京）全一册.idx.json",
+      "count": 2749
+    },
+    {
+      "version": "沪科版 全一册",
+      "file": "physics_九年级上册_沪科版 全一册.idx.json",
+      "count": 7496
+    },
+    {
+      "version": "沪科版（2012）全一册",
+      "file": "physics_九年级上册_沪科版（2012）全一册.idx.json",
+      "count": 7789
+    },
+    {
+      "version": "沪粤版",
+      "file": "physics_九年级上册_沪粤版.idx.json",
+      "count": 5242
+    },
+    {
+      "version": "沪粤版（2012）",
+      "file": "physics_九年级上册_沪粤版（2012）.idx.json",
+      "count": 3747
+    },
+    {
+      "version": "教科版 全一册",
+      "file": "physics_九年级上册_教科版 全一册.idx.json",
+      "count": 6237
+    },
+    {
+      "version": "鲁科版（五四学制）",
+      "file": "physics_九年级上册_鲁科版（五四学制）.idx.json",
+      "count": 4497
     },
     {
       "version": "鲁科版（五四学制）（2012）",
-      "file": "biology_八年级下册_鲁科版（五四学制）（2012）.idx.json",
-      "count": 1050
-    }
-  ],
-  "biology|六年级上册": [
-    {
-      "version": "人教版（五四制）",
-      "file": "biology_六年级上册_人教版（五四制）.idx.json",
-      "count": 2499
+      "file": "physics_九年级上册_鲁科版（五四学制）（2012）.idx.json",
+      "count": 4249
     },
     {
-      "version": "鲁科版（五四学制）",
-      "file": "biology_六年级上册_鲁科版（五四学制）.idx.json",
-      "count": 750
+      "version": "人教版 全一册",
+      "file": "physics_九年级上册_人教版 全一册.idx.json",
+      "count": 8991
     },
     {
-      "version": "鲁科版（五四学制）2012",
-      "file": "biology_六年级上册_鲁科版（五四学制）2012.idx.json",
-      "count": 1200
-    }
-  ],
-  "biology|六年级下册": [
-    {
-      "version": "人教版（五四制）",
-      "file": "biology_六年级下册_人教版（五四制）.idx.json",
-      "count": 1500
+      "version": "人教版（2012）全一册",
+      "file": "physics_九年级上册_人教版（2012）全一册.idx.json",
+      "count": 9482
     },
     {
-      "version": "鲁科版（五四学制）",
-      "file": "biology_六年级下册_鲁科版（五四学制）.idx.json",
-      "count": 750
+      "version": "苏科版",
+      "file": "physics_九年级上册_苏科版.idx.json",
+      "count": 4497
     },
     {
-      "version": "鲁科版（五四学制）2012",
-      "file": "biology_六年级下册_鲁科版（五四学制）2012.idx.json",
-      "count": 1500
+      "version": "苏科版（2012）",
+      "file": "physics_九年级上册_苏科版（2012）.idx.json",
+      "count": 4249
     }
   ],
   "chemistry|九年级上册": [
-    {
-      "version": "人教版",
-      "file": "chemistry_九年级上册_人教版.idx.json",
-      "count": 3539
-    },
-    {
-      "version": "人教版（五四学制）全一册",
-      "file": "chemistry_九年级上册_人教版（五四学制）全一册.idx.json",
-      "count": 3242
-    },
-    {
-      "version": "仁爱科普版",
-      "file": "chemistry_九年级上册_仁爱科普版.idx.json",
-      "count": 3459
-    },
     {
       "version": "北京版",
       "file": "chemistry_九年级上册_北京版.idx.json",
@@ -286,363 +915,21 @@
       "version": "鲁教版（五四学制）全一册",
       "file": "chemistry_九年级上册_鲁教版（五四学制）全一册.idx.json",
       "count": 5246
-    }
-  ],
-  "chemistry|九年级下册": [
+    },
     {
       "version": "人教版",
-      "file": "chemistry_九年级下册_人教版.idx.json",
+      "file": "chemistry_九年级上册_人教版.idx.json",
       "count": 3539
     },
     {
       "version": "人教版（五四学制）全一册",
-      "file": "chemistry_九年级下册_人教版（五四学制）全一册.idx.json",
+      "file": "chemistry_九年级上册_人教版（五四学制）全一册.idx.json",
       "count": 3242
     },
     {
       "version": "仁爱科普版",
-      "file": "chemistry_九年级下册_仁爱科普版.idx.json",
+      "file": "chemistry_九年级上册_仁爱科普版.idx.json",
       "count": 3459
-    },
-    {
-      "version": "北京版",
-      "file": "chemistry_九年级下册_北京版.idx.json",
-      "count": 5742
-    },
-    {
-      "version": "沪教版",
-      "file": "chemistry_九年级下册_沪教版.idx.json",
-      "count": 4241
-    },
-    {
-      "version": "沪科版（五四学制）全一册",
-      "file": "chemistry_九年级下册_沪科版（五四学制）全一册.idx.json",
-      "count": 1499
-    },
-    {
-      "version": "科粤版",
-      "file": "chemistry_九年级下册_科粤版.idx.json",
-      "count": 3581
-    },
-    {
-      "version": "鲁教版",
-      "file": "chemistry_九年级下册_鲁教版.idx.json",
-      "count": 750
-    },
-    {
-      "version": "鲁教版（五四学制）全一册",
-      "file": "chemistry_九年级下册_鲁教版（五四学制）全一册.idx.json",
-      "count": 5246
-    }
-  ],
-  "chemistry|八年级上册": [
-    {
-      "version": "人教版（五四学制）全一册",
-      "file": "chemistry_八年级上册_人教版（五四学制）全一册.idx.json",
-      "count": 3242
-    },
-    {
-      "version": "沪科版（五四学制）全一册",
-      "file": "chemistry_八年级上册_沪科版（五四学制）全一册.idx.json",
-      "count": 1499
-    },
-    {
-      "version": "鲁教版（五四学制）全一册",
-      "file": "chemistry_八年级上册_鲁教版（五四学制）全一册.idx.json",
-      "count": 5246
-    }
-  ],
-  "chemistry|八年级下册": [
-    {
-      "version": "人教版（五四学制）全一册",
-      "file": "chemistry_八年级下册_人教版（五四学制）全一册.idx.json",
-      "count": 3242
-    },
-    {
-      "version": "沪科版（五四学制）全一册",
-      "file": "chemistry_八年级下册_沪科版（五四学制）全一册.idx.json",
-      "count": 1499
-    },
-    {
-      "version": "鲁教版（五四学制）全一册",
-      "file": "chemistry_八年级下册_鲁教版（五四学制）全一册.idx.json",
-      "count": 5246
-    }
-  ],
-  "geography|七年级上册": [
-    {
-      "version": "中华中图版（五四学制)",
-      "file": "geography_七年级上册_中华中图版（五四学制).idx.json",
-      "count": 3599
-    },
-    {
-      "version": "中图版（2012）",
-      "file": "geography_七年级上册_中图版（2012）.idx.json",
-      "count": 2000
-    },
-    {
-      "version": "中图版（北京）（2014）",
-      "file": "geography_七年级上册_中图版（北京）（2014）.idx.json",
-      "count": 2506
-    },
-    {
-      "version": "人教版（2012）",
-      "file": "geography_七年级上册_人教版（2012）.idx.json",
-      "count": 2885
-    },
-    {
-      "version": "人教版（五四学制）（2012）",
-      "file": "geography_七年级上册_人教版（五四学制）（2012）.idx.json",
-      "count": 2902
-    },
-    {
-      "version": "晋教版（2012）",
-      "file": "geography_七年级上册_晋教版（2012）.idx.json",
-      "count": 2800
-    },
-    {
-      "version": "沪教版（上海）（2007）",
-      "file": "geography_七年级上册_沪教版（上海）（2007）.idx.json",
-      "count": 1350
-    },
-    {
-      "version": "湘教版（2012）",
-      "file": "geography_七年级上册_湘教版（2012）.idx.json",
-      "count": 3650
-    },
-    {
-      "version": "粤人版（2012）",
-      "file": "geography_七年级上册_粤人版（2012）.idx.json",
-      "count": 3199
-    },
-    {
-      "version": "鲁教版（五四学制）（2012）",
-      "file": "geography_七年级上册_鲁教版（五四学制）（2012）.idx.json",
-      "count": 2902
-    }
-  ],
-  "geography|七年级下册": [
-    {
-      "version": "中华中图版（五四学制）",
-      "file": "geography_七年级下册_中华中图版（五四学制）.idx.json",
-      "count": 2450
-    },
-    {
-      "version": "中图版（2012）",
-      "file": "geography_七年级下册_中图版（2012）.idx.json",
-      "count": 3345
-    },
-    {
-      "version": "人教版（2012）",
-      "file": "geography_七年级下册_人教版（2012）.idx.json",
-      "count": 2700
-    },
-    {
-      "version": "人教版（五四学制）（2012）",
-      "file": "geography_七年级下册_人教版（五四学制）（2012）.idx.json",
-      "count": 2050
-    },
-    {
-      "version": "商务星球版（2012）",
-      "file": "geography_七年级下册_商务星球版（2012）.idx.json",
-      "count": 2300
-    },
-    {
-      "version": "晋教版（2012）",
-      "file": "geography_七年级下册_晋教版（2012）.idx.json",
-      "count": 2851
-    },
-    {
-      "version": "湘教版（2012）",
-      "file": "geography_七年级下册_湘教版（2012）.idx.json",
-      "count": 3102
-    },
-    {
-      "version": "粤人版（2012）",
-      "file": "geography_七年级下册_粤人版（2012）.idx.json",
-      "count": 2550
-    },
-    {
-      "version": "鲁教版（五四学制）（2012）",
-      "file": "geography_七年级下册_鲁教版（五四学制）（2012）.idx.json",
-      "count": 2050
-    }
-  ],
-  "geography|八年级上册": [
-    {
-      "version": "中图版（2012）",
-      "file": "geography_八年级上册_中图版（2012）.idx.json",
-      "count": 2998
-    },
-    {
-      "version": "中图版（北京版）",
-      "file": "geography_八年级上册_中图版（北京版）.idx.json",
-      "count": 3750
-    },
-    {
-      "version": "中图版（北京版）（2014）",
-      "file": "geography_八年级上册_中图版（北京版）（2014）.idx.json",
-      "count": 2730
-    },
-    {
-      "version": "人教版（2012）",
-      "file": "geography_八年级上册_人教版（2012）.idx.json",
-      "count": 3250
-    },
-    {
-      "version": "仁爱科普版 全一册",
-      "file": "geography_八年级上册_仁爱科普版 全一册.idx.json",
-      "count": 3250
-    },
-    {
-      "version": "仁爱科普版（2012）",
-      "file": "geography_八年级上册_仁爱科普版（2012）.idx.json",
-      "count": 3500
-    },
-    {
-      "version": "商务星球版（2012）",
-      "file": "geography_八年级上册_商务星球版（2012）.idx.json",
-      "count": 3000
-    },
-    {
-      "version": "晋教版（2012）",
-      "file": "geography_八年级上册_晋教版（2012）.idx.json",
-      "count": 2750
-    },
-    {
-      "version": "湘教版（2012）",
-      "file": "geography_八年级上册_湘教版（2012）.idx.json",
-      "count": 3500
-    },
-    {
-      "version": "粤人版（2012）",
-      "file": "geography_八年级上册_粤人版（2012）.idx.json",
-      "count": 3250
-    }
-  ],
-  "geography|八年级下册": [
-    {
-      "version": "中图版（2012）",
-      "file": "geography_八年级下册_中图版（2012）.idx.json",
-      "count": 3249
-    },
-    {
-      "version": "中图版（北京版）",
-      "file": "geography_八年级下册_中图版（北京版）.idx.json",
-      "count": 2000
-    },
-    {
-      "version": "中图版（北京版）（2012）",
-      "file": "geography_八年级下册_中图版（北京版）（2012）.idx.json",
-      "count": 3250
-    },
-    {
-      "version": "人教版（2012）",
-      "file": "geography_八年级下册_人教版（2012）.idx.json",
-      "count": 2250
-    },
-    {
-      "version": "仁爱科普版 全一册",
-      "file": "geography_八年级下册_仁爱科普版 全一册.idx.json",
-      "count": 3250
-    },
-    {
-      "version": "仁爱科普版（2012）",
-      "file": "geography_八年级下册_仁爱科普版（2012）.idx.json",
-      "count": 3250
-    },
-    {
-      "version": "商务星球版（2012）",
-      "file": "geography_八年级下册_商务星球版（2012）.idx.json",
-      "count": 3500
-    },
-    {
-      "version": "晋教版（2012）",
-      "file": "geography_八年级下册_晋教版（2012）.idx.json",
-      "count": 2500
-    },
-    {
-      "version": "湘教版（2012）",
-      "file": "geography_八年级下册_湘教版（2012）.idx.json",
-      "count": 4000
-    },
-    {
-      "version": "粤人版（2012）",
-      "file": "geography_八年级下册_粤人版（2012）.idx.json",
-      "count": 3750
-    }
-  ],
-  "geography|六年级上册": [
-    {
-      "version": "中华中图版（五四学制）",
-      "file": "geography_六年级上册_中华中图版（五四学制）.idx.json",
-      "count": 2950
-    },
-    {
-      "version": "人教版（五四学制）（2012）",
-      "file": "geography_六年级上册_人教版（五四学制）（2012）.idx.json",
-      "count": 2885
-    },
-    {
-      "version": "沪教版（上海）（2007）",
-      "file": "geography_六年级上册_沪教版（上海）（2007）.idx.json",
-      "count": 250
-    },
-    {
-      "version": "鲁教版（五四学制）",
-      "file": "geography_六年级上册_鲁教版（五四学制）.idx.json",
-      "count": 3600
-    },
-    {
-      "version": "鲁教版（五四学制）（2012）",
-      "file": "geography_六年级上册_鲁教版（五四学制）（2012）.idx.json",
-      "count": 2196
-    }
-  ],
-  "geography|六年级下册": [
-    {
-      "version": "中华中图版（五四学制）",
-      "file": "geography_六年级下册_中华中图版（五四学制）.idx.json",
-      "count": 2500
-    },
-    {
-      "version": "人教版（五四学制）（2012）",
-      "file": "geography_六年级下册_人教版（五四学制）（2012）.idx.json",
-      "count": 2700
-    },
-    {
-      "version": "沪教版（上海）（2007）",
-      "file": "geography_六年级下册_沪教版（上海）（2007）.idx.json",
-      "count": 900
-    },
-    {
-      "version": "鲁教版（五四学制）",
-      "file": "geography_六年级下册_鲁教版（五四学制）.idx.json",
-      "count": 2700
-    },
-    {
-      "version": "鲁教版（五四学制）（2012）",
-      "file": "geography_六年级下册_鲁教版（五四学制）（2012）.idx.json",
-      "count": 2700
-    }
-  ],
-  "history|七年级上册": [
-    {
-      "version": "统编版（2016）",
-      "file": "history_七年级上册_统编版（2016）.idx.json",
-      "count": 4910
-    }
-  ],
-  "history|七年级下册": [
-    {
-      "version": "统编版（2016）",
-      "file": "history_七年级下册_统编版（2016）.idx.json",
-      "count": 135
-    },
-    {
-      "version": "统编版（五四学制）（2018）",
-      "file": "history_七年级下册_统编版（五四学制）（2018）.idx.json",
-      "count": 2000
     }
   ],
   "history|九年级上册": [
@@ -652,132 +939,19 @@
       "count": 4700
     }
   ],
-  "history|九年级下册": [
+  "politics|九年级上册": [
     {
       "version": "统编版（2016）",
-      "file": "history_九年级下册_统编版（2016）.idx.json",
-      "count": 4900
-    }
-  ],
-  "history|八年级下册": [
+      "file": "politics_九年级上册_统编版（2016）.idx.json",
+      "count": 2000
+    },
     {
-      "version": "统编版（2016）",
-      "file": "history_八年级下册_统编版（2016）.idx.json",
+      "version": "统编版（五四学制）（2018）",
+      "file": "politics_九年级上册_统编版（五四学制）（2018）.idx.json",
       "count": 2000
     }
   ],
-  "history|六年级上册": [
-    {
-      "version": "统编版（五四学制）",
-      "file": "history_六年级上册_统编版（五四学制）.idx.json",
-      "count": 3597
-    },
-    {
-      "version": "统编版（五四学制）（2018）",
-      "file": "history_六年级上册_统编版（五四学制）（2018）.idx.json",
-      "count": 4910
-    }
-  ],
-  "history|六年级下册": [
-    {
-      "version": "统编版（五四学制）",
-      "file": "history_六年级下册_统编版（五四学制）.idx.json",
-      "count": 3200
-    },
-    {
-      "version": "统编版（五四学制）（2018）",
-      "file": "history_六年级下册_统编版（五四学制）（2018）.idx.json",
-      "count": 135
-    }
-  ],
-  "physics|九年级上册": [
-    {
-      "version": "人教版 全一册",
-      "file": "physics_九年级上册_人教版 全一册.idx.json",
-      "count": 8991
-    },
-    {
-      "version": "人教版（2012）全一册",
-      "file": "physics_九年级上册_人教版（2012）全一册.idx.json",
-      "count": 9482
-    },
-    {
-      "version": "北师大版 全一册",
-      "file": "physics_九年级上册_北师大版 全一册.idx.json",
-      "count": 8748
-    },
-    {
-      "version": "北师大版（2012）全一册",
-      "file": "physics_九年级上册_北师大版（2012）全一册.idx.json",
-      "count": 6248
-    },
-    {
-      "version": "北师大版（北京）全一册",
-      "file": "physics_九年级上册_北师大版（北京）全一册.idx.json",
-      "count": 2749
-    },
-    {
-      "version": "北师大版（北京）（2013）全一册",
-      "file": "physics_九年级上册_北师大版（北京）（2013）全一册.idx.json",
-      "count": 3250
-    },
-    {
-      "version": "教科版 全一册",
-      "file": "physics_九年级上册_教科版 全一册.idx.json",
-      "count": 6237
-    },
-    {
-      "version": "沪科版 全一册",
-      "file": "physics_九年级上册_沪科版 全一册.idx.json",
-      "count": 7496
-    },
-    {
-      "version": "沪科版（2012）全一册",
-      "file": "physics_九年级上册_沪科版（2012）全一册.idx.json",
-      "count": 7789
-    },
-    {
-      "version": "沪粤版",
-      "file": "physics_九年级上册_沪粤版.idx.json",
-      "count": 5242
-    },
-    {
-      "version": "沪粤版（2012）",
-      "file": "physics_九年级上册_沪粤版（2012）.idx.json",
-      "count": 3747
-    },
-    {
-      "version": "苏科版",
-      "file": "physics_九年级上册_苏科版.idx.json",
-      "count": 4497
-    },
-    {
-      "version": "苏科版（2012）",
-      "file": "physics_九年级上册_苏科版（2012）.idx.json",
-      "count": 4249
-    },
-    {
-      "version": "鲁科版（五四学制）",
-      "file": "physics_九年级上册_鲁科版（五四学制）.idx.json",
-      "count": 4497
-    },
-    {
-      "version": "鲁科版（五四学制）（2012）",
-      "file": "physics_九年级上册_鲁科版（五四学制）（2012）.idx.json",
-      "count": 4249
-    }
-  ],
   "physics|九年级下册": [
-    {
-      "version": "人教版 全一册",
-      "file": "physics_九年级下册_人教版 全一册.idx.json",
-      "count": 8991
-    },
-    {
-      "version": "人教版（2012）全一册",
-      "file": "physics_九年级下册_人教版（2012）全一册.idx.json",
-      "count": 9482
-    },
     {
       "version": "北师大版 全一册",
       "file": "physics_九年级下册_北师大版 全一册.idx.json",
@@ -789,24 +963,14 @@
       "count": 6248
     },
     {
-      "version": "北师大版（北京）全一册",
-      "file": "physics_九年级下册_北师大版（北京）全一册.idx.json",
-      "count": 2749
-    },
-    {
       "version": "北师大版（北京）（2013）全一册",
       "file": "physics_九年级下册_北师大版（北京）（2013）全一册.idx.json",
       "count": 3250
     },
     {
-      "version": "教科版 全一册",
-      "file": "physics_九年级下册_教科版 全一册.idx.json",
-      "count": 6237
-    },
-    {
-      "version": "教科版",
-      "file": "physics_九年级下册_教科版.idx.json",
-      "count": 3499
+      "version": "北师大版（北京）全一册",
+      "file": "physics_九年级下册_北师大版（北京）全一册.idx.json",
+      "count": 2749
     },
     {
       "version": "沪教版（上海）（2007）",
@@ -839,9 +1003,34 @@
       "count": 4250
     },
     {
-      "version": "科教版（2012）",
-      "file": "physics_九年级下册_科教版（2012）.idx.json",
-      "count": 2749
+      "version": "教科版",
+      "file": "physics_九年级下册_教科版.idx.json",
+      "count": 3499
+    },
+    {
+      "version": "教科版 全一册",
+      "file": "physics_九年级下册_教科版 全一册.idx.json",
+      "count": 6237
+    },
+    {
+      "version": "鲁科版（五四学制）",
+      "file": "physics_九年级下册_鲁科版（五四学制）.idx.json",
+      "count": 3850
+    },
+    {
+      "version": "鲁科版（五四学制）（2012）",
+      "file": "physics_九年级下册_鲁科版（五四学制）（2012）.idx.json",
+      "count": 5835
+    },
+    {
+      "version": "人教版 全一册",
+      "file": "physics_九年级下册_人教版 全一册.idx.json",
+      "count": 8991
+    },
+    {
+      "version": "人教版（2012）全一册",
+      "file": "physics_九年级下册_人教版（2012）全一册.idx.json",
+      "count": 9482
     },
     {
       "version": "苏科版",
@@ -854,209 +1043,63 @@
       "count": 850
     },
     {
-      "version": "鲁科版（五四学制）",
-      "file": "physics_九年级下册_鲁科版（五四学制）.idx.json",
-      "count": 3850
-    },
-    {
-      "version": "鲁科版（五四学制）（2012）",
-      "file": "physics_九年级下册_鲁科版（五四学制）（2012）.idx.json",
-      "count": 5835
+      "version": "科教版（2012）",
+      "file": "physics_九年级下册_科教版（2012）.idx.json",
+      "count": 2749
     }
   ],
-  "physics|八年级上册": [
+  "chemistry|九年级下册": [
+    {
+      "version": "北京版",
+      "file": "chemistry_九年级下册_北京版.idx.json",
+      "count": 5742
+    },
+    {
+      "version": "沪教版",
+      "file": "chemistry_九年级下册_沪教版.idx.json",
+      "count": 4241
+    },
+    {
+      "version": "沪科版（五四学制）全一册",
+      "file": "chemistry_九年级下册_沪科版（五四学制）全一册.idx.json",
+      "count": 1499
+    },
+    {
+      "version": "科粤版",
+      "file": "chemistry_九年级下册_科粤版.idx.json",
+      "count": 3581
+    },
+    {
+      "version": "鲁教版",
+      "file": "chemistry_九年级下册_鲁教版.idx.json",
+      "count": 750
+    },
+    {
+      "version": "鲁教版（五四学制）全一册",
+      "file": "chemistry_九年级下册_鲁教版（五四学制）全一册.idx.json",
+      "count": 5246
+    },
     {
       "version": "人教版",
-      "file": "physics_八年级上册_人教版.idx.json",
-      "count": 5999
+      "file": "chemistry_九年级下册_人教版.idx.json",
+      "count": 3539
     },
     {
-      "version": "人教版（2012）",
-      "file": "physics_八年级上册_人教版（2012）.idx.json",
-      "count": 5249
+      "version": "人教版（五四学制）全一册",
+      "file": "chemistry_九年级下册_人教版（五四学制）全一册.idx.json",
+      "count": 3242
     },
     {
-      "version": "北师大版",
-      "file": "physics_八年级上册_北师大版.idx.json",
-      "count": 5745
-    },
-    {
-      "version": "北师大版（2012）",
-      "file": "physics_八年级上册_北师大版（2012）.idx.json",
-      "count": 5494
-    },
-    {
-      "version": "北师大版（北京）全一册",
-      "file": "physics_八年级上册_北师大版（北京）全一册.idx.json",
-      "count": 11505
-    },
-    {
-      "version": "北师大版（北京）（2013）全一册",
-      "file": "physics_八年级上册_北师大版（北京）（2013）全一册.idx.json",
-      "count": 5759
-    },
-    {
-      "version": "教科版",
-      "file": "physics_八年级上册_教科版.idx.json",
-      "count": 5746
-    },
-    {
-      "version": "教科版（2012）",
-      "file": "physics_八年级上册_教科版（2012）.idx.json",
-      "count": 5749
-    },
-    {
-      "version": "沪教版（上海）（2007）",
-      "file": "physics_八年级上册_沪教版（上海）（2007）.idx.json",
-      "count": 3000
-    },
-    {
-      "version": "沪科版 全一册",
-      "file": "physics_八年级上册_沪科版 全一册.idx.json",
-      "count": 9719
-    },
-    {
-      "version": "沪科版(2012) 全一册",
-      "file": "physics_八年级上册_沪科版(2012) 全一册.idx.json",
-      "count": 9993
-    },
-    {
-      "version": "沪科版（五四学制）",
-      "file": "physics_八年级上册_沪科版（五四学制）.idx.json",
-      "count": 4745
-    },
-    {
-      "version": "苏科版",
-      "file": "physics_八年级上册_苏科版.idx.json",
-      "count": 5499
-    },
-    {
-      "version": "苏科版（2012）",
-      "file": "physics_八年级上册_苏科版（2012）.idx.json",
-      "count": 5249
-    },
-    {
-      "version": "鲁科版（五四学制）",
-      "file": "physics_八年级上册_鲁科版（五四学制）.idx.json",
-      "count": 1500
-    },
-    {
-      "version": "鲁科版（五四学制）（2012）",
-      "file": "physics_八年级上册_鲁科版（五四学制）（2012）.idx.json",
-      "count": 3998
+      "version": "仁爱科普版",
+      "file": "chemistry_九年级下册_仁爱科普版.idx.json",
+      "count": 3459
     }
   ],
-  "physics|八年级下册": [
-    {
-      "version": "北师大版（2012）",
-      "file": "physics_八年级下册_北师大版（2012）.idx.json",
-      "count": 500
-    },
-    {
-      "version": "北师大版（北京）全一册",
-      "file": "physics_八年级下册_北师大版（北京）全一册.idx.json",
-      "count": 11505
-    },
-    {
-      "version": "北师大版（北京）（2013）全一册",
-      "file": "physics_八年级下册_北师大版（北京）（2013）全一册.idx.json",
-      "count": 5759
-    },
-    {
-      "version": "教科版（2012）",
-      "file": "physics_八年级下册_教科版（2012）.idx.json",
-      "count": 250
-    },
-    {
-      "version": "沪科版 全一册",
-      "file": "physics_八年级下册_沪科版 全一册.idx.json",
-      "count": 9719
-    },
-    {
-      "version": "沪科版(2012) 全一册",
-      "file": "physics_八年级下册_沪科版(2012) 全一册.idx.json",
-      "count": 9993
-    },
-    {
-      "version": "沪科版（五四学制）",
-      "file": "physics_八年级下册_沪科版（五四学制）.idx.json",
-      "count": 500
-    },
-    {
-      "version": "沪粤版（2012）",
-      "file": "physics_八年级下册_沪粤版（2012）.idx.json",
-      "count": 5249
-    },
-    {
-      "version": "苏科版（2012）",
-      "file": "physics_八年级下册_苏科版（2012）.idx.json",
-      "count": 5000
-    },
-    {
-      "version": "鲁科版（五四学制）",
-      "file": "physics_八年级下册_鲁科版（五四学制）.idx.json",
-      "count": 5498
-    },
-    {
-      "version": "鲁科版（五四学制）（2012）",
-      "file": "physics_八年级下册_鲁科版（五四学制）（2012）.idx.json",
-      "count": 5988
-    }
-  ],
-  "politics|七年级上册": [
-    {
-      "version": "中华民族大团结 全一册",
-      "file": "politics_七年级上册_中华民族大团结 全一册.idx.json",
-      "count": 2999
-    },
+  "history|九年级下册": [
     {
       "version": "统编版（2016）",
-      "file": "politics_七年级上册_统编版（2016）.idx.json",
-      "count": 2498
-    },
-    {
-      "version": "统编版（五四学制）全一册",
-      "file": "politics_七年级上册_统编版（五四学制）全一册.idx.json",
-      "count": 2750
-    },
-    {
-      "version": "统编版（五四学制）（2018）全一册",
-      "file": "politics_七年级上册_统编版（五四学制）（2018）全一册.idx.json",
-      "count": 2319
-    }
-  ],
-  "politics|七年级下册": [
-    {
-      "version": "中华民族大团结 全一册",
-      "file": "politics_七年级下册_中华民族大团结 全一册.idx.json",
-      "count": 2999
-    },
-    {
-      "version": "统编版（2016）",
-      "file": "politics_七年级下册_统编版（2016）.idx.json",
-      "count": 2319
-    },
-    {
-      "version": "统编版（五四学制）全一册",
-      "file": "politics_七年级下册_统编版（五四学制）全一册.idx.json",
-      "count": 2750
-    },
-    {
-      "version": "统编版（五四学制）（2018）全一册",
-      "file": "politics_七年级下册_统编版（五四学制）（2018）全一册.idx.json",
-      "count": 2319
-    }
-  ],
-  "politics|九年级上册": [
-    {
-      "version": "统编版（2016）",
-      "file": "politics_九年级上册_统编版（2016）.idx.json",
-      "count": 2000
-    },
-    {
-      "version": "统编版（五四学制）（2018）",
-      "file": "politics_九年级上册_统编版（五四学制）（2018）.idx.json",
-      "count": 2000
+      "file": "history_九年级下册_统编版（2016）.idx.json",
+      "count": 4900
     }
   ],
   "politics|九年级下册": [
@@ -1069,54 +1112,6 @@
       "version": "统编版（五四学制）（2018）",
       "file": "politics_九年级下册_统编版（五四学制）（2018）.idx.json",
       "count": 1750
-    }
-  ],
-  "politics|八年级上册": [
-    {
-      "version": "统编版（2016）",
-      "file": "politics_八年级上册_统编版（2016）.idx.json",
-      "count": 2529
-    },
-    {
-      "version": "统编版（五四学制）（2018）",
-      "file": "politics_八年级上册_统编版（五四学制）（2018）.idx.json",
-      "count": 2529
-    }
-  ],
-  "politics|八年级下册": [
-    {
-      "version": "统编版（2016）",
-      "file": "politics_八年级下册_统编版（2016）.idx.json",
-      "count": 1998
-    },
-    {
-      "version": "统编版（五四学制）2018",
-      "file": "politics_八年级下册_统编版（五四学制）2018.idx.json",
-      "count": 1998
-    }
-  ],
-  "politics|六年级上册": [
-    {
-      "version": "统编版(五四学制)",
-      "file": "politics_六年级上册_统编版(五四学制).idx.json",
-      "count": 3000
-    },
-    {
-      "version": "统编版(五四学制)（2018）全一册",
-      "file": "politics_六年级上册_统编版(五四学制)（2018）全一册.idx.json",
-      "count": 2498
-    }
-  ],
-  "politics|六年级下册": [
-    {
-      "version": "统编版(五四学制)（2018）全一册",
-      "file": "politics_六年级下册_统编版(五四学制)（2018）全一册.idx.json",
-      "count": 2498
-    },
-    {
-      "version": "统编版（五四学制）",
-      "file": "politics_六年级下册_统编版（五四学制）.idx.json",
-      "count": 2735
     }
   ]
 }
