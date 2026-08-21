@@ -16,6 +16,25 @@ interface DerivedChapter {
   lessons: DerivedLesson[];
 }
 
+// ponytail: 章节自然排序——从标题提取章/单元序号(支持中文数字)，无序号者排末尾
+const CN_DIGIT: Record<string, number> = { 零:0,一:1,二:2,三:3,四:4,五:5,六:6,七:7,八:8,九:9 };
+function cnToNum(s: string): number {
+  if (/^\d+$/.test(s)) return parseInt(s, 10);
+  if (s === "十") return 10;
+  if (s.startsWith("十")) return 10 + (CN_DIGIT[s[1]] ?? 0);
+  if (s.endsWith("十")) return (CN_DIGIT[s[0]] ?? 0) * 10;
+  if (s.includes("十")) {
+    const [a, b] = s.split("十");
+    return (CN_DIGIT[a] ?? 0) * 10 + (CN_DIGIT[b] ?? 0);
+  }
+  return CN_DIGIT[s] ?? 9999;
+}
+function chapterOrder(title: string): number {
+  // 匹配"第X章/第X单元/单元X"
+  const m = title.match(/第([一二三四五六七八九十百零\d]+)(?:章|单元)/) || title.match(/单元([一二三四五六七八九十百零\d]+)/);
+  return m ? cnToNum(m[1]) : 9999;
+}
+
 export default function ChapterSelectPage() {
   const { subject = "biology" } = useParams<{ subject: string }>();
   const [searchParams] = useSearchParams();
@@ -61,12 +80,15 @@ export default function ChapterSelectPage() {
       }
     }
     // 没有课时的单元补一个"整个单元"占位，方便直接开始
-    return Array.from(chapterMap.values()).map((ch) => {
+    const list = Array.from(chapterMap.values()).map((ch) => {
       if (ch.lessons.length === 0) {
         return { ...ch, lessons: [{ id: `${ch.title}::__whole`, title: "整个单元" }] };
       }
       return ch;
     });
+    // 按章节序号自然排序（第一章 < 第二章 < ...），无序号者排末尾
+    list.sort((a, b) => chapterOrder(a.title) - chapterOrder(b.title));
+    return list;
   }, [questions, subjectKey, selectedGrade, version]);
 
   const [openChapter, setOpenChapter] = useState<string | null>(chapters[0]?.id || null);

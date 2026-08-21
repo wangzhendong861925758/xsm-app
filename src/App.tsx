@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import ClientLayout from "@/components/ClientLayout";
 import HomePage from "@/pages/client/HomePage";
 import ExamPage from "@/pages/client/ExamPage";
@@ -62,7 +62,6 @@ export default function App() {
         {/* 客户端全屏页 */}
         <Route path="/app/chapter/:subject" element={<RequireClient><ChapterSelectPage /></RequireClient>} />
         <Route path="/app/practice/:subject" element={<RequireClient><PracticePage /></RequireClient>} />
-        <Route path="/app/practice/history" element={<RequireClient><PracticePage /></RequireClient>} />
         <Route path="/app/essay/:subject" element={<RequireClient><EssayPracticePage /></RequireClient>} />
         <Route path="/app/simulate" element={<RequireClient><SimulatePage /></RequireClient>} />
         <Route path="/app/papers" element={<RequireClient><PaperSelectPage /></RequireClient>} />
