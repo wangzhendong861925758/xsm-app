@@ -1,14 +1,13 @@
-﻿﻿﻿﻿import { useState, useMemo, useEffect, useRef } from "react";
+﻿﻿﻿﻿﻿import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import {
   ChevronLeft, ChevronRight, Star, CheckCircle2, XCircle,
   RotateCcw, Shuffle, Grid3x3, Plus, Check,
 } from "lucide-react";
-import { SUBJECTS, getTextbook } from "@/data/textbooks";
+import { SUBJECTS, getTextbook, getTextbooksByGrade } from "@/data/textbooks";
 import { useStore } from "@/store/useStore";
 import type { Subject, Question } from "@/data/types";
 import { shuffle, randomInRange } from "@/lib/utils";
-import { fetchVersions } from "@/lib/api";
 
 // 每次刷题题目数量范围（15-20 道随机）
 const MIN_QUESTIONS = 15;
@@ -64,9 +63,9 @@ export default function PracticePage() {
     (async () => {
       let v = version;
       if (!v) {
-        // 版本未指定时，取该学科年级下第一个版本
-        const versions = await fetchVersions(subjectKey, selectedGrade);
-        v = versions[0]?.version || "";
+        // 版本未指定时，从 textbooks.ts 取第一个版本
+        const tbs = getTextbooksByGrade(selectedGrade);
+        v = tbs.find((t) => t.subject === subjectKey)?.versions[0] || "";
       }
       if (v && !cancelled) loadQuestions(subjectKey, selectedGrade, v);
     })();

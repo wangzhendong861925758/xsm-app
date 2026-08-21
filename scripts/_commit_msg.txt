@@ -1,16 +1,14 @@
-fix: 全量修复题型字段+跨版本共享缺失题目
+fix: 修复shardCache缓存空数组+前端版本列表不再依赖manifest
 
-问题1：题目type字段用了"choice"，前端期望"single"
-- 180289道choice题全部转为single（4选项单选）
-- 多答案字母的自动判为multiple
-- 2选项判断题自动判为judge
-- 修复105个题目文件
+根本问题：shardCache会缓存空数组，一旦缓存了空结果（数据修复前的旧状态），
+SPA导航时即使数据已修复也不会重新加载，导致"暂无题目数据"。
+同时前端多个页面通过fetchVersions从manifest.json获取版本列表，
+manifest缓存会导致版本丢失。
 
-问题2：17个版本只有选择题无大题，2个版本只有大题无选择题
-- 按用户要求从同学段同学科其他版本共享题目
-- 共享21846题，修改ID和version避免冲突
-- 19个问题版本全部修复，304版本0问题
+修复1：shardCache不缓存空数组（api.ts）
+- 空结果每次重新请求，确保数据修复后能立即生效
 
-修复3：rebuild-all.mjs保留SUBJECTS/GRADES导出
-- 之前重建会覆盖textbooks.ts导致编译报错
-- 现在生成时保留SUBJECTS和GRADES定义
+修复2：HomePage/ChapterSelectPage/PracticePage/EssayPracticePage
+- 版本列表直接从textbooks.ts获取，不再依赖manifest.json
+- version为空时从textbooks.ts取第一个版本
+- 消除了manifest缓存导致的版本丢失问题

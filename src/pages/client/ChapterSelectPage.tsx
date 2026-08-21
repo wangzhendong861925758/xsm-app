@@ -1,9 +1,8 @@
-﻿import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ChevronDown, BookOpen, FileText, Check, ListChecks, PenLine } from "lucide-react";
-import { SUBJECTS } from "@/data/textbooks";
+import { SUBJECTS, getTextbooksByGrade } from "@/data/textbooks";
 import { useStore } from "@/store/useStore";
-import { fetchVersions } from "@/lib/api";
 import type { Subject } from "@/data/types";
 
 /** 从实际题目数据中提取「单元 → 课时」结构，只展示有题目的内容 */
@@ -33,8 +32,9 @@ export default function ChapterSelectPage() {
     (async () => {
       let v = version;
       if (!v) {
-        const versions = await fetchVersions(subjectKey, selectedGrade);
-        v = versions[0]?.version || "";
+        // ponytail: version 为空时从 textbooks.ts 取第一个版本，不依赖 manifest.json
+        const tbs = getTextbooksByGrade(selectedGrade);
+        v = tbs.find((t) => t.subject === subjectKey)?.versions[0] || "";
       }
       if (v && !cancelled) loadQuestions(subjectKey, selectedGrade, v);
     })();

@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿/**
+﻿﻿﻿﻿﻿﻿﻿﻿/**
  * 前端 API 封装：通过 fetch 调用 Netlify Functions
  * 本地开发时通过 vite proxy 转发到 Netlify Dev，生产环境直接调用同域 API
  */
@@ -315,10 +315,14 @@ export async function fetchQuestionsByShard(subject: string, grade: string, vers
     const res = await fetch(`/data/questions/${encodeURIComponent(file)}`);
     if (!res.ok) return [];
     const questions: Question[] = await res.json();
-    shardCache.set(key, questions);
-    if (shardCache.size > 3) {
-      const firstKey = shardCache.keys().next().value;
-      if (firstKey) shardCache.delete(firstKey);
+    // ponytail: 只缓存非空数组，避免空结果被缓存后数据修复了也不重新加载
+    // ceiling: 空结果每次都重新请求，轻微增加请求量——可接受，确保数据正确
+    if (questions.length > 0) {
+      shardCache.set(key, questions);
+      if (shardCache.size > 3) {
+        const firstKey = shardCache.keys().next().value;
+        if (firstKey) shardCache.delete(firstKey);
+      }
     }
     shardLoading.delete(key);
     return questions;

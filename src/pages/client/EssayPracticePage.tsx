@@ -4,11 +4,10 @@ import {
   ChevronLeft, ChevronRight, CheckCircle2, XCircle,
   RotateCcw, Grid3x3, Check,
 } from "lucide-react";
-import { SUBJECTS } from "@/data/textbooks";
+import { SUBJECTS, getTextbooksByGrade } from "@/data/textbooks";
 import { useStore } from "@/store/useStore";
 import type { Subject, Question } from "@/data/types";
 import { shuffle, randomInRange } from "@/lib/utils";
-import { fetchVersions } from "@/lib/api";
 
 // 大题每次训练数量（5-8 题，大题作答时间长）
 const MIN_QUESTIONS = 5;
@@ -88,8 +87,8 @@ export default function EssayPracticePage() {
     (async () => {
       let v = version;
       if (!v) {
-        const versions = await fetchVersions(subjectKey, selectedGrade);
-        v = versions[0]?.version || "";
+        const tbs = getTextbooksByGrade(selectedGrade);
+        v = tbs.find((t) => t.subject === subjectKey)?.versions[0] || "";
       }
       if (v && !cancelled) loadQuestions(subjectKey, selectedGrade, v);
     })();

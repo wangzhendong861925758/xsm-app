@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 import { getTextbooksByGrade, SUBJECTS } from "@/data/textbooks";
 import { useStore } from "@/store/useStore";
-import { fetchVersions } from "@/lib/api";
 import type { Subject } from "@/data/types";
 
 const IMG_VER = "20260819";
@@ -159,25 +158,6 @@ export default function HomePage() {
 
   const textbooks = getTextbooksByGrade(selectedGrade);
 
-  const [realVersions, setRealVersions] = useState<Record<string, string[]>>({});
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const entries = await Promise.all(
-        textbooks.map(async (tb) => {
-          const vs = await fetchVersions(tb.subject, selectedGrade);
-          return [tb.subject, vs.map((v) => v.version)] as [string, string[]];
-        }),
-      );
-      if (!cancelled) {
-        const map: Record<string, string[]> = {};
-        for (const [k, v] of entries) map[k] = v;
-        setRealVersions(map);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [selectedGrade]);
-
   useEffect(() => {
     const t = setInterval(() => setBannerIndex((i) => (i + 1) % SLIDES.length), 3500);
     return () => clearInterval(t);
@@ -190,7 +170,8 @@ export default function HomePage() {
       alert("请联系管理员开通权限");
       return;
     }
-    const versions = realVersions[subject] || textbooks.find((t) => t.subject === subject)?.versions || [];
+    // ponytail: 直接用 textbooks.ts 的版本列表，不依赖 manifest.json（避免缓存导致版本丢失）
+    const versions = textbooks.find((t) => t.subject === subject)?.versions || [];
     let version = selectedVersions[subject];
     if (!version || !versions.includes(version)) {
       version = versions[0] || "";
