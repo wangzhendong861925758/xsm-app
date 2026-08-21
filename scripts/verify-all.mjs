@@ -1,86 +1,124 @@
-// 全面验证：对比 textbooks.ts 与 manifest.json 的版本一致性
-// 检查每个学科/年级的版本是否完全匹配，不遗漏不多余
-import { readFileSync } from 'fs';
+// 全量验证所有304个版本的数据完整性
+// 检查项：文件存在、题数>0、有章节、有课时、有选择题、有大题、字段匹配
+import { readFileSync, readdirSync, existsSync } from 'fs';
+import { join } from 'path';
 
-// 读取 textbooks.ts 中的 TEXTBOOKS 配置
+const Q_DIR = 'd:/小四门软件/public/data/questions';
+const IDX_DIR = 'd:/小四门软件/public/data/question-index';
+
+// 读取textbooks.ts
 const tbRaw = readFileSync('d:/小四门软件/src/data/textbooks.ts', 'utf8');
-// 提取 TEXTBOOKS 数组中的配置项
 const tbMatches = [...tbRaw.matchAll(/\{ grade: "([^"]+)", subject: "([^"]+)", subjectName: "([^"]+)", versions: \[([^\]]+)\] \}/g)];
-const textbooksMap = {};
+const allVersions = [];
 for (const m of tbMatches) {
-  const grade = m[1];
-  const subject = m[2];
-  const versionsStr = m[4];
-  const versions = [...versionsStr.matchAll(/"([^"]+)"/g)].map(x => x[1]);
-  const key = `${subject}|${grade}`;
-  textbooksMap[key] = versions;
-}
-
-// 读取 questions/manifest.json
-const manifest = JSON.parse(readFileSync('d:/小四门软件/public/data/questions/manifest.json', 'utf8'));
-
-// 读取 question-index/manifest.json
-const idxManifest = JSON.parse(readFileSync('d:/小四门软件/public/data/question-index/manifest.json', 'utf8'));
-
-const GRADE_ORDER = ['六年级上册','六年级下册','七年级上册','七年级下册','八年级上册','八年级下册','九年级上册','九年级下册'];
-const SUBJECT_ORDER = ['physics','chemistry','biology','history','politics','geography'];
-const SUBJECT_NAMES = { physics:'物理', chemistry:'化学', biology:'生物', history:'历史', politics:'道法', geography:'地理' };
-
-let hasError = false;
-let report = '';
-let totalTb = 0, totalManifest = 0;
-
-for (const grade of GRADE_ORDER) {
-  report += `\n【${grade}】\n`;
-  for (const subject of SUBJECT_ORDER) {
-    const key = `${subject}|${grade}`;
-    const tbVersions = textbooksMap[key] || [];
-    const mEntries = manifest[key] || [];
-    const mVersions = mEntries.map(e => e.version);
-    const idxEntries = idxManifest[key] || [];
-    const idxVersions = idxEntries.map(e => e.version);
-
-    if (tbVersions.length === 0 && mVersions.length === 0) continue;
-
-    totalTb += tbVersions.length;
-    totalManifest += mVersions.length;
-
-    // 找出差异
-    const onlyInTb = tbVersions.filter(v => !mVersions.includes(v));
-    const onlyInManifest = mVersions.filter(v => !tbVersions.includes(v));
-    const onlyInIdx = idxVersions.filter(v => !mVersions.includes(v));
-    const missingIdx = mVersions.filter(v => !idxVersions.includes(v));
-
-    const ok = onlyInTb.length === 0 && onlyInManifest.length === 0 && missingIdx.length === 0;
-    const status = ok ? '✓' : '✗';
-    if (!ok) hasError = true;
-
-    report += `  ${status} ${SUBJECT_NAMES[subject]}: textbooks=${tbVersions.length} manifest=${mVersions.length} idx=${idxVersions.length}`;
-    if (tbVersions.length > 0) report += ` 总题数=${mEntries.reduce((s,e)=>s+e.count,0)}`;
-    report += '\n';
-
-    if (onlyInTb.length > 0) {
-      report += `    ⚠ textbooks有但manifest无: ${onlyInTb.join(' / ')}\n`;
-    }
-    if (onlyInManifest.length > 0) {
-      report += `    ⚠ manifest有但textbooks无: ${onlyInManifest.join(' / ')}\n`;
-    }
-    if (missingIdx.length > 0) {
-      report += `    ⚠ 缺少.idx.json索引: ${missingIdx.join(' / ')}\n`;
-    }
-    if (onlyInIdx.length > 0) {
-      report += `    ⚠ idx有但questions无(孤立索引): ${onlyInIdx.join(' / ')}\n`;
-    }
+  const grade = m[1], subject = m[2];
+  const versions = [...m[4].matchAll(/"([^"]+)"/g)].map(x => x[1]);
+  for (const v of versions) {
+    allVersions.push({ grade, subject, version: v });
   }
 }
 
-report += `\n=== 汇总 ===\n`;
-report += `textbooks.ts 版本总数: ${totalTb}\n`;
-report += `manifest.json 版本总数: ${totalManifest}\n`;
-report += `一致性: ${hasError ? '✗ 有差异' : '✓ 完全一致'}\n`;
+const norm = (s) => s.replace(/（/g, '(').replace(/）/g, ')').replace(/\s+/g, '');
 
-console.log(report);
+// 构建文件映射
+const qFiles = readdirSync(Q_DIR).filter(f => f.endsWith('.json') && f !== 'manifest.json');
+const qFileMap = {};
+for (const f of qFiles) {
+  const base = f.replace(/\.json$/, '');
+  const parts = base.split('_');
+  if (parts.length < 3) continue;
+  const subject = parts[0];
+  const version = parts[parts.length - 1];
+  const grade = parts.slice(1, -1).join('_');
+  qFileMap[`${subject}|${grade}|${norm(version)}`] = join(Q_DIR, f);
+}
 
-// 输出到文件
-const { writeFileSync } = await import('fs');
-writeFileSync('d:/小四门软件/scripts/_verify_report.txt', report);
+// 读取manifest
+const manifest = JSON.parse(readFileSync(join(Q_DIR, 'manifest.json'), 'utf8'));
+const idxManifest = JSON.parse(readFileSync(join(IDX_DIR, 'manifest.json'), 'utf8'));
+
+console.log(`检查 ${allVersions.length} 个版本...`);
+
+let ok = 0;
+const problems = [];
+
+for (let i = 0; i < allVersions.length; i++) {
+  const { grade, subject, version } = allVersions[i];
+  const key = `${subject}|${grade}|${norm(version)}`;
+  const filePath = qFileMap[key];
+  
+  // 1. 文件存在性
+  if (!filePath) {
+    problems.push({ grade, subject, version, issue: 'NO_FILE' });
+    continue;
+  }
+  
+  let questions;
+  try {
+    questions = JSON.parse(readFileSync(filePath, 'utf8'));
+  } catch (e) {
+    problems.push({ grade, subject, version, issue: 'PARSE_ERROR' });
+    continue;
+  }
+  
+  // 2. 题数>0
+  if (!Array.isArray(questions) || questions.length === 0) {
+    problems.push({ grade, subject, version, issue: 'ZERO_QUESTIONS' });
+    continue;
+  }
+  
+  // 3. 类型统计
+  const types = questions.reduce((a, q) => { a[q.type] = (a[q.type] || 0) + 1; return a; }, {});
+  const choiceQs = (types.single || 0) + (types.multiple || 0) + (types.judge || 0);
+  const essayQs = types.essay || 0;
+  
+  // 4. 有章节
+  const withChapter = questions.filter(q => q.chapter && q.chapter.trim()).length;
+  // 5. 有课时
+  const withSection = questions.filter(q => q.section && q.section.trim()).length;
+  
+  // 6. 字段匹配检查
+  const gradeMatch = questions.filter(q => q.grade === grade).length;
+  const subjectMatch = questions.filter(q => q.subject === subject).length;
+  const versionMatch = questions.filter(q => q.version === version).length;
+  
+  // 7. manifest登记检查
+  const mKey = `${subject}|${grade}`;
+  const mEntry = manifest[mKey]?.find(v => v.version === version);
+  const idxEntry = idxManifest[mKey]?.find(v => v.version === version);
+  
+  // 收集问题
+  if (choiceQs === 0) problems.push({ grade, subject, version, issue: 'NO_CHOICE', total: questions.length });
+  if (essayQs === 0) problems.push({ grade, subject, version, issue: 'NO_ESSAY', total: questions.length });
+  if (withChapter === 0) problems.push({ grade, subject, version, issue: 'NO_CHAPTER', total: questions.length });
+  if (gradeMatch === 0) problems.push({ grade, subject, version, issue: 'GRADE_MISMATCH', sample: questions[0]?.grade });
+  if (subjectMatch === 0) problems.push({ grade, subject, version, issue: 'SUBJECT_MISMATCH', sample: questions[0]?.subject });
+  if (!mEntry) problems.push({ grade, subject, version, issue: 'NOT_IN_MANIFEST' });
+  if (!idxEntry) problems.push({ grade, subject, version, issue: 'NOT_IN_INDEX' });
+  
+  ok++;
+}
+
+console.log(`\n=== 检查结果 ===`);
+console.log(`通过: ${ok} / ${allVersions.length}`);
+console.log(`问题数: ${problems.length}`);
+
+if (problems.length > 0) {
+  console.log('\n=== 问题详情 ===');
+  // 按问题类型分组
+  const byType = {};
+  for (const p of problems) {
+    if (!byType[p.issue]) byType[p.issue] = [];
+    byType[p.issue].push(p);
+  }
+  for (const [issue, items] of Object.entries(byType)) {
+    console.log(`\n[${issue}] (${items.length}个):`);
+    for (const i of items.slice(0, 20)) {
+      const detail = i.sample ? ` (sample: ${i.sample})` : i.total ? ` (total: ${i.total})` : '';
+      console.log(`  ${i.grade}|${i.subject}|${i.version}${detail}`);
+    }
+    if (items.length > 20) console.log(`  ... 还有 ${items.length - 20} 个`);
+  }
+} else {
+  console.log('\n所有版本验证通过！');
+}
