@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { create } from "zustand";
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User, Question, Subject, ClientAccount } from "@/data/types";
 import { CURRENT_USER, ADMIN_USERS, CAROUSEL_IMAGES } from "@/data/mock";
@@ -415,7 +415,7 @@ export const useStore = create<AppState>()(
     }),
     {
       name: "xsm-app-store",
-      version: 4,
+      version: 5,
       migrate: (persisted: any, version: number) => {
         if (version < 2) {
           const { questions: _q, loadedQuestionKey: _k, ...rest } = persisted || {};
@@ -430,6 +430,13 @@ export const useStore = create<AppState>()(
           if (persisted) {
             persisted.subjectTotalAnswered = {};
             persisted.subjectTotalCorrect = {};
+          }
+        }
+        if (version < 5) {
+          // ponytail: 清除旧的 selectedVersions，强制用户重新选择教材版本
+          // 修复：旧版本选择可能指向已更新名称的版本，导致加载失败
+          if (persisted) {
+            persisted.selectedVersions = {};
           }
         }
         return persisted;
