@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿import { useState, useMemo, useEffect, useRef } from "react";
+﻿﻿﻿﻿﻿﻿﻿import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import {
   ChevronLeft, ChevronRight, Star, CheckCircle2, XCircle,
@@ -77,17 +77,23 @@ export default function PracticePage() {
   }, [subjectKey, version]);
 
   const versionQuestions = useMemo(() => {
-    return questions.filter((q) => {
+    // 基础过滤：学科+年级+版本+选择题（排除大题）
+    const base = questions.filter((q) => {
       if (q.subject !== subjectKey) return false;
       if (q.grade !== selectedGrade) return false;
-      // 版本匹配：管理端未指定版本时匹配所有，客户端未选版本时也匹配所有
       if (q.version && version && q.version !== version) return false;
-      // 选择判断题训练：排除大题
       if (q.type === "essay") return false;
-      // 若指定了课时标题，则按 section 过滤；未指定则取该版本全部选择判断题
-      if (lessonTitle && q.section && q.section !== lessonTitle) return false;
       return true;
     });
+    // 若指定了课时标题，先按课时过滤；若该课时无选择题，回退到整个章节
+    if (lessonTitle) {
+      const byLesson = base.filter((q) => !q.section || q.section === lessonTitle);
+      if (byLesson.length > 0) return byLesson;
+      // ponytail: 课时级无选择题时回退到章节级，确保用户始终有题可做
+      // ceiling: 回退到整个版本的所有选择题（不限章节），最坏情况题量偏大——可接受
+      return base;
+    }
+    return base;
   }, [questions, subjectKey, selectedGrade, version, lessonTitle]);
 
   // 本轮题目：仅在进入页面/切换学科版本时计算一次，作答过程中不重新洗牌
@@ -146,6 +152,15 @@ export default function PracticePage() {
     });
     return { correct, wrong, unanswered };
   }, [sessionQuestions, answersMap]);
+
+  if (questionsLoading) {
+    return (
+      <div className="mobile-frame flex flex-col items-center justify-center bg-white">
+        <div className="w-8 h-8 border-2 border-navy-300 border-t-navy-700 rounded-full animate-spin mb-3" />
+        <p className="font-kai text-sm text-navy-800/60">正在加载题目...</p>
+      </div>
+    );
+  }
 
   if (versionQuestions.length === 0) {
     return (

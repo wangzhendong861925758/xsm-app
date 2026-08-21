@@ -76,6 +76,7 @@ export default function EssayPracticePage() {
     resetAnsweredBySubjectVersion,
     questions,
     loadQuestions,
+    questionsLoading,
   } = useStore();
 
   const subjectKey = subject as Subject;
@@ -97,17 +98,21 @@ export default function EssayPracticePage() {
 
   // 题库筛选：按学段+学科+版本+课时+大题类型
   const versionQuestions = useMemo(() => {
-    return questions.filter((q) => {
+    // 基础过滤：学科+年级+版本+大题
+    const base = questions.filter((q) => {
       if (q.subject !== subjectKey) return false;
       if (q.grade !== selectedGrade) return false;
-      // 版本匹配：管理端未指定版本时匹配所有
       if (q.version && version && q.version !== version) return false;
-      // 大题专项训练：仅取大题
       if (q.type !== "essay") return false;
-      // 若指定了课时标题，则按 section 过滤
-      if (lessonTitle && q.section && q.section !== lessonTitle) return false;
       return true;
     });
+    // 若指定了课时标题，先按课时过滤；若该课时无大题，回退到整个版本
+    if (lessonTitle) {
+      const byLesson = base.filter((q) => !q.section || q.section === lessonTitle);
+      if (byLesson.length > 0) return byLesson;
+      return base;
+    }
+    return base;
   }, [questions, subjectKey, selectedGrade, version, lessonTitle]);
 
   // 本次训练题目（避免依赖问题导致重渲染）
@@ -304,6 +309,16 @@ export default function EssayPracticePage() {
             </button>
           </div>
         </footer>
+      </div>
+    );
+  }
+
+  // 加载中
+  if (questionsLoading) {
+    return (
+      <div className="mobile-frame flex flex-col items-center justify-center bg-white">
+        <div className="w-8 h-8 border-2 border-navy-300 border-t-navy-700 rounded-full animate-spin mb-3" />
+        <p className="font-kai text-sm text-navy-800/60">正在加载题目...</p>
       </div>
     );
   }
