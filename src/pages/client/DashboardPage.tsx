@@ -1,4 +1,4 @@
-﻿﻿﻿import { useNavigate } from "react-router-dom";
+﻿﻿﻿﻿﻿import { useNavigate } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { Clock, AlertCircle, BookX, FileText, Bookmark, Trophy } from "lucide-react";
 import BrushTitle from "@/components/BrushTitle";

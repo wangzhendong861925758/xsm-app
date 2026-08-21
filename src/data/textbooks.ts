@@ -304,7 +304,7 @@ export const TEXTBOOKS: TextbookConfig[] = [
     grade: "八年级上册",
     subject: "history",
     subjectName: "历史",
-    versions: ["统编版（五四学制）"],
+    versions: ["统编版", "统编版（2024）", "统编版（五四学制）"],
   },
   {
     grade: "八年级上册",
@@ -514,7 +514,17 @@ export const TEXTBOOKS: TextbookConfig[] = [
     grade: "九年级下册",
     subject: "chemistry",
     subjectName: "化学",
-    versions: ["鲁教版（五四学制）全一册"],
+    versions: [
+      "人教版",
+      "人教版（五四学制）全一册",
+      "科粤版",
+      "沪教版",
+      "北京版",
+      "鲁教版",
+      "仁爱科普版",
+      "鲁教版（五四学制）全一册",
+      "沪科版（五四学制）全一册",
+    ],
   },
   {
     grade: "九年级下册",
