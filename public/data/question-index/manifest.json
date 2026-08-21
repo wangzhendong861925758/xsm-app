@@ -405,7 +405,7 @@
     {
       "version": "人教版",
       "file": "chemistry_九年级上册_人教版.idx.json",
-      "count": 3539
+      "count": 4188
     },
     {
       "version": "人教版（五四学制）全一册",
@@ -435,7 +435,7 @@
     {
       "version": "科粤版",
       "file": "chemistry_九年级上册_科粤版.idx.json",
-      "count": 3581
+      "count": 4230
     },
     {
       "version": "鲁教版",
@@ -452,7 +452,7 @@
     {
       "version": "人教版",
       "file": "chemistry_九年级下册_人教版.idx.json",
-      "count": 3539
+      "count": 4188
     },
     {
       "version": "人教版（五四学制）全一册",
@@ -482,7 +482,7 @@
     {
       "version": "科粤版",
       "file": "chemistry_九年级下册_科粤版.idx.json",
-      "count": 3581
+      "count": 4230
     },
     {
       "version": "鲁教版",
@@ -645,7 +645,7 @@
     {
       "version": "中图版（北京）",
       "file": "geography_七年级下册_中图版（北京）.idx.json",
-      "count": 2161
+      "count": 2411
     },
     {
       "version": "人教版",
@@ -660,12 +660,12 @@
     {
       "version": "人教版（五四学制）（2012）",
       "file": "geography_七年级下册_人教版（五四学制）（2012）.idx.json",
-      "count": 2050
+      "count": 2300
     },
     {
       "version": "仁爱科普版",
       "file": "geography_七年级下册_仁爱科普版.idx.json",
-      "count": 2198
+      "count": 2448
     },
     {
       "version": "商务星球版",
@@ -675,7 +675,7 @@
     {
       "version": "商务星球版（2012）",
       "file": "geography_七年级下册_商务星球版（2012）.idx.json",
-      "count": 2300
+      "count": 2550
     },
     {
       "version": "晋教版",
@@ -705,17 +705,17 @@
     {
       "version": "粤人版（2012）",
       "file": "geography_七年级下册_粤人版（2012）.idx.json",
-      "count": 2550
+      "count": 2800
     },
     {
       "version": "鲁教版（五四学制）",
       "file": "geography_七年级下册_鲁教版（五四学制）.idx.json",
-      "count": 1914
+      "count": 2164
     },
     {
       "version": "鲁教版（五四学制）（2012）",
       "file": "geography_七年级下册_鲁教版（五四学制）（2012）.idx.json",
-      "count": 2050
+      "count": 2300
     }
   ],
   "geography|八年级上册": [
@@ -940,7 +940,7 @@
     {
       "version": "统编版",
       "file": "history_七年级上册_统编版.idx.json",
-      "count": 2672
+      "count": 3582
     },
     {
       "version": "统编版（2016）",
@@ -972,12 +972,12 @@
     {
       "version": "统编版（五四学制）",
       "file": "history_七年级下册_统编版（五四学制）.idx.json",
-      "count": 2083
+      "count": 2232
     },
     {
       "version": "统编版（五四学制）（2018）",
       "file": "history_七年级下册_统编版（五四学制）（2018）.idx.json",
-      "count": 2000
+      "count": 2149
     }
   ],
   "history|九年级上册": [
@@ -1025,12 +1025,12 @@
     {
       "version": "统编版",
       "file": "history_八年级下册_统编版.idx.json",
-      "count": 2083
+      "count": 2578
     },
     {
       "version": "统编版（2016）",
       "file": "history_八年级下册_统编版（2016）.idx.json",
-      "count": 2000
+      "count": 2495
     },
     {
       "version": "统编版（五四学制）",
@@ -1042,7 +1042,7 @@
     {
       "version": "统编版（五四学制）",
       "file": "history_六年级上册_统编版（五四学制）.idx.json",
-      "count": 3597
+      "count": 4507
     },
     {
       "version": "统编版（五四学制）（2018）",
@@ -1233,12 +1233,12 @@
     {
       "version": "苏科版",
       "file": "physics_九年级下册_苏科版.idx.json",
-      "count": 750
+      "count": 7946
     },
     {
       "version": "苏科版（2012）",
       "file": "physics_九年级下册_苏科版（2012）.idx.json",
-      "count": 850
+      "count": 8046
     },
     {
       "version": "鲁科版（五四学制）",
