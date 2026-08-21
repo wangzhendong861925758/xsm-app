@@ -1,8 +1,13 @@
-fix: 严格按照用户清单修正版本名称
+fix: 前端直接使用textbooks.ts显示版本，修复学科缺失问题
 
-- 七下生物: 鲁科版（五四学制）2012 → 鲁科版（五四学制）（2012）
-- 八下道法: 统编版（五四学制）2018 → 统编版（五四学制）（2018）
-- 八下地理: 恢复并重命名 中图版（北京版）（2012）→ 中图版（北京版）（2014）
-- 九下物理: 科教版（2012）→ 教科版（2012）
+问题：前端GradeSelectPage从manifest.json加载版本列表，
+而非直接用textbooks.ts。浏览器缓存旧manifest.json导致：
+- 七上/七下历史版本显示不完整
+- 八上历史学科消失
 
-304个版本与用户清单完全一致
+修复：
+1. GradeSelectPage改为直接用tb.versions（来自textbooks.ts）
+2. 恢复rebuild-all.mjs误删的SUBJECTS和GRADES导出
+3. 删除fetchVersions的依赖（版本列表不再依赖远程manifest）
+
+304个版本数据已在textbooks.ts中硬编码，不存在缓存问题

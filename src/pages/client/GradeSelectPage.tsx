@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Check } from "lucide-react";
 import { GRADES, getTextbooksByGrade, SUBJECTS } from "@/data/textbooks";
 import { useStore } from "@/store/useStore";
-import { fetchVersions } from "@/lib/api";
 import type { Subject } from "@/data/types";
 
 const IMG_VER = "20260819";
@@ -29,28 +28,8 @@ export default function GradeSelectPage() {
   // 本地草稿状态：选中年级 + 各学科版本
   const [draftGrade, setDraftGrade] = useState(selectedGrade);
   const [draftVersions, setDraftVersions] = useState<Record<string, string>>(selectedVersions);
-  const [realVersions, setRealVersions] = useState<Record<string, string[]>>({});
 
   const textbooks = getTextbooksByGrade(draftGrade);
-
-  // 加载当前草稿年级对应的所有学科版本
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const entries = await Promise.all(
-        textbooks.map(async (tb) => {
-          const vs = await fetchVersions(tb.subject, draftGrade);
-          return [tb.subject, vs.map((v) => v.version)] as [string, string[]];
-        }),
-      );
-      if (!cancelled) {
-        const map: Record<string, string[]> = {};
-        for (const [k, v] of entries) map[k] = v;
-        setRealVersions(map);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [draftGrade]);
 
   const handlePickVersion = (subject: Subject, v: string) => {
     setDraftVersions((prev) => ({ ...prev, [subject]: v }));
@@ -158,7 +137,7 @@ export default function GradeSelectPage() {
               {textbooks.map((tb) => {
                 const info = SUBJECTS[tb.subject];
                 const subIcon = SUBJECT_ICONS[tb.subject];
-                const versions = realVersions[tb.subject] || tb.versions;
+                const versions = tb.versions;
                 const currentVer = draftVersions[tb.subject] || versions[0] || "—";
 
                 return (

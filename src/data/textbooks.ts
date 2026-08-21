@@ -1,4 +1,24 @@
-import type { TextbookConfig } from "./types";
+import type { TextbookConfig, Subject, SubjectInfo } from "./types";
+
+export const SUBJECTS: Record<Subject, SubjectInfo> = {
+  physics: { key: "physics", name: "物理", shortName: "物", color: "#E83E3E", bgColor: "rgba(232,62,62,0.08)", icon: "⚛️" },
+  chemistry: { key: "chemistry", name: "化学", shortName: "化", color: "#22C593", bgColor: "rgba(34,197,147,0.08)", icon: "⚗️" },
+  biology: { key: "biology", name: "生物", shortName: "生", color: "#3B82F6", bgColor: "rgba(59,130,246,0.08)", icon: "🧬" },
+  history: { key: "history", name: "历史", shortName: "史", color: "#F59E0B", bgColor: "rgba(245,158,11,0.08)", icon: "📖" },
+  politics: { key: "politics", name: "道法", shortName: "道", color: "#8B5CF6", bgColor: "rgba(139,92,246,0.08)", icon: "⚖️" },
+  geography: { key: "geography", name: "地理", shortName: "地", color: "#10B981", bgColor: "rgba(16,185,129,0.08)", icon: "🌍" },
+};
+
+export const GRADES = [
+  { key: "六年级上册", short: "六上", phase: "小升初" },
+  { key: "六年级下册", short: "六下", phase: "小升初" },
+  { key: "七年级上册", short: "七上", phase: "初中" },
+  { key: "七年级下册", short: "七下", phase: "初中" },
+  { key: "八年级上册", short: "八上", phase: "初中" },
+  { key: "八年级下册", short: "八下", phase: "初中" },
+  { key: "九年级上册", short: "九上", phase: "初中" },
+  { key: "九年级下册", short: "九下", phase: "初中" },
+];
 
 export const TEXTBOOKS: TextbookConfig[] = [
 
