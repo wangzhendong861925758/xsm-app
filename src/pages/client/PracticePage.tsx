@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿import { useState, useMemo, useEffect, useRef } from "react";
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import {
   ChevronLeft, ChevronRight, Star, CheckCircle2, XCircle,
@@ -41,7 +41,14 @@ export default function PracticePage() {
     addToErrorBook,
     loadQuestions,
     questionsLoading,
+    currentClientCode,
   } = useStore();
+
+  // ponytail: 按账号隔离，仅判断当前账号的错题
+  const isInErrorBook = (qid: string) =>
+    errorBook.some(
+      (e) => e.questionId === qid && (e.clientCode || undefined) === (currentClientCode || undefined),
+    );
 
   const subjectKey = subject as Subject;
   const info = SUBJECTS[subjectKey];
@@ -203,13 +210,11 @@ export default function PracticePage() {
     addAnsweredQuestion(currentQ.id);
     incrementTodayLearned(subjectKey);
     recordTodayAnswer(subjectKey, isCorrect);
-    // 答错时自动加入错题本（去重）
-    if (!isCorrect && !errorBook.some((e) => e.questionId === currentQ.id)) {
+    // 答错时自动加入错题本（按账号去重）
+    if (!isCorrect && !isInErrorBook(currentQ.id)) {
       handleAddToErrorBook(letter);
     }
   };
-
-  const isInErrorBook = errorBook.some((e) => e.questionId === currentQ.id);
 
   // 将字母（A/B/C/D）转为完整选项文本
   const letterToText = (letter: string): string => {
@@ -253,11 +258,11 @@ export default function PracticePage() {
         return a.length === 1 && aIdx >= 0 && aIdx < 26 ? letterToText(a) : a;
       })();
 
-  // 答错时自动加入错题本（去重），传入用户所选字母
+  // 答错时自动加入错题本（按账号去重），传入用户所选字母
   const handleAddToErrorBook = (letter?: string) => {
     const sel = letter || currentAnswer?.selected;
     if (!sel) return;
-    if (errorBook.some((e) => e.questionId === currentQ.id)) return;
+    if (isInErrorBook(currentQ.id)) return;
     // 计算"用户所选选项的错因"和"正确选项的思路"，存入错题本
     const selIdx = sel.charCodeAt(0) - 65;
     const opts = currentQ.options;

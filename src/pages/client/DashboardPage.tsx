@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿import { useNavigate } from "react-router-dom";
+﻿﻿﻿﻿﻿﻿﻿﻿import { useNavigate } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { Clock, AlertCircle, BookX, FileText, Bookmark, Trophy } from "lucide-react";
 import BrushTitle from "@/components/BrushTitle";
@@ -7,10 +7,13 @@ import { useStore } from "@/store/useStore";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { currentUser, questions, errorBook, collectedQuestions, examRecords } = useStore();
+  const { currentUser, questions, errorBook, collectedQuestions, examRecords, currentClientCode } = useStore();
 
+  // ponytail: 错题数按账号隔离，仅统计当前账号的错题
+  const errorCount = errorBook.filter(
+    (e) => (e.clientCode || undefined) === (currentClientCode || undefined),
+  ).length;
   const collectedCount = collectedQuestions.length;
-  const errorCount = errorBook.length;
   const examCount = examRecords.length;
 
   const chartData = WEEKLY_RECORDS.map((r) => ({

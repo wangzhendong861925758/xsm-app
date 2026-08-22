@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿import { useState } from "react";
+﻿﻿﻿﻿﻿﻿﻿﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Trash2, BookX, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
 import { useStore } from "@/store/useStore";
@@ -7,14 +7,16 @@ import type { Subject } from "@/data/types";
 
 export default function ErrorBookPage() {
   const navigate = useNavigate();
-  const { errorBook, questions, removeFromErrorBook } = useStore();
+  const { errorBook, questions, removeFromErrorBook, currentClientCode } = useStore();
   const [filter, setFilter] = useState<Subject | "all">("all");
 
-  const filtered = filter === "all" ? errorBook : errorBook.filter((e) => e.subject === filter);
+  // ponytail: 按账号隔离，仅显示当前登录账号的错题；旧数据无 clientCode 时也归属当前账号
+  const myErrorBook = errorBook.filter((e) => (e.clientCode || undefined) === (currentClientCode || undefined));
+  const filtered = filter === "all" ? myErrorBook : myErrorBook.filter((e) => e.subject === filter);
 
   const getQuestion = (id: string) => questions.find((q) => q.id === id);
 
-  const subjects = Array.from(new Set(errorBook.map((e) => e.subject)));
+  const subjects = Array.from(new Set(myErrorBook.map((e) => e.subject)));
 
   return (
     <div className="mobile-frame flex flex-col bg-white">
@@ -27,7 +29,7 @@ export default function ErrorBookPage() {
             <BookX size={16} className="text-navy-600" />
             错题本
           </h1>
-          <p className="text-[10px] text-navy-800/50 font-kai mt-0.5">共 {errorBook.length} 道错题</p>
+          <p className="text-[10px] text-navy-800/50 font-kai mt-0.5">共 {myErrorBook.length} 道错题</p>
         </div>
       </header>
 

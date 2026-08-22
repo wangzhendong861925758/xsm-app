@@ -54,7 +54,7 @@ export default function SimulatePage() {
   const [searchParams] = useSearchParams();
   const paperId = searchParams.get("paperId");
   const navigate = useNavigate();
-  const { recordExamResult, addToErrorBook, errorBook, collectedQuestions, addCollectedQuestion } = useStore();
+  const { recordExamResult, addToErrorBook, errorBook, collectedQuestions, addCollectedQuestion, currentClientCode } = useStore();
 
   const paper = useMemo(
     () => EXAM_PAPERS.find((p) => p.id === paperId),
@@ -133,7 +133,7 @@ export default function SimulatePage() {
       const userAns = answers[i] || [];
       if (isCorrect(q, userAns)) return; // 只处理错题
       const qid = `exam-${paper.id}-${q.id}`;
-      if (errorBook.some((e) => e.questionId === qid)) return;
+      if (errorBook.some((e) => e.questionId === qid && (e.clientCode || undefined) === (currentClientCode || undefined))) return;
       const correctAns = Array.isArray(q.answer) ? q.answer : [q.answer];
       addToErrorBook({
         id: `err-${qid}-${Date.now()}`,

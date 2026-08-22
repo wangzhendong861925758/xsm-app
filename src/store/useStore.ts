@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { create } from "zustand";
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User, Question, Subject, ClientAccount } from "@/data/types";
 import { CURRENT_USER, ADMIN_USERS, CAROUSEL_IMAGES } from "@/data/mock";
@@ -18,6 +18,8 @@ export interface ErrorBookItem {
   id: string;
   questionId: string;
   subject: Subject;
+  /** 归属账号 8 位 ID（用于多账号隔离；旧数据无此字段时归属当前登录账号） */
+  clientCode?: string;
   /** 题目类型（重做时需要） */
   type?: "single" | "multiple" | "judge" | "essay";
   grade?: string;
@@ -307,13 +309,23 @@ export const useStore = create<AppState>()(
         set((s) => ({ selectedVersions: { ...s.selectedVersions, [subject]: version } })),
 
       addToErrorBook: (item) =>
-        set((s) => ({
-          errorBook: s.errorBook.find((e) => e.questionId === item.questionId)
-            ? s.errorBook
-            : [...s.errorBook, item],
-        })),
+        set((s) => {
+          // ponytail: 错题本按账号隔离，写入时打上 currentClientCode
+          const code = s.currentClientCode || undefined;
+          // 同账号下去重：同 questionId 不重复加
+          const dup = s.errorBook.some(
+            (e) => e.questionId === item.questionId && (e.clientCode || undefined) === code,
+          );
+          if (dup) return {};
+          return { errorBook: [...s.errorBook, { ...item, clientCode: code }] };
+        }),
       removeFromErrorBook: (questionId) =>
-        set((s) => ({ errorBook: s.errorBook.filter((e) => e.questionId !== questionId) })),
+        set((s) => ({
+          // 仅删除当前账号下的该错题，避免误删其他账号数据
+          errorBook: s.errorBook.filter(
+            (e) => !(e.questionId === questionId && (e.clientCode || undefined) === (s.currentClientCode || undefined)),
+          ),
+        })),
 
       recordExamResult: (record) =>
         set((s) => ({ examRecords: [...s.examRecords, record] })),
@@ -430,7 +442,7 @@ export const useStore = create<AppState>()(
     }),
     {
       name: "xsm-app-store",
-      version: 5,
+      version: 6,
       migrate: (persisted: any, version: number) => {
         if (version < 2) {
           const { questions: _q, loadedQuestionKey: _k, ...rest } = persisted || {};
@@ -452,6 +464,16 @@ export const useStore = create<AppState>()(
           // 修复：旧版本选择可能指向已更新名称的版本，导致加载失败
           if (persisted) {
             persisted.selectedVersions = {};
+          }
+        }
+        if (version < 6) {
+          // ponytail: 给旧错题数据打上当前账号标记，实现错题本按账号隔离
+          // 旧数据无 clientCode 时归属到当前登录账号，避免数据丢失
+          if (persisted?.errorBook && Array.isArray(persisted.errorBook)) {
+            const code = persisted.currentClientCode || undefined;
+            persisted.errorBook = persisted.errorBook.map((e: any) =>
+              e && !e.clientCode ? { ...e, clientCode: code } : e,
+            );
           }
         }
         return persisted;

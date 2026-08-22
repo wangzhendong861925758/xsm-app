@@ -109,7 +109,13 @@ export default function RedoQuestionPage() {
   const questionId = searchParams.get("questionId") || "";
   const subjectFilter = searchParams.get("subject") || "";
 
-  const { errorBook, collectedQuestions, removeFromErrorBook, removeCollectedQuestion } = useStore();
+  const { errorBook, collectedQuestions, removeFromErrorBook, removeCollectedQuestion, currentClientCode } = useStore();
+
+  // ponytail: 按账号隔离，仅展示当前账号的错题
+  const myErrorBook = useMemo(
+    () => errorBook.filter((e) => (e.clientCode || undefined) === (currentClientCode || undefined)),
+    [errorBook, currentClientCode],
+  );
 
   // 当前题在列表中的位置（用于"下一题"）
   const list = useMemo(() => {
@@ -117,9 +123,9 @@ export default function RedoQuestionPage() {
       return collectedQuestions;
     }
     return subjectFilter
-      ? errorBook.filter((e) => e.subject === subjectFilter)
-      : errorBook;
-  }, [source, subjectFilter, errorBook, collectedQuestions]);
+      ? myErrorBook.filter((e) => e.subject === subjectFilter)
+      : myErrorBook;
+  }, [source, subjectFilter, myErrorBook, collectedQuestions]);
 
   const currentIndexInList = useMemo(
     () => list.findIndex((item) =>
@@ -138,9 +144,9 @@ export default function RedoQuestionPage() {
       const q = collectedQuestions.find((c) => c.id === questionId);
       return q ? fromCollected(q) : null;
     }
-    const it = errorBook.find((e) => e.questionId === questionId);
+    const it = myErrorBook.find((e) => e.questionId === questionId);
     return it ? fromErrorItem(it) : null;
-  }, [source, questionId, errorBook, collectedQuestions]);
+  }, [source, questionId, myErrorBook, collectedQuestions]);
 
   const [selected, setSelected] = useState<string[]>([]);
   const [essayAnswer, setEssayAnswer] = useState("");
