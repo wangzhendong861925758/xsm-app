@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User, Lock, IdCard, UserPlus, LogIn } from "lucide-react";
 import BrushTitle from "@/components/BrushTitle";
@@ -19,14 +19,14 @@ export default function ClientLoginPage() {
     e.preventDefault();
     setError("");
     if (!username || !password) {
-      setError("请输入用户名和密码");
+      setError("请输入手机号和密码");
       return;
     }
     const ok = await loginClient(username, password);
     if (ok) {
       navigate("/app/home", { replace: true });
     } else {
-      setError("用户名或密码错误");
+      setError("手机号或密码错误");
     }
   };
 
@@ -39,7 +39,7 @@ export default function ClientLoginPage() {
     }
     const code = await registerClient(username, password, studentName);
     if (!code) {
-      setError("该用户名已存在");
+      setError("该手机号已存在");
       return;
     }
     setNewCode(code);
@@ -117,14 +117,14 @@ export default function ClientLoginPage() {
         {/* 表单 */}
         <form onSubmit={mode === "login" ? handleLogin : handleRegister} className="ink-card rounded-2xl p-6 space-y-4">
           <div>
-            <label className="block text-xs font-kai text-navy-800/60 mb-1.5">用户名</label>
+            <label className="block text-xs font-kai text-navy-800/60 mb-1.5">手机号</label>
             <div className="relative">
               <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-navy-800/40" />
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="请输入用户名"
+                placeholder="请输入手机号"
                 className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-navy-500/15 bg-navy-50/40 font-kai text-sm focus:outline-none focus:border-navy-500/50"
               />
             </div>
