@@ -6,7 +6,7 @@
 //  - 其他同源 GET（favicon/manifest 等）: stale-while-revalidate
 //  - 非同源 / API（Netlify Functions、字体 CDN）: 不拦截，直接走网络
 const CACHE = "xsm-v1";
-const SHELL = ["/", "/index.html", "/manifest.webmanifest", "/favicon.svg", "/icon-maskable.svg"];
+const SHELL = ["/", "/index.html", "/manifest.webmanifest", "/favicon.svg", "/icon-any.svg", "/icon-maskable.svg"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(

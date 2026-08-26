@@ -1,0 +1,8 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="112" fill="#0A0B0D"/>
+  <!-- 四门：2×2 学科色块，负空间成"十"字 -->
+  <rect x="64" y="64" width="176" height="176" rx="44" fill="#3B82F6"/>
+  <rect x="272" y="64" width="176" height="176" rx="44" fill="#F59E0B"/>
+  <rect x="64" y="272" width="176" height="176" rx="44" fill="#10B981"/>
+  <rect x="272" y="272" width="176" height="176" rx="44" fill="#8B5CF6"/>
+</svg>
