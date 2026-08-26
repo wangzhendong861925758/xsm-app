@@ -18,6 +18,38 @@ function randomSessionCount(): number {
 }
 
 /**
+ * 拆分材料题：题干含 ≥2 个从 1 开始连续递增的（N）小问时，
+ * 拆为"材料前缀 + 小问列表"，让每问可独立作答。
+ * 如："阅读材料…材料：'……'（1）为什么…？（2）意义是什么？"
+ */
+function splitSubQuestions(stem: string): { material: string; subs: { label: string; text: string }[] } | null {
+  const re = /[（(]\s*(\d+)\s*[)）]/g;
+  const marks: { num: number; index: number; end: number }[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(stem)) !== null) {
+    marks.push({ num: parseInt(m[1], 10), index: m.index, end: re.lastIndex });
+  }
+  // 找最长"连续递增且起点为1"的序列
+  let best: typeof marks = [];
+  let cur: typeof marks = [];
+  for (const mk of marks) {
+    if (cur.length > 0 && mk.num === cur[cur.length - 1].num + 1) {
+      cur.push(mk);
+    } else {
+      cur = mk.num === 1 ? [mk] : [];
+    }
+    if (cur.length > best.length) best = [...cur];
+  }
+  if (best.length < 2 || best[0].num !== 1) return null;
+  const material = stem.slice(0, best[0].index).trim();
+  const subs = best.map((mk, i) => ({
+    label: `（${mk.num}）`,
+    text: stem.slice(mk.end, i + 1 < best.length ? best[i + 1].index : stem.length).trim(),
+  }));
+  return { material, subs };
+}
+
+/**
  * 大题判分：检查学生答案是否命中要点
  * 命中所有要点（或权重达到80%以上）判定为正确
  */
@@ -147,12 +179,18 @@ export default function EssayPracticePage() {
   const [currentIdx, setCurrentIdx] = useState(0);
   // 每题作答：学生答案
   const [answersMap, setAnswersMap] = useState<Record<number, string>>({});
+  // 材料题小问答案：题索引 -> 各小问文本（提交时合并进 answersMap 判分）
+  const [subAnswersMap, setSubAnswersMap] = useState<Record<number, string[]>>({});
   // 每题判分结果
   const [gradeMap, setGradeMap] = useState<Record<number, { correct: boolean; hitPoints: string[]; missPoints: string[]; hitRate: number }>>({});
   const [showAnswerSheet, setShowAnswerSheet] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
   const currentQ = sessionQuestions[currentIdx];
+  // 材料题小问拆分（含 ≥2 个连续（1）（2）…小问时启用）
+  const subQ = useMemo(() => (currentQ ? splitSubQuestions(currentQ.stem || "") : null), [currentQ]);
+  const subAnswers = subAnswersMap[currentIdx] || [];
+  const subAnswerTotal = subAnswers.reduce((a, s) => a + s.length, 0);
   const studentAnswer = answersMap[currentIdx] || "";
   const grade = gradeMap[currentIdx];
   const isAnswered = !!grade;
@@ -171,8 +209,14 @@ export default function EssayPracticePage() {
   }, [sessionQuestions, gradeMap]);
 
   const handleSubmit = () => {
-    if (!currentQ || !studentAnswer.trim()) return;
-    const result = gradeEssay(studentAnswer, currentQ);
+    if (!currentQ) return;
+    // 材料题：合并各小问答案后判分；普通大题：直接用整题答案
+    const finalAnswer = subQ
+      ? subQ.subs.map((_, i) => (subAnswers[i] || "").trim()).filter(Boolean).join("\n")
+      : studentAnswer;
+    if (!finalAnswer.trim()) return;
+    const result = gradeEssay(finalAnswer, currentQ);
+    setAnswersMap({ ...answersMap, [currentIdx]: finalAnswer });
     setGradeMap({ ...gradeMap, [currentIdx]: result });
     addAnsweredQuestion(currentQ.id);
     incrementTodayLearned(subjectKey);
@@ -189,7 +233,7 @@ export default function EssayPracticePage() {
         stem: currentQ.stem,
         options: currentQ.options,
         correctAnswer: Array.isArray(currentQ.answer) ? currentQ.answer.join("；") : currentQ.answer,
-        selectedAnswer: studentAnswer,
+        selectedAnswer: finalAnswer,
         analysis: currentQ.analysis,
         solution: currentQ.solution,
         addedAt: Date.now(),
@@ -395,7 +439,21 @@ export default function EssayPracticePage() {
               <span className="text-[10px] text-navy-800/40 font-kai">建议字数 {currentQ.wordLimit}</span>
             )}
           </div>
-          <p className="font-kai text-sm text-navy-900 leading-relaxed whitespace-pre-wrap">{currentQ.stem}</p>
+          {subQ ? (
+            <>
+              <p className="font-kai text-sm text-navy-900 leading-relaxed whitespace-pre-wrap">{subQ.material}</p>
+              <div className="mt-2 space-y-2">
+                {subQ.subs.map((s, i) => (
+                  <p key={i} className="font-kai text-sm text-navy-900 leading-relaxed">
+                    <span className="font-bold" style={{ color: info.color }}>{s.label}</span>
+                    {s.text}
+                  </p>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="font-kai text-sm text-navy-900 leading-relaxed whitespace-pre-wrap">{currentQ.stem}</p>
+          )}
         </div>
 
         {/* 作答区 */}
@@ -404,22 +462,46 @@ export default function EssayPracticePage() {
             <span className="w-1 h-3 rounded-full" style={{ background: info.color }} />
             你的作答
           </p>
-          <textarea
-            value={studentAnswer}
-            onChange={(e) => !isAnswered && setAnswersMap({ ...answersMap, [currentIdx]: e.target.value })}
-            disabled={isAnswered}
-            placeholder="请在此处输入你的答案，注意要点完整、思路清晰…"
-            className="w-full min-h-[140px] p-3 rounded-xl border border-navy-500/15 bg-white/60 text-sm font-kai text-navy-900 leading-relaxed resize-none focus:outline-none focus:border-navy-500/50 disabled:opacity-70"
-            style={{ fontSize: "13px" }}
-          />
+          {subQ && !isAnswered ? (
+            /* 材料题：每小问独立输入框 */
+            <div className="space-y-3">
+              {subQ.subs.map((s, i) => (
+                <div key={i}>
+                  <p className="text-[11px] font-kai font-bold mb-1" style={{ color: info.color }}>{s.label}</p>
+                  <textarea
+                    value={subAnswers[i] || ""}
+                    onChange={(e) => {
+                      const next = [...subAnswers];
+                      next[i] = e.target.value;
+                      setSubAnswersMap({ ...subAnswersMap, [currentIdx]: next });
+                    }}
+                    placeholder="请输入本小问答案…"
+                    className="w-full min-h-[72px] p-3 rounded-xl border border-navy-500/15 bg-white/60 text-sm font-kai text-navy-900 leading-relaxed resize-none focus:outline-none focus:border-navy-500/50"
+                    style={{ fontSize: "13px" }}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <textarea
+              value={studentAnswer}
+              onChange={(e) => !isAnswered && setAnswersMap({ ...answersMap, [currentIdx]: e.target.value })}
+              disabled={isAnswered}
+              placeholder="请在此处输入你的答案，注意要点完整、思路清晰…"
+              className="w-full min-h-[140px] p-3 rounded-xl border border-navy-500/15 bg-white/60 text-sm font-kai text-navy-900 leading-relaxed resize-none focus:outline-none focus:border-navy-500/50 disabled:opacity-70"
+              style={{ fontSize: "13px" }}
+            />
+          )}
           <div className="flex items-center justify-between mt-1.5">
-            <span className="text-[10px] text-navy-800/40 font-kai">{studentAnswer.length} 字</span>
+            <span className="text-[10px] text-navy-800/40 font-kai">
+              {subQ && !isAnswered ? `${subAnswerTotal} 字（共 ${subQ.subs.length} 小问）` : `${studentAnswer.length} 字`}
+            </span>
             {!isAnswered && (
               <button
                 onClick={handleSubmit}
-                disabled={!studentAnswer.trim()}
+                disabled={subQ ? subAnswerTotal === 0 : !studentAnswer.trim()}
                 className={`px-4 py-1.5 rounded-lg font-kai text-xs font-bold transition-all ${
-                  studentAnswer.trim() ? "btn-navy" : "bg-navy-500/8 text-navy-800/40"
+                  (subQ ? subAnswerTotal > 0 : studentAnswer.trim()) ? "btn-navy" : "bg-navy-500/8 text-navy-800/40"
                 }`}
               >
                 提交作答

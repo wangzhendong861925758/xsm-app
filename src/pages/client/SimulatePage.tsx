@@ -1,4 +1,4 @@
-﻿﻿﻿﻿import { useState, useMemo, useRef } from "react";
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { useState, useMemo, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { ChevronLeft, Clock, Award, RotateCcw, CheckCircle2, XCircle, BookOpen, Star } from "lucide-react";
 import { EXAM_PAPERS } from "@/data/examPapers";
@@ -254,7 +254,7 @@ export default function SimulatePage() {
                     </span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <p className="font-kai text-xs text-navy-900 line-clamp-2 mb-1 flex-1">
+                        <p className="font-kai text-xs text-navy-900 leading-relaxed mb-1 flex-1">
                           {i + 1}. {q.stem}
                         </p>
                         <button

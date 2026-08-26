@@ -1,0 +1,156 @@
+[
+  {
+    "grade": "八年级上册",
+    "subject": "physics",
+    "version": "沪粤版",
+    "status": "FIXED",
+    "total": 6250,
+    "chapters": 5,
+    "sections": 25,
+    "choice": 5000,
+    "essay": 1250
+  },
+  {
+    "grade": "八年级上册",
+    "subject": "physics",
+    "version": "沪粤版（2012）",
+    "status": "FIXED",
+    "total": 6250,
+    "chapters": 5,
+    "sections": 25,
+    "choice": 5000,
+    "essay": 1250
+  },
+  {
+    "grade": "八年级下册",
+    "subject": "physics",
+    "version": "北师大版",
+    "status": "FIXED",
+    "total": 5750,
+    "chapters": 4,
+    "sections": 23,
+    "choice": 4600,
+    "essay": 1150
+  },
+  {
+    "grade": "八年级下册",
+    "subject": "physics",
+    "version": "教科版",
+    "status": "FIXED",
+    "total": 6250,
+    "chapters": 6,
+    "sections": 25,
+    "choice": 5000,
+    "essay": 1250
+  },
+  {
+    "grade": "八年级下册",
+    "subject": "physics",
+    "version": "沪教版（上海）（2007）",
+    "status": "FIXED",
+    "total": 2250,
+    "chapters": 2,
+    "sections": 9,
+    "choice": 1800,
+    "essay": 450
+  },
+  {
+    "grade": "八年级下册",
+    "subject": "physics",
+    "version": "沪粤版",
+    "status": "FIXED",
+    "total": 5504,
+    "chapters": 5,
+    "sections": 22,
+    "choice": 4400,
+    "essay": 1104
+  },
+  {
+    "grade": "八年级下册",
+    "subject": "politics",
+    "version": "统编版",
+    "status": "FIXED",
+    "total": 3500,
+    "chapters": 5,
+    "sections": 14,
+    "choice": 2800,
+    "essay": 700
+  },
+  {
+    "grade": "八年级下册",
+    "subject": "politics",
+    "version": "统编版（五四学制）",
+    "status": "FIXED",
+    "total": 3250,
+    "chapters": 5,
+    "sections": 13,
+    "choice": 2600,
+    "essay": 650
+  },
+  {
+    "grade": "八年级下册",
+    "subject": "geography",
+    "version": "人教版",
+    "status": "FIXED",
+    "total": 2499,
+    "chapters": 4,
+    "sections": 8,
+    "choice": 1999,
+    "essay": 500
+  },
+  {
+    "grade": "九年级上册",
+    "subject": "physics",
+    "version": "教科版（2012）",
+    "status": "FIXED",
+    "total": 6300,
+    "chapters": 8,
+    "sections": 26,
+    "choice": 5000,
+    "essay": 1300
+  },
+  {
+    "grade": "九年级上册",
+    "subject": "physics",
+    "version": "沪教版（上海）2007",
+    "status": "FIXED",
+    "total": 2750,
+    "chapters": 2,
+    "sections": 11,
+    "choice": 2200,
+    "essay": 550
+  },
+  {
+    "grade": "九年级上册",
+    "subject": "physics",
+    "version": "沪科版（五四学制）",
+    "status": "FIXED",
+    "total": 4251,
+    "chapters": 4,
+    "sections": 17,
+    "choice": 3401,
+    "essay": 850
+  },
+  {
+    "grade": "九年级上册",
+    "subject": "politics",
+    "version": "统编版",
+    "status": "FIXED",
+    "total": 2500,
+    "chapters": 4,
+    "sections": 10,
+    "choice": 2000,
+    "essay": 500
+  },
+  {
+    "grade": "九年级下册",
+    "subject": "politics",
+    "version": "统编版",
+    "status": "FIXED",
+    "total": 2500,
+    "chapters": 3,
+    "sections": 10,
+    "choice": 2000,
+    "essay": 500
+  }
+]

@@ -150,10 +150,20 @@ export default function ChapterSelectPage() {
         {questionsLoading || chapters.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16">
             {questionsLoading ? (
-              <>
-                <div className="w-8 h-8 border-2 border-navy-300 border-t-navy-700 rounded-full animate-spin mb-3" />
-                <p className="font-kai text-sm text-navy-800/60">正在加载题目...</p>
-              </>
+              <div className="w-full space-y-2" aria-label="正在加载题目">
+                {/* 骨架屏代替转圈：保持页面结构稳定，弱化加载感知 */}
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="ink-card rounded-2xl p-4 animate-pulse">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-navy-500/10" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-3.5 w-2/5 rounded bg-navy-500/10" />
+                        <div className="h-2.5 w-1/4 rounded bg-navy-500/5" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             ) : (
               <>
                 <BookOpen size={32} className="text-navy-300 mb-3" />

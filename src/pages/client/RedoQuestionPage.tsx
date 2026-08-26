@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { useMemo, useState, useEffect } from "react";
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { useMemo, useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, CheckCircle2, XCircle, RotateCcw, Check, Trash2 } from "lucide-react";
 import { useStore, type ErrorBookItem } from "@/store/useStore";
@@ -109,7 +109,7 @@ export default function RedoQuestionPage() {
   const questionId = searchParams.get("questionId") || "";
   const subjectFilter = searchParams.get("subject") || "";
 
-  const { errorBook, collectedQuestions, removeFromErrorBook, removeCollectedQuestion, currentClientCode } = useStore();
+  const { errorBook, collectedQuestions, removeFromErrorBook, removeCollectedQuestion, currentClientCode, questions } = useStore();
 
   // ponytail: 按账号隔离，仅展示当前账号的错题
   const myErrorBook = useMemo(
@@ -145,8 +145,13 @@ export default function RedoQuestionPage() {
       return q ? fromCollected(q) : null;
     }
     const it = myErrorBook.find((e) => e.questionId === questionId);
-    return it ? fromErrorItem(it) : null;
-  }, [source, questionId, myErrorBook, collectedQuestions]);
+    if (!it) return null;
+    // ponytail: 错题快照是加入时的题干拷贝，历史数据修复后快照可能残缺（如"***说的对吗"）。
+    // 已加载分片里能按 questionId 找到原题时，优先用题库最新数据重建视图；找不到再回退快照。
+    const fresh = questions.find((q) => q.id === it.questionId);
+    if (fresh) return fromCollected(fresh);
+    return fromErrorItem(it);
+  }, [source, questionId, myErrorBook, collectedQuestions, questions]);
 
   const [selected, setSelected] = useState<string[]>([]);
   const [essayAnswer, setEssayAnswer] = useState("");

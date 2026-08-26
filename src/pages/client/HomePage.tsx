@@ -134,6 +134,7 @@ export default function HomePage() {
     currentClientCode,
     checkAndRevokeExpired,
     homeDesign,
+    loadQuestions,
   } = useStore();
   const c = { ...FALLBACK, ...homeDesign };
   const [bannerIndex, setBannerIndex] = useState(0);
@@ -177,6 +178,8 @@ export default function HomePage() {
       version = versions[0] || "";
       if (version) setSelectedVersion(subject, version);
     }
+    // 跳转前先发起题目加载（不等待），与路由切换并行，弱化章节页的加载等待
+    if (version) loadQuestions(subject, selectedGrade, version);
     navigate(`/app/chapter/${subject}?version=${encodeURIComponent(version)}`);
   };
 

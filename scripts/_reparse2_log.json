@@ -1,0 +1,212 @@
+[
+  {
+    "grade": "八年级上册",
+    "subject": "history",
+    "version": "统编版",
+    "status": "NO_QUESTIONS_PARSED"
+  },
+  {
+    "grade": "八年级上册",
+    "subject": "history",
+    "version": "统编版（2016）",
+    "status": "NO_QUESTIONS_PARSED"
+  },
+  {
+    "grade": "七年级下册",
+    "subject": "geography",
+    "version": "中图版",
+    "status": "FIXED",
+    "total": 2800,
+    "chapters": 3,
+    "sections": 14,
+    "choice": 2800,
+    "essay": 0
+  },
+  {
+    "grade": "七年级下册",
+    "subject": "geography",
+    "version": "晋教版",
+    "status": "FIXED",
+    "total": 2400,
+    "chapters": 4,
+    "sections": 12,
+    "choice": 2400,
+    "essay": 0
+  },
+  {
+    "grade": "七年级下册",
+    "subject": "geography",
+    "version": "湘教版",
+    "status": "FIXED",
+    "total": 2800,
+    "chapters": 3,
+    "sections": 14,
+    "choice": 2800,
+    "essay": 0
+  },
+  {
+    "grade": "六年级上册",
+    "subject": "history",
+    "version": "统编版（五四学制）",
+    "status": "FIXED",
+    "total": 4450,
+    "chapters": 4,
+    "sections": 18,
+    "choice": 3600,
+    "essay": 850
+  },
+  {
+    "grade": "六年级上册",
+    "subject": "geography",
+    "version": "鲁教版（五四学制）（2012）",
+    "status": "FIXED",
+    "total": 2052,
+    "chapters": 4,
+    "sections": 10,
+    "choice": 2000,
+    "essay": 52
+  },
+  {
+    "grade": "六年级下册",
+    "subject": "history",
+    "version": "统编版（五四学制）",
+    "status": "FIXED",
+    "total": 3962,
+    "chapters": 3,
+    "sections": 17,
+    "choice": 3140,
+    "essay": 822
+  },
+  {
+    "grade": "七年级上册",
+    "subject": "geography",
+    "version": "仁爱科普版",
+    "status": "FIXED",
+    "total": 3000,
+    "chapters": 5,
+    "sections": 15,
+    "choice": 2999,
+    "essay": 1
+  },
+  {
+    "grade": "七年级上册",
+    "subject": "geography",
+    "version": "粤人版（2012）",
+    "status": "FIXED",
+    "total": 2851,
+    "chapters": 5,
+    "sections": 14,
+    "choice": 2800,
+    "essay": 51
+  },
+  {
+    "grade": "七年级下册",
+    "subject": "geography",
+    "version": "人教版（五四学制）（2012）",
+    "status": "FIXED",
+    "total": 2450,
+    "chapters": 4,
+    "sections": 9,
+    "choice": 2250,
+    "essay": 200
+  },
+  {
+    "grade": "七年级下册",
+    "subject": "geography",
+    "version": "商务星球版",
+    "status": "FIXED",
+    "total": 3248,
+    "chapters": 4,
+    "sections": 15,
+    "choice": 2998,
+    "essay": 250
+  },
+  {
+    "grade": "七年级下册",
+    "subject": "geography",
+    "version": "商务星球版（2012）",
+    "status": "FIXED",
+    "total": 2900,
+    "chapters": 3,
+    "sections": 13,
+    "choice": 2600,
+    "essay": 300
+  },
+  {
+    "grade": "七年级下册",
+    "subject": "geography",
+    "version": "晋教版（2012）",
+    "status": "FIXED",
+    "total": 2809,
+    "chapters": 3,
+    "sections": 14,
+    "choice": 2409,
+    "essay": 400
+  },
+  {
+    "grade": "七年级下册",
+    "subject": "geography",
+    "version": "粤人版（2012）",
+    "status": "FIXED",
+    "total": 3050,
+    "chapters": 4,
+    "sections": 14,
+    "choice": 2800,
+    "essay": 250
+  },
+  {
+    "grade": "七年级下册",
+    "subject": "geography",
+    "version": "鲁教版（五四学制）（2012）",
+    "status": "FIXED",
+    "total": 2450,
+    "chapters": 4,
+    "sections": 9,
+    "choice": 2250,
+    "essay": 200
+  },
+  {
+    "grade": "八年级上册",
+    "subject": "biology",
+    "version": "人教版（2012）",
+    "status": "FIXED",
+    "total": 1999,
+    "chapters": 2,
+    "sections": 8,
+    "choice": 1599,
+    "essay": 400
+  },
+  {
+    "grade": "八年级上册",
+    "subject": "biology",
+    "version": "冀少版（2012）",
+    "status": "FIXED",
+    "total": 2250,
+    "chapters": 3,
+    "sections": 9,
+    "choice": 1800,
+    "essay": 450
+  },
+  {
+    "grade": "八年级上册",
+    "subject": "biology",
+    "version": "北京版（2012）",
+    "status": "FIXED",
+    "total": 3250,
+    "chapters": 4,
+    "sections": 13,
+    "choice": 2600,
+    "essay": 650
+  },
+  {
+    "grade": "八年级上册",
+    "subject": "biology",
+    "version": "北师大版（2012）",
+    "status": "FIXED",
+    "total": 1500,
+    "chapters": 2,
+    "sections": 6,
+    "choice": 1200,
+    "essay": 300
+  }
+]

@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿import { useState } from "react";
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Trash2, BookX, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
 import { useStore } from "@/store/useStore";
@@ -75,8 +75,8 @@ export default function ErrorBookPage() {
             {filtered.map((item) => {
               const q = getQuestion(item.questionId);
               const info = SUBJECTS[item.subject];
-              // 兼容：选择题从 q 读，大题从 item 本身读
-              const stem = item.stem || q?.stem || "";
+              // 优先题库最新题干：错题快照是加入时的拷贝，历史数据修复前加入的快照可能残缺
+              const stem = q?.stem || item.stem || "";
               const version = item.version || q?.version || "";
               // 题型判断：优先 item.type，其次 q.type，最后用 options 推断（旧数据兜底）
               const itemType = item.type || q?.type;
